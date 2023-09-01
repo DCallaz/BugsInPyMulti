@@ -1,0 +1,36 @@
+#!/bin/python3
+import inspect
+import importlib
+import sys
+import dis
+import os
+
+if __name__ == "__main__":
+    if (len(sys.argv) < 2):
+        print("USAGE: cut <test file> [<test class>] <test_method>")
+    sys.path.insert(1, os.getcwd())
+    test_module = importlib.import_module(sys.argv[1])
+    if (len(sys.argv) == 4):
+        test_class = getattr(test_module, sys.argv[2])
+        test_method = getattr(test_class, sys.argv[3])
+    else:
+        test_class = None
+        test_method = getattr(test_module, sys.argv[2])
+    # Get all the imports and required functions used for this test
+    calls = {}
+    instrs = list(dis.get_instructions(test_method))[::-1]
+    for (i, instr) in enumerate(reversed(instrs)):
+        if (instr.opname == 'LOAD_GLOBAL'):
+            calls[instr.argval] = 'import'
+        if (instr.opname == 'CALL_FUNCTION'):
+            calls[instrs[len(instrs)-i+instr.arg].argval] = 'function'
+    for (name, type_) in sorted(calls.items(), key=lambda c: c[1], reverse=True):
+        if (type_ == 'import'):
+            print("import", name)
+        elif (type_ == 'function'):
+            if (hasattr(test_module, name)):
+                print(inspect.getsource(getattr(test_module, name)))
+            elif (hasattr(test_class, name)):
+                print(inspect.getsource(getattr(test_class, name)))
+    # Get this test source
+    print(inspect.getsource(test_method))
