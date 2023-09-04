@@ -42,6 +42,7 @@ for (( b=1; b<=$bugs; b++ )); do
     # Revert to working changes
     git restore .
     git reset > /dev/null
+    git add -A .
     cd "$temp"
     continue
   fi
@@ -62,6 +63,10 @@ for (( b=1; b<=$bugs; b++ )); do
   declare -A test_diffs
   declare -A test_pts
   cd "$project-$b/$project"
+  # Revert to working changes (sanity check)
+  git restore .
+  git reset > /dev/null
+  git add -A .
   if [ ! -f "bugsinpy_run_test.sh" ]; then
     echo "${red}ERROR: Could not find run_test.sh for bug $b${reset}"
     continue
@@ -90,7 +95,7 @@ for (( b=1; b<=$bugs; b++ )); do
   cd "$temp"
   # Done collecting tests
   #echo "${test_diffs[@]}"
-  brk=0
+  brk=1
   for (( v=$b+1; v<=$bugs; v++ )); do
     echo "${blue}Transplanting bug $b in version $v${reset}"
     #echo "${diff[$b]}"
@@ -119,8 +124,6 @@ for (( b=1; b<=$bugs; b++ )); do
       if [ "$fail_or_error" == "error" ]; then
         echo "${yellow}  failed to compile test case${reset}"
         echo "$test_output"
-        # Don't consider versions before if not compiling
-        brk=1
       elif [ "$fail_or_error" == "fail" ]; then
         if [ "$test_error" != "$expected_error" ]; then
           echo "${yellow}  error messages do not match${reset}"
@@ -133,17 +136,17 @@ for (( b=1; b<=$bugs; b++ )); do
           echo "$v" >> "$log_dir/$project/$v/bugs.txt"
           echo "${test_pts[$t]}" > "$log_dir/$project/$v/$b.test"
           echo "${test_diffs[$t]}" > "$log_dir/$project/$v/$b.diff"
+          brk=0
         fi
       else
         echo "${yellow}  test case passing${reset}"
         echo "$test_output"
-        # Don't consider versions before if test case passing
-        brk=1
       fi
     done
     # Revert to working changes
     git restore .
     git reset > /dev/null
+    git add -A .
     #echo "$diff" | patch -R -p1
     cd "$temp"
     if [ "$brk" -eq 1 ]; then
