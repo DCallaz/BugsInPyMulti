@@ -1,8 +1,26 @@
 #!/bin/python3
 import inspect
+import importlib.util
 import importlib
 import sys
 import os
+import re
+
+
+def linesin(source, target):
+    start = 0
+    while (start < len(target)):
+        try:
+            start = target.index(source[0], start)
+        except ValueError:
+            start = len(target)
+        line = 1
+        while (len(source) < line and target[start+line] == source[line]):
+            line += 1
+        if (line == len(source)):
+            return (start, start+line-1)
+    return None
+
 
 if __name__ == "__main__":
     if (len(sys.argv) < 2):
@@ -13,24 +31,39 @@ if __name__ == "__main__":
     test_class = None
     if (len(sys.argv) == 4):
         test_class = sys.argv[2]
-    test_module = importlib.import_module(test_file)
-    if (test_class is not None):
-        test_module = getattr(test_module, test_class)
-    code, sloc = inspect.findsource(test_module)
-    # Update the method if it exists
-    if (hasattr(test_module, test_method)):
-        test_lines = inspect.getsourcelines(getattr(test_module, test_method))
-        sloc, eloc = (test_lines[1]-1, test_lines[1]+len(test_lines[0])-2)
+    full_diff = sys.stdin.read()
+    cut_parts = full_diff.split('# BLOCK\n')
+    test_exists = importlib.util.find_spec(test_file) is not None
+    if (test_exists):
+        test_module = importlib.import_module(test_file)
+        code, sloc = inspect.findsource(test_module)
+        # inject each block into the code
+        for part in cut_parts:
+            method_name_list = re.findall("\s*def\s+([A-z0-9_]+)\s*\(", part)
+            method_name = method_name_list[0] if method_name_list else None
+            splice = part.splitlines(True)
+            if (test_class is not None):
+                test_c_module = getattr(test_module, test_class)
+            if (method_name is None and linesin(splice, code)):
+                sloc, eloc = linesin(splice, code)
+            # Update the method if it exists
+            elif (hasattr(test_module, method_name)):
+                test_lines = inspect.getsourcelines(getattr(test_module, method_name))
+                sloc, eloc = (test_lines[1]-1, test_lines[1]+len(test_lines[0])-2)
+            elif (test_c_module and hasattr(test_c_module, method_name)):
+                test_lines = inspect.getsourcelines(getattr(test_c_module, method_name))
+                sloc, eloc = (test_lines[1]-1, test_lines[1]+len(test_lines[0])-2)
+            else:
+                # skip variable declarations
+                while (code[sloc].strip() != ""):
+                    sloc += 1
+                # add blank line before and after
+                sloc += 1
+                eloc = sloc - 1
+            code = code[:sloc] + splice + code[eloc+1:]
+            # print(*code, sep="", end="")
     else:
-        # skip variable declarations
-        while (code[sloc].strip() != ""):
-            sloc += 1
-        # add blank line before and after
-        sloc += 1
-        eloc = sloc - 1
-    splice = sys.stdin.readlines()
-    code = code[:sloc] + splice + code[eloc+1:]
-    # print(*code, sep="", end="")
+        code = full_diff.replace("# BLOCK\n", "\n").splitlines(True)
     test_file_out = open(test_file.replace('.', '/')+".py", 'w')
     print(*code, sep="", end="", file=test_file_out)
     test_file_out.close()

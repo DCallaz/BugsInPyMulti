@@ -4,8 +4,10 @@ import importlib
 import sys
 import dis
 import os
+import re
 
 if __name__ == "__main__":
+    end = "# BLOCK\n"
     if (len(sys.argv) < 2):
         print("USAGE: cut <test file> [<test class>] <test_method>")
         quit()
@@ -17,21 +19,48 @@ if __name__ == "__main__":
     else:
         test_class = None
         test_method = getattr(test_module, sys.argv[2])
+    code, _ = inspect.findsource(test_module)
     # Get all the imports and required functions used for this test
     calls = {}
     instrs = list(dis.get_instructions(test_method))[::-1]
+    # Add function calls and imports
     for (i, instr) in enumerate(reversed(instrs)):
         if (instr.opname == 'LOAD_GLOBAL'):
             calls[instr.argval] = 'import'
         if (instr.opname == 'CALL_FUNCTION'):
-            calls[instrs[len(instrs)-i+instr.arg].argval] = 'function'
+            argval = instrs[len(instrs)-i+instr.arg].argval
+            if (argval in calls):
+                calls[argval] = 'function'
+    full_code = inspect.getsource(test_module)
+    # Add fixture calls if pytest
+    if ("pytest" in full_code):
+        for param in inspect.signature(test_method).parameters:
+            calls[param] = 'function'
+        # TODO: add pytest parameters
+        m = [i[1] for i in inspect.getmembers(test_method) if i[0] == 'pytestmark']
+        if (m):
+            for param in m[0][0].args[0].split(', '):
+                calls[param] = 'function'
+    all_import_indices = []
     for (name, type_) in sorted(calls.items(), key=lambda c: c[1], reverse=True):
-        if (type_ == 'import'):
-            print("import", name)
-        elif (type_ == 'function'):
+        if (type_ == 'function'):
             if (hasattr(test_module, name)):
-                print(inspect.getsource(getattr(test_module, name)))
+                used = inspect.getsource(getattr(test_module, name))
             elif (hasattr(test_class, name)):
-                print(inspect.getsource(getattr(test_class, name)))
+                used = inspect.getsource(getattr(test_class, name))
+            if (used and used in full_code):
+                print(used, end=end)
+            else:  # change type to import if not found in code
+                type_ = 'import'
+        if (type_ == 'import'):
+            r = re.compile("^[\s]*(from [A-z0-9_.]+)?[\s]*import.*[\s,]+"+str(name)+"[\s,]*")
+            name_import = list(filter(r.match, code))
+            # Don't print imports that have already been printed
+            name_import = [line for line in name_import if code.index(line)
+                           not in all_import_indices]
+            if (name_import):
+                all_import_indices += name_import
+                print(*name_import, end=end)
+            # print("import", name)
     # Get this test source
-    print(inspect.getsource(test_method))
+    print(inspect.getsource(test_method), end="")
