@@ -36,6 +36,9 @@ bugs=$(bugsinpy-info -p $project | grep "Number of bugs" | cut -d ':' -f 2 | xar
 cd "$temp"
 echo "${blue}Checking out versions...${reset}"
 for (( b=1; b<=$bugs; b++ )); do
+  echo "  $project-$b"
+  # create the log dir for this version
+  mkdir -p "$log_dir/$project/$b"
   # Skip downloading project if it is already there
   if [ -d $temp/$project-$b ]; then
     cd "$project-$b/$project"
@@ -46,9 +49,6 @@ for (( b=1; b<=$bugs; b++ )); do
     cd "$temp"
     continue
   fi
-  # create the log dir for this version
-  mkdir -p "$log_dir/$project/$b"
-  echo "  $project-$b"
   bugsinpy-checkout -p $project -i $b -v 0 -w $temp/$project-$b &> /dev/null
   cd "$project-$b/$project"
   # Compile the project
@@ -60,6 +60,8 @@ done
 echo "${blue}Done checking out versions.${reset}"
 for (( b=1; b<=$bugs; b++ )); do
   # Collect the tests for version b
+  unset test_diffs
+  unset test_pts
   declare -A test_diffs
   declare -A test_pts
   cd "$project-$b/$project"
@@ -82,7 +84,7 @@ for (( b=1; b<=$bugs; b++ )); do
     unittest=1
   fi
   # Process tests and collect test diffs
-  for t in ${tests[@]}; do
+  for t in "${tests[@]}"; do
     if [ "$unittest" -eq 1 ]; then
       awk_cmd='match($0, /(.+)\.([A-Z][^.]*)\.([^.]+)/, ary) {print ary[1],ary[2],ary[3]}'
     else
@@ -90,17 +92,17 @@ for (( b=1; b<=$bugs; b++ )); do
     fi
     test_pts[$t]="$(echo "$t" | awk "$awk_cmd" | sed 's/\//./g')"
     test_diffs[$t]="$($top_dir/cut ${test_pts[$t]})"
-    echo "${test_diffs[$t]}" > "$log_dir/$project/$b/$t.patch"
+    echo "${test_diffs[$t]}" > "$log_dir/$project/$b/${test_pts[@]// /.}.patch"
   done
   cd "$temp"
   # Done collecting tests
   #echo "${test_diffs[@]}"
-  brk=1
   for (( v=$b+1; v<=$bugs; v++ )); do
     echo "${blue}Transplanting bug $b in version $v${reset}"
     #echo "${diff[$b]}"
     cd "$project-$v/$project"
     # check expected and actual outputs for each test
+    brk=1
     for t in "${tests[@]}"; do
       # Splice in the code for this test for bug b
       echo "${test_diffs[$t]}" | $top_dir/splice ${test_pts[$t]}
@@ -133,7 +135,7 @@ for (( b=1; b<=$bugs; b++ )); do
           echo "  $expected_error"
         else
           echo "${green}  success!${reset}"
-          echo "$v" >> "$log_dir/$project/$v/bugs.txt"
+          echo "$b" >> "$log_dir/$project/$v/bugs.txt"
           echo "${test_pts[$t]}" > "$log_dir/$project/$v/$b.test"
           echo "${test_diffs[$t]}" > "$log_dir/$project/$v/$b.diff"
           brk=0
