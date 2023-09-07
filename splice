@@ -51,10 +51,10 @@ if __name__ == "__main__":
             if (method_name is None and linesin(splice, code)):
                 sloc, eloc = linesin(splice, code)
             # Update the method if it exists
-            elif (hasattr(test_module, method_name)):
+            elif (method_name and hasattr(test_module, method_name)):
                 test_lines = inspect.getsourcelines(getattr(test_module, method_name))
                 sloc, eloc = (test_lines[1]-1, test_lines[1]+len(test_lines[0])-2)
-            elif (test_c_module and hasattr(test_c_module, method_name)):
+            elif (method_name and test_c_module and hasattr(test_c_module, method_name)):
                 test_lines = inspect.getsourcelines(getattr(test_c_module, method_name))
                 sloc, eloc = (test_lines[1]-1, test_lines[1]+len(test_lines[0])-2)
             else:
@@ -70,7 +70,8 @@ if __name__ == "__main__":
                 eloc = sloc - 2
             splices.append((sloc, eloc, splice))
             # print(*code, sep="", end="")
-        splices.sort(key=lambda x: x[0], reverse=True)
+        # Sort by start location and then LOC (to have imports first)
+        splices.sort(key=lambda x: (x[0], len(x[2])), reverse=True)
         for s in splices:
             sloc, eloc, splice = s
             code = code[:sloc] + splice + code[eloc+1:]
