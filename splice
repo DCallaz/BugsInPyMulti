@@ -36,14 +36,17 @@ if __name__ == "__main__":
     test_exists = importlib.util.find_spec(test_file) is not None
     if (test_exists):
         test_module = importlib.import_module(test_file)
-        code, sloc = inspect.findsource(test_module)
+        test_c_module = None
+        if (test_class is not None):
+            test_c_module = getattr(test_module, test_class)
+            c_sloc = inspect.findsource(test_c_module)[1]
+        code, m_sloc = inspect.findsource(test_module)
+        splices = []
         # inject each block into the code
         for part in cut_parts:
             method_name_list = re.findall("\s*def\s+([A-z0-9_]+)\s*\(", part)
             method_name = method_name_list[0] if method_name_list else None
             splice = part.splitlines(True)
-            if (test_class is not None):
-                test_c_module = getattr(test_module, test_class)
             if (method_name is None and linesin(splice, code)):
                 sloc, eloc = linesin(splice, code)
             # Update the method if it exists
@@ -54,14 +57,23 @@ if __name__ == "__main__":
                 test_lines = inspect.getsourcelines(getattr(test_c_module, method_name))
                 sloc, eloc = (test_lines[1]-1, test_lines[1]+len(test_lines[0])-2)
             else:
+                if (test_c_module):
+                    sloc = c_sloc
+                else:
+                    sloc = m_sloc
                 # skip variable declarations
                 while (code[sloc].strip() != ""):
                     sloc += 1
                 # add blank line before and after
                 sloc += 1
-                eloc = sloc - 1
-            code = code[:sloc] + splice + code[eloc+1:]
+                eloc = sloc - 2
+            splices.append((sloc, eloc, splice))
             # print(*code, sep="", end="")
+        splices.sort(key=lambda x: x[0], reverse=True)
+        for s in splices:
+            print(*s)
+            sloc, eloc, splice = s
+            code = code[:sloc] + splice + code[eloc+1:]
     else:
         code = full_diff.replace("# BLOCK\n", "\n").splitlines(True)
     test_file_out = open(test_file.replace('.', '/')+".py", 'w')
