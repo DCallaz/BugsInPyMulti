@@ -8,14 +8,15 @@ import re
 
 
 def linesin(source, target):
-    start = 0
+    start = -1
     while (start < len(target)):
         try:
-            start = target.index(source[0], start)
+            start = target.index(source[0], start+1)
         except ValueError:
-            start = len(target)
+            return None
         line = 1
-        while (len(source) < line and target[start+line] == source[line]):
+        while (line < len(source) and start+line < len(target) and
+                target[start+line] == source[line]):
             line += 1
         if (line == len(source)):
             return (start, start+line-1)
