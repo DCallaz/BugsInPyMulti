@@ -34,14 +34,20 @@ if __name__ == "__main__":
         test_class = sys.argv[2]
     full_diff = sys.stdin.read()
     cut_parts = full_diff.split('# BLOCK\n')
-    test_exists = importlib.util.find_spec(test_file) is not None
+    try:
+        test_exists = importlib.util.find_spec(test_file) is not None
+    except ModuleNotFoundError:
+        test_exists = False
     if (test_exists):
         test_module = importlib.import_module(test_file)
+        code, m_sloc = inspect.findsource(test_module)
         test_c_module = None
         if (test_class is not None):
-            test_c_module = getattr(test_module, test_class)
-            c_sloc = inspect.findsource(test_c_module)[1]
-        code, m_sloc = inspect.findsource(test_module)
+            if (hasattr(test_module, test_class)):
+                test_c_module = getattr(test_module, test_class)
+                c_sloc = inspect.findsource(test_c_module)[1]
+            else:
+                cut_parts.append("class "+test_class+":\n")
         splices = []
         # inject each block into the code
         for part in cut_parts:
@@ -62,8 +68,8 @@ if __name__ == "__main__":
                     sloc = c_sloc
                 else:
                     sloc = m_sloc
-                # skip variable declarations
-                while (code[sloc].strip() != ""):
+                # skip variable declarations & imports
+                while (code[sloc].strip() != "" or "import" in code[sloc+1]):
                     sloc += 1
                 # add blank line before and after
                 sloc += 1
@@ -77,6 +83,10 @@ if __name__ == "__main__":
             code = code[:sloc] + splice + code[eloc+1:]
     else:
         code = full_diff.replace("# BLOCK\n", "\n").splitlines(True)
-    test_file_out = open(test_file.replace('.', '/')+".py", 'w')
+        if (test_class is not None):
+            code.insert(0, "class "+test_class+":\n")
+    filename = test_file.replace('.', '/')+".py"
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    test_file_out = open(filename, 'w')
     print(*code, sep="", end="", file=test_file_out)
     test_file_out.close()

@@ -39,8 +39,15 @@ if __name__ == "__main__":
         # TODO: add pytest parameters
         m = [i[1] for i in inspect.getmembers(test_method) if i[0] == 'pytestmark']
         if (m):
-            for param in m[0][0].args[0].split(', '):
-                calls[param] = 'function'
+            for mark in m[0]:
+                if (mark.name == 'parametrize'):
+                    params = mark.args[0].split(', ')
+                elif (mark.name == 'usefixtures' or hasattr(mark, 'args')):
+                    params = list(mark.args)
+                else:
+                    params = []
+                for param in params:
+                    calls[param] = 'function'
     all_import_indices = []
     for (name, type_) in sorted(calls.items(), key=lambda c: c[1], reverse=True):
         if (type_ == 'function'):
