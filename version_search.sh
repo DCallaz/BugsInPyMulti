@@ -125,6 +125,8 @@ for (( b=1; b<=$bugs; b++ )); do
       fi
       if [ "$fail_or_error" == "error" ]; then
         echo "${yellow}  failed to compile test case${reset}"
+        echo "${test_diffs[$t]}"
+        echo "<-------------------------------------------------------------->"
         echo "$test_output"
       elif [ "$fail_or_error" == "fail" ]; then
         if [ "$test_error" != "$expected_error" ]; then
@@ -142,6 +144,8 @@ for (( b=1; b<=$bugs; b++ )); do
         fi
       else
         echo "${yellow}  test case passing${reset}"
+        echo "${test_diffs[$t]}"
+        echo "<-------------------------------------------------------------->"
         echo "$test_output"
       fi
     done

@@ -71,7 +71,6 @@ if __name__ == "__main__":
             # print(*code, sep="", end="")
         splices.sort(key=lambda x: x[0], reverse=True)
         for s in splices:
-            print(*s)
             sloc, eloc, splice = s
             code = code[:sloc] + splice + code[eloc+1:]
     else:
