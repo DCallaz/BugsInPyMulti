@@ -39,10 +39,12 @@ for (( b=1; b<=$bugs; b++ )); do
   echo "  $project-$b"
   # create the log dir for this version
   mkdir -p "$log_dir/$project/$b"
+  echo "$b" >> "$log_dir/$project/$b/bugs.txt"
   # Skip downloading project if it is already there
   if [ -d $temp/$project-$b ]; then
     cd "$project-$b/$project"
     # Revert to working changes
+    git clean -df > /dev/null
     git restore .
     git reset > /dev/null
     git add -A .
@@ -66,6 +68,7 @@ for (( b=1; b<=$bugs; b++ )); do
   declare -A test_pts
   cd "$project-$b/$project"
   # Revert to working changes (sanity check)
+  git clean -df > /dev/null
   git restore .
   git reset > /dev/null
   git add -A .
@@ -150,6 +153,7 @@ for (( b=1; b<=$bugs; b++ )); do
       fi
     done
     # Revert to working changes
+    git clean -df > /dev/null
     git restore .
     git reset > /dev/null
     git add -A .
