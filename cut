@@ -5,6 +5,7 @@ import sys
 import dis
 import os
 import re
+import glob
 
 if __name__ == "__main__":
     end = "# BLOCK\n"
@@ -36,7 +37,6 @@ if __name__ == "__main__":
     if ("pytest" in full_code):
         for param in inspect.signature(test_method).parameters:
             calls[param] = 'function'
-        # TODO: add pytest parameters
         m = [i[1] for i in inspect.getmembers(test_method) if i[0] == 'pytestmark']
         if (m):
             for mark in m[0]:
@@ -47,7 +47,8 @@ if __name__ == "__main__":
                 else:
                     params = []
                 for param in params:
-                    calls[param] = 'function'
+                    if (param != ""):
+                        calls[param] = 'function'
     all_import_indices = []
     for (name, type_) in sorted(calls.items(), key=lambda c: c[1], reverse=True):
         if (type_ == 'function'):
@@ -73,3 +74,17 @@ if __name__ == "__main__":
             # print("import", name)
     # Get this test source
     print(inspect.getsource(test_method), end="")
+    consts = test_method.__code__.co_consts
+    used_files = []
+    for const in consts:
+        if (const is not None):
+            if (os.path.isfile(const)):
+                used_files.append(const)
+            else:
+                for const_ext in glob.glob(const+"*"):
+                    used_files.append(const_ext)
+    for f in used_files:
+        file = open(f)
+        lines = file.read()
+        print("# FILE:", f)
+        print(lines, end="")

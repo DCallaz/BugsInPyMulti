@@ -33,6 +33,7 @@ if __name__ == "__main__":
     if (len(sys.argv) == 4):
         test_class = sys.argv[2]
     full_diff = sys.stdin.read()
+    full_diff, *files = full_diff.split("# FILE: ")
     cut_parts = full_diff.split('# BLOCK\n')
     try:
         test_exists = importlib.util.find_spec(test_file) is not None
@@ -85,8 +86,18 @@ if __name__ == "__main__":
         code = full_diff.replace("# BLOCK\n", "\n").splitlines(True)
         if (test_class is not None):
             code.insert(0, "class "+test_class+":\n")
+        if ("pytest" in full_diff):
+            code.insert(0, "import pytest\n")
     filename = test_file.replace('.', '/')+".py"
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    if (os.path.dirname(filename) != ''):
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
     test_file_out = open(filename, 'w')
     print(*code, sep="", end="", file=test_file_out)
     test_file_out.close()
+    for f in files:
+        filename, *lines = f.splitlines()
+        if (os.path.dirname(filename) != ''):
+            os.makedirs(os.path.dirname(filename), exist_ok=True)
+        file_out = open(filename, 'w')
+        print(*lines, sep="\n", file=file_out)
+        file_out.close()
