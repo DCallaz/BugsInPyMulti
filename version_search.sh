@@ -27,6 +27,9 @@ fi
 project=$1
 top_dir="$PWD"
 log_dir="$(readlink -f "$(echo ${log_dir/"~"/~})")"
+if [ -d "$log_dir/$project" ]; then
+  rm -r "$log_dir/$project"
+fi
 mkdir -p "$log_dir/$project"
 temp="$PWD/temp"
 if [ ! -d "$temp" ]; then
@@ -39,7 +42,6 @@ for (( b=1; b<=$bugs; b++ )); do
   echo "  $project-$b"
   # create the log dir for this version
   mkdir -p "$log_dir/$project/$b"
-  echo "$b" >> "$log_dir/$project/$b/bugs.txt"
   # Skip downloading project if it is already there
   if [ -d $temp/$project-$b ]; then
     cd "$project-$b/$project"
@@ -93,9 +95,11 @@ for (( b=1; b<=$bugs; b++ )); do
     else
       awk_cmd='match($0, /(.+)\.py(::([A-Z][^:]*))?::(.+)/, ary) {print ary[1],ary[3],ary[4]}'
     fi
-    test_pts[$t]="$(echo "$t" | awk "$awk_cmd" | sed 's/\//./g')"
+    test_pts[$t]="$(echo "$t" | awk "$awk_cmd" | sed 's/\//./g;s/ \+/ /g')"
     test_diffs[$t]="$($top_dir/cut ${test_pts[$t]})"
-    echo "${test_diffs[$t]}" > "$log_dir/$project/$b/${test_pts[$t]// /.}.patch"
+    echo "$b,${test_pts[$t]}" >> "$log_dir/$project/$b/bugs.txt"
+    echo "${test_diffs[$t]}" > "$log_dir/$project/$b/${test_pts[$t]}.patch"
+    #echo "${test_diffs[$t]}" > "$log_dir/$project/$b/${test_pts[$t]// /.}.patch"
   done
   cd "$temp"
   # Done collecting tests
@@ -110,7 +114,7 @@ for (( b=1; b<=$bugs; b++ )); do
       # Splice in the code for this test for bug b
       echo "${test_diffs[$t]}" | $top_dir/splice ${test_pts[$t]}
       # Get expected and actual output for test
-      expected_output="$(bugsinpy-test -t "$t")"
+      expected_output="$(bugsinpy-test -t "$t" -w "$temp/$project-$b/$project")"
       test_output="$(bugsinpy-test -t "$t")"
 
       if [ "$unittest" == 1 ]; then
@@ -126,37 +130,42 @@ for (( b=1; b<=$bugs; b++ )); do
         sed_cmd='s/.*FAILURES.*/fail/g;s/.*ERRORS.*/error/g'
         fail_or_error=$(echo "$test_output" | grep "=\+ \(FAILURES\|ERRORS\)" | sed "$sed_cmd")
       fi
-      if [ "$fail_or_error" == "error" ]; then
-        echo "${yellow}  failed to compile test case${reset}"
-        echo "${test_diffs[$t]}"
-        echo "<-------------------------------------------------------------->"
-        echo "$test_output"
-      elif [ "$fail_or_error" == "fail" ]; then
-        if [ "$test_error" != "$expected_error" ]; then
+      # Replace any occurence of this version in error string with the bug version
+      test_error="${test_error//$project-$v/$project-$b}"
+      if [ "$test_error" != "$expected_error" ] || [ "$fail_or_error" == "" ]; then
+        if [ "$fail_or_error" == "error" ]; then
+          echo "${yellow}  failed to compile test case${reset}"
+          echo "${test_diffs[$t]}"
+          echo "<-------------------------------------------------------------->"
+          if [ "$test_error" ]; then
+            echo "$test_error"
+          else
+            echo "$test_output"
+          fi
+        elif [ "$fail_or_error" == "fail" ]; then
           echo "${yellow}  error messages do not match${reset}"
           echo "  Found:"
           echo "  $test_error"
           echo "  Expected:"
           echo "  $expected_error"
         else
-          echo "${green}  success!${reset}"
-          echo "$b" >> "$log_dir/$project/$v/bugs.txt"
-          echo "${test_pts[$t]}" > "$log_dir/$project/$v/$b.test"
-          echo "${test_diffs[$t]}" > "$log_dir/$project/$v/$b.diff"
-          brk=0
+          echo "${yellow}  test case passing${reset}"
+          echo "${test_diffs[$t]}"
+          echo "<-------------------------------------------------------------->"
+          echo "$test_output"
         fi
       else
-        echo "${yellow}  test case passing${reset}"
-        echo "${test_diffs[$t]}"
-        echo "<-------------------------------------------------------------->"
-        echo "$test_output"
+        echo "${green}  success!${reset}"
+        echo "$b,${test_pts[$t]}" >> "$log_dir/$project/$v/bugs.txt"
+        echo "${test_diffs[$t]}" > "$log_dir/$project/$v/${test_pts[$t]}.diff"
+        brk=0
       fi
+      # Revert to working changes for this test
+      git clean -df > /dev/null
+      git restore .
+      git reset > /dev/null
+      git add -A .
     done
-    # Revert to working changes
-    git clean -df > /dev/null
-    git restore .
-    git reset > /dev/null
-    git add -A .
     #echo "$diff" | patch -R -p1
     cd "$temp"
     if [ "$brk" -eq 1 ]; then
