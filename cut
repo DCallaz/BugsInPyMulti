@@ -6,7 +6,6 @@ import dis
 import os
 import re
 import glob
-from functools import partial as part
 
 if __name__ == "__main__":
     end = "# BLOCK\n"
@@ -50,7 +49,9 @@ if __name__ == "__main__":
                 for param in params:
                     if (param != ""):
                         calls[param] = 'function'
-    all_import_indices = []
+    pat = ("[ \t]*(?:from[ \t]+[A-z0-9_.]+)?[ \t]*import[ \t]+"
+           "(?:[A-z0-9_., \t]+|\\[\s]+|\([A-z0-9_.,\s]+\))")
+    all_imports = re.findall(pat, full_code)
     for (name, type_) in sorted(calls.items(), key=lambda c: c[1], reverse=True):
         if (type_ == 'function'):
             if (hasattr(test_module, name) and
@@ -66,16 +67,13 @@ if __name__ == "__main__":
             else:  # change type to import if not found in code
                 type_ = 'import'
         if (type_ == 'import'):
-            # TODO: multiline imports
-            r = re.compile("^[\s]*(from [A-z0-9_.]+)?[\s]*import.*[\s,]+" +
-                           str(name)+"([\s,]+|$)")
-            name_import = list(filter(r.match, code))
-            # Don't print imports that have already been printed
-            name_import = [line for line in name_import if code.index(line)
-                           not in all_import_indices]
+            r = re.compile("^[\s]*(from [A-z0-9_.]+)?[\s]*import(.|\n)*[\s,]+"
+                           + str(name)+"([\s,]+|$)")
+            name_import = list(filter(r.match, all_imports))
             if (name_import):
-                all_import_indices += name_import
-                print(*name_import, end=end)
+                # Don't print imports that have already been printed
+                all_imports.remove(name_import[0])
+                print(name_import[0].rstrip('\n'), end='\n'+end)
             # print("import", name)
     # Get this test source
     print(inspect.getsource(test_method), end="")

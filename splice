@@ -7,19 +7,36 @@ import os
 import re
 
 
-def linesin(source, target):
+def linesin(imprt, test, code):
+    """
+    Gets the lines of the import <imprt> in the code. Overrides the import to
+    include lines that appear in code and not in the import.
+    """
     start = -1
-    while (start < len(target)):
+    while (start < len(code)):
         try:
-            start = target.index(source[0], start+1)
+            start = code.index(imprt[0], start+1)
         except ValueError:
             return None
-        line = 1
-        while (line < len(source) and start+line < len(target) and
-                target[start+line] == source[line]):
-            line += 1
-        if (line == len(source)):
-            return (start, start+line-1)
+        cur = 1
+        end = start + 1
+        while (cur < len(imprt)):
+            if (imprt[cur] == code[end]):
+                cur += 1
+                end += 1
+            elif (code[end] in imprt[cur:]):
+                new = imprt.index(code[end], cur)
+                for i in range(new-1, cur-1, -1):
+                    for iden in re.findall("[A-z0-9_]+", imprt[i]):
+                        if (iden in test):
+                            break
+                    else:
+                        imprt.pop(i)
+                cur = imprt.index(code[end], cur)
+            else:
+                imprt.insert(cur, code[end])
+        if (cur == len(imprt)):
+            return (start, end-1)
     return None
 
 
@@ -55,8 +72,8 @@ if __name__ == "__main__":
             method_name_list = re.findall("\s*def\s+([A-z0-9_]+)\s*\(", part)
             method_name = method_name_list[0] if method_name_list else None
             splice = part.splitlines(True)
-            if (method_name is None and linesin(splice, code)):
-                sloc, eloc = linesin(splice, code)
+            if (method_name is None and linesin(splice, cut_parts[-1], code)):
+                sloc, eloc = linesin(splice, cut_parts[-1], code)
             # Update the method if it exists
             elif (method_name and hasattr(test_module, method_name)):
                 test_lines = inspect.getsourcelines(getattr(test_module, method_name))
