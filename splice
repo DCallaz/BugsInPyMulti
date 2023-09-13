@@ -65,7 +65,7 @@ if __name__ == "__main__":
                 test_lines = inspect.getsourcelines(getattr(test_c_module, method_name))
                 sloc, eloc = (test_lines[1]-1, test_lines[1]+len(test_lines[0])-2)
             else:
-                if (method_name and test_c_module):
+                if (test_c_module and splice[0].startswith((' ', '\t'))):
                     sloc = c_sloc
                 else:
                     sloc = m_sloc
@@ -77,15 +77,20 @@ if __name__ == "__main__":
                 eloc = sloc - 2
             splices.append((sloc, eloc, splice))
             # print(*code, sep="", end="")
-        # Sort by start location and then LOC (to have imports first)
-        splices.sort(key=lambda x: (x[0], len(x[2])), reverse=True)
+        # Sort by start location and then indentation and then imports
+        splices.sort(key=lambda x: (x[0], x[2][0].startswith((' ', '\t')),
+                     not any("import" in y for y in x[2])), reverse=True)
         for s in splices:
             sloc, eloc, splice = s
             code = code[:sloc] + splice + code[eloc+1:]
     else:
         code = full_diff.replace("# BLOCK\n", "\n").splitlines(True)
         if (test_class is not None):
-            code.insert(0, "class "+test_class+":\n")
+            # insert the class starter after imports
+            i = 0
+            while (i < len(code) and not code[i].startswith((' ', '\t'))):
+                i += 1
+            code.insert(i, "class "+test_class+":\n")
         if ("pytest" in full_diff):
             code.insert(0, "import pytest\n")
     filename = test_file.replace('.', '/')+".py"
