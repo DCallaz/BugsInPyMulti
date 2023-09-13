@@ -65,7 +65,7 @@ if __name__ == "__main__":
                 test_lines = inspect.getsourcelines(getattr(test_c_module, method_name))
                 sloc, eloc = (test_lines[1]-1, test_lines[1]+len(test_lines[0])-2)
             else:
-                if (test_c_module):
+                if (method_name and test_c_module):
                     sloc = c_sloc
                 else:
                     sloc = m_sloc

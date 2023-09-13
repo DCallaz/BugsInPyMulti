@@ -6,6 +6,7 @@ import dis
 import os
 import re
 import glob
+from functools import partial as part
 
 if __name__ == "__main__":
     end = "# BLOCK\n"
@@ -52,9 +53,11 @@ if __name__ == "__main__":
     all_import_indices = []
     for (name, type_) in sorted(calls.items(), key=lambda c: c[1], reverse=True):
         if (type_ == 'function'):
-            if (hasattr(test_module, name)):
+            if (hasattr(test_module, name) and not isinstance(
+                    getattr(test_module, name), part)):
                 used = inspect.getsource(getattr(test_module, name))
-            elif (test_class and hasattr(test_class, name)):
+            elif (test_class and hasattr(test_class, name) and not isinstance(
+                    getattr(test_class, name), part)):
                 used = inspect.getsource(getattr(test_class, name))
             else:
                 used = ""
@@ -63,7 +66,8 @@ if __name__ == "__main__":
             else:  # change type to import if not found in code
                 type_ = 'import'
         if (type_ == 'import'):
-            r = re.compile("^[\s]*(from [A-z0-9_.]+)?[\s]*import.*[\s,]+"+str(name)+"[\s,]*")
+            r = re.compile("^[\s]*(from [A-z0-9_.]+)?[\s]*import.*[\s,]+" +
+                           str(name)+"([\s,]+|$)")
             name_import = list(filter(r.match, code))
             # Don't print imports that have already been printed
             name_import = [line for line in name_import if code.index(line)
@@ -74,17 +78,24 @@ if __name__ == "__main__":
             # print("import", name)
     # Get this test source
     print(inspect.getsource(test_method), end="")
-    consts = test_method.__code__.co_consts
+    consts = list(test_method.__code__.co_consts)
+    if ('__wrapped__' in test_method.__dict__):
+        consts.extend(test_method.__dict__['__wrapped__'].__code__.co_consts)
     used_files = []
     for const in consts:
-        if (const is not None):
+        if (const is not None and type(const) is str and const != ""):
             if (os.path.isfile(const)):
                 used_files.append(const)
             else:
-                for const_ext in glob.glob(const+"*"):
+                found = False
+                for const_ext in glob.glob(str(const)+".*"):
                     used_files.append(const_ext)
+                    found = True
+                if (not found):
+                    for const_ext in glob.glob("test*/**/"+str(const)+".*", recursive=True):
+                        used_files.append(const_ext)
     for f in used_files:
         file = open(f)
         lines = file.read()
         print("# FILE:", f)
-        print(lines, end="")
+        print(lines.rstrip('\n'))
