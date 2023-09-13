@@ -53,11 +53,11 @@ if __name__ == "__main__":
     all_import_indices = []
     for (name, type_) in sorted(calls.items(), key=lambda c: c[1], reverse=True):
         if (type_ == 'function'):
-            if (hasattr(test_module, name) and not isinstance(
-                    getattr(test_module, name), part)):
+            if (hasattr(test_module, name) and
+                    inspect.isroutine(getattr(test_module, name))):
                 used = inspect.getsource(getattr(test_module, name))
-            elif (test_class and hasattr(test_class, name) and not isinstance(
-                    getattr(test_class, name), part)):
+            elif (test_class and hasattr(test_class, name) and
+                    inspect.isroutine(getattr(test_class, name))):
                 used = inspect.getsource(getattr(test_class, name))
             else:
                 used = ""
@@ -66,6 +66,7 @@ if __name__ == "__main__":
             else:  # change type to import if not found in code
                 type_ = 'import'
         if (type_ == 'import'):
+            # TODO: multiline imports
             r = re.compile("^[\s]*(from [A-z0-9_.]+)?[\s]*import.*[\s,]+" +
                            str(name)+"([\s,]+|$)")
             name_import = list(filter(r.match, code))
