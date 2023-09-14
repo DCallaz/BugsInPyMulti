@@ -34,18 +34,19 @@ for file, content in js['files'].items():
                 tests.append(test)
             coverage.setdefault(i, []).append(j)
 if (subprocess.getoutput('grep unittest bugsinpy_run_test.sh')):
-    failed = subprocess.getoutput('grep "^\\(ERROR\\|FAIL\\):" coverage_alltest_bugsinpy.txt')
+    all_failed = subprocess.getoutput('grep "^\\(ERROR\\|FAIL\\):" coverage_alltest_bugsinpy.txt')
     pat = "^(?:ERROR|FAIL): (\S+) \((.*)\)"
-    failed = failed.splitlines()
+    failed = all_failed.splitlines()
     for i in range(len(failed)):
         print(failed[i])
         match = re.match(pat, failed[i])
-        failed[i] = match.group(2) + "." + match.group(1)
+        if (match is not None):
+            failed[i] = match.group(2) + "." + match.group(1)
 else:
-    failed = subprocess.getoutput('grep "^FAILED" coverage_alltest_bugsinpy.txt')
-    failed = failed.splitlines()
+    all_failed = subprocess.getoutput('grep "^FAIL" coverage_alltest_bugsinpy.txt')
+    failed = all_failed.splitlines()
     for i in range(len(failed)):
-        _, _, failed[i] = str(failed[i]).partition('  ')
+        failed[i] = str(failed[i]).split(' ')[1]
         failed[i] = failed[i].replace(".py", "").replace("::", ".").replace("/", ".")
 tcm = open(tcm_file, 'w')
 print("#tests", file=tcm)

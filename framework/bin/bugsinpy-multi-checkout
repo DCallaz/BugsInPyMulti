@@ -1,0 +1,56 @@
+#!/bin/bash
+USAGE="bugsinpy-multi-checkout -p <project> -i <version> [-w <work dir>]"
+
+work_dir="$PWD"
+while getopts ":hp:i:w:" opt; do
+  case ${opt} in
+    h )
+      echo "$USAGE"
+      exit 0
+      ;;
+    p )
+      project="$OPTARG"
+      ;;
+    i )
+      v="$OPTARG"
+      ;;
+    w )
+      work_dir="$OPTARG"
+      ;;
+    \? )
+      echo "Invalid option: $OPTARG" 1>&2
+      ;;
+    : )
+      echo "Invalid option: $OPTARG requires an argument" 1>&2
+      ;;
+  esac
+done
+shift $((OPTIND -1))
+# Convert to absolute path
+work_dir="$(readlink -f "$(echo ${work_dir/"~"/~})")"
+home="$(dirname $0)/../../"
+home="$(readlink -f "$(echo ${home/"~"/~})")"
+if [ ! "$project" ]; then
+  echo "Please specify a project"
+  echo "$USAGE"
+  exit 0
+elif [ ! "$v" ]; then
+  echo "Please specify a version"
+  echo "$USAGE"
+  exit 0
+fi
+if [ -d "$work_dir/$project-$v" ]; then
+  rm -rf "$work_dir/$project-$v"
+fi
+# Checkout the project using base bugsinpy
+bugsinpy-checkout -p "$project" -i "$v" -v "0" -w "$work_dir"
+cd "$work_dir/$project"
+# Loop over all tests and transplant
+while read -u 10 -r line; do
+  bug="$(echo "$line" | cut -d ',' -f 1)"
+  if [ "$bug" != "$v" ]; then
+    test_pts="$(echo "$line" | cut -d ',' -f 2)"
+    test_diff="$(cat "$home/versions/$project/$v/$test_pts.diff")"
+    echo "$test_diff" | $home/splice $test_pts
+  fi
+done 10< "$home/versions/$project/$v/bugs.txt"
