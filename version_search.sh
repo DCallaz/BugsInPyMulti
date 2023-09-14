@@ -98,7 +98,7 @@ for (( b=1; b<=$bugs; b++ )); do
     test_pts[$t]="$(echo "$t" | awk "$awk_cmd" | sed 's/\//./g;s/ \+/ /g')"
     test_diffs[$t]="$($top_dir/cut ${test_pts[$t]})"
     echo "$b,${test_pts[$t]}" >> "$log_dir/$project/$b/bugs.txt"
-    echo "${test_diffs[$t]}" > "$log_dir/$project/$b/${test_pts[$t]}.patch"
+    echo "${test_diffs[$t]}" > "$log_dir/$project/$b/${test_pts[$t]}.diff"
     #echo "${test_diffs[$t]}" > "$log_dir/$project/$b/${test_pts[$t]// /.}.patch"
   done
   cd "$temp"
