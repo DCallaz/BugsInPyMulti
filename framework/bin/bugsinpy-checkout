@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 framework_location="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
@@ -33,26 +33,26 @@ do
 done
 
 ###Project name and bug id are mandatory
-if [ "$project_name" == "" ]; then 
+if [ "$project_name" == "" ]; then
    echo "Please input project name"
    exit
 fi
 
-if [ "$bug_id" == "" ]; then 
+if [ "$bug_id" == "" ]; then
    echo "Please input bug id"
    exit
 fi
-if [ "$version_id" == "" ]; then 
+if [ "$version_id" == "" ]; then
    version_id="1"
 elif [[ "$version_id" != "1" && "$version_id" != "0" ]]; then
    version_id="1"
 fi
 
-if [ "$work_dir" == "" ]; then 
+if [ "$work_dir" == "" ]; then
    work_dir="$framework_location/temp"
 fi
 
-if [[ $work_dir == */ ]]; then 
+if [[ $work_dir == */ ]]; then
    temp_work_dir="$work_dir"
    work_dir=${temp_work_dir::-1}
 fi
@@ -162,7 +162,7 @@ do
    test_file_now=${test_file[index]}
    cp -v "$work_dir/$project_name/$test_file_now" "$project_location/bugs/$bug_id"
 done
-   
+
 cd "$work_dir/$project_name"
 git reset --hard "$buggy_commit"
 git clean -f -d
@@ -193,6 +193,7 @@ done
 
 rm -f "$work_dir/$project_name/bugsinpy_patchfile.info"
 echo "$patch_fix_all" > "$work_dir/$project_name/bugsinpy_patchfile.info"
+cp "$bugsinpy_location/.coveragerc" "$work_dir/$project_name"
 
 ###Move information about bug to clone project folder
 cp -f "$project_location/bugs/$bug_id/bug.info" "$work_dir/$project_name/bugsinpy_bug.info"

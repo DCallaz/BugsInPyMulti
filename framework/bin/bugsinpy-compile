@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-
+#!/bin/bash
 usage="-w work_dir
              The working directory to compile the project. Default will be the current directory.
 "
@@ -54,7 +53,7 @@ fi
 rm -r -f env/
 
 ###Add environment
-python3 -m venv env
+python -m venv env
 
 ###Activate environment
 if [ -d "env/Scripts" ]; then
@@ -123,7 +122,7 @@ done < "$work_dir/bugsinpy_bug.info"
 #dos2unix $work_dir/bugsinpy_requirements.txt
 #pip install -r "$work_dir/bugsinpy_requirements.txt"
 if grep -q '[^[:space:]]' "$work_dir/bugsinpy_requirements.txt"; then
-    sed -e '/^\s*#.*$/d' -e '/^\s*$/d' $work_dir/bugsinpy_requirements.txt | xargs -I {} pip install {}
+    cat "$work_dir/bugsinpy_requirements.txt" | sed -e '/^\s*#.*$/d' -e '/^\s*$/d' | xargs -n 1 pip install
 fi
 
 for index in "${!run_setup[@]}"
@@ -136,7 +135,7 @@ done
 ###Install requirement
 #pip install -r "$work_dir/bugsinpy_requirements.txt"
 if grep -q '[^[:space:]]' "$work_dir/bugsinpy_requirements.txt"; then
-    sed -e '/^\s*#.*$/d' -e '/^\s*$/d' $work_dir/bugsinpy_requirements.txt | xargs -I {} pip install {}
+    cat "$work_dir/bugsinpy_requirements.txt" | sed -e '/^\s*#.*$/d' -e '/^\s*$/d' | xargs -n 1 pip install
 fi
 deactivate
 

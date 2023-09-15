@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 usage="-w work_dir
              The working directory to run the test. Default will be the current directory.
@@ -34,11 +34,11 @@ do
 done
 
 ###Update the work directory
-if [ "$work_dir" == "" ]; then 
+if [ "$work_dir" == "" ]; then
    work_dir=$(pwd)
 fi
 
-if [[ $work_dir == */ ]]; then 
+if [[ $work_dir == */ ]]; then
    temp_work_dir="$work_dir"
    work_dir=${temp_work_dir::-1}
 fi
@@ -92,17 +92,17 @@ if [[ "$pytest" == "1" ]]; then
   run_command_filter=""
   for index in "${!run_command[@]}"
   do
-     run_command_trail=${run_command[index]} 
+     run_command_trail=${run_command[index]}
      echo "RUN EVERY COMMAND"
      echo "$index"
      echo "$run_command_now"
      echo "$test_file_now"
      run_command_now=$(echo $run_command_trail | sed -e 's/\r//g')
-  
+
      coverage=$(coverage run -m $run_command_now 2>&1)
      echo "coverage run -m $run_command_now" &>>"$work_dir/coverage_bugsinpy.txt"
      echo "$coverage" &>>"$work_dir/coverage_bugsinpy.txt"
-  
+
      coverage_report=$(coverage report -m 2>&1)
      echo "$coverage_report"
      printf "\nCoverage Report\n" &>>"$work_dir/coverage_bugsinpy.txt"
@@ -114,9 +114,9 @@ else
   run_command_filter=""
   for index in "${!run_command[@]}"
   do
-     run_command_trail=${run_command[index]} 
-  
-     
+     run_command_trail=${run_command[index]}
+
+
      run_command_now=$(echo $run_command_trail | sed -e 's/\r//g')
      echo "RUN EVERY COMMAND"
      echo "$index"
@@ -130,13 +130,13 @@ else
              searchstring="python -m "
          else
              searchstring="python "
-         fi 
+         fi
          echo "$searchstring"
          temp_run=${run_command_now##*$searchstring}
          run_command_now="unittest $temp_run"
          echo "$run_command_now"
      fi
-     
+
      coverage=$(coverage run -m $run_command_now 2>&1)
      echo "$coverage"
      echo "coverage run -m $run_command_now" &>>"$work_dir/coverage_bugsinpy.txt"
@@ -153,9 +153,9 @@ fi
 
 elif [[ "$run_all" == "1" ]]; then
   if [[ "$pytest" == "1" ]]; then
-     coverage=$(coverage run -m pytest 2>&1)
+     coverage=$(coverage run -m pytest -ra 2>&1)
      echo "$coverage"
-     echo "coverage run -m pytest" &>>"$work_dir/coverage_alltest_bugsinpy.txt"
+     echo "coverage run -m pytest -ra" &>>"$work_dir/coverage_alltest_bugsinpy.txt"
      echo "$coverage" &>>"$work_dir/coverage_alltest_bugsinpy.txt"
 
      coverage_report=$(coverage report -m 2>&1)
@@ -165,7 +165,7 @@ elif [[ "$run_all" == "1" ]]; then
      printf "\n\n" &>>"$work_dir/coverage_alltest_bugsinpy.txt"
 
   else
-     echo "Run Unittest" 
+     echo "Run Unittest"
      ###Read bug.info file
      DONE=false
      until $DONE ;do
@@ -183,8 +183,8 @@ elif [[ "$run_all" == "1" ]]; then
      if [[ "$test_file_now" != "" ]]; then
         IFS='/' read -r -a test_file_ex <<< "$test_file_now"
      fi
-     
-     
+
+
 
      for index in "${!test_file_ex[@]}"
      do
@@ -195,7 +195,7 @@ elif [[ "$run_all" == "1" ]]; then
         else
            if [[ "$test_file_temp" == "test" || "$test_file_temp" == "tests" ]]; then
               stop_loop_test="1"
-           fi 
+           fi
            access_test+="$test_file_temp/"
         fi
      fi
@@ -241,6 +241,8 @@ elif [ "$single_test" != "" ]; then
      printf "\n\n" &>>"$work_dir/coverage_singletest_bugsinpy.txt"
   fi
 fi
+
+coverage json --show-contexts --pretty-print
 
 ###Deactivate the environment
 deactivate

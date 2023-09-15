@@ -1,5 +1,7 @@
 #!/bin/bash
 USAGE="bugsinpy-multi-checkout -p <project> -i <version> [-w <work dir>]"
+yellow=`tput setaf 3`
+reset=`tput sgr0`
 
 work_dir="$PWD"
 while getopts ":hp:i:w:" opt; do
@@ -31,12 +33,17 @@ work_dir="$(readlink -f "$(echo ${work_dir/"~"/~})")"
 home="$(dirname $0)/../../"
 home="$(readlink -f "$(echo ${home/"~"/~})")"
 if [ ! "$project" ]; then
-  echo "Please specify a project"
+  echo "${yellow}Please specify a project${reset}"
   echo "$USAGE"
   exit 0
 elif [ ! "$v" ]; then
-  echo "Please specify a version"
+  echo "${yellow}Please specify a version${reset}"
   echo "$USAGE"
+  exit 0
+elif [ ! -d "$home/versions/$project" ]; then
+  echo "${yellow}Version search for $project has not been run yet. Please run:${reset}"
+  echo "  $home/version_search $project |& tee ${project}_search.log"
+  echo "${yellow}to find available multi-fault versions for this project${reset}"
   exit 0
 fi
 if [ -d "$work_dir/$project-$v" ]; then
@@ -45,6 +52,8 @@ fi
 # Checkout the project using base bugsinpy
 bugsinpy-checkout -p "$project" -i "$v" -v "0" -w "$work_dir"
 cd "$work_dir/$project"
+# Compile the project before transplanting (needed for some projects)
+bugsinpy-compile &> /dev/null
 # Loop over all tests and transplant
 while read -u 10 -r line; do
   bug="$(echo "$line" | cut -d ',' -f 1)"
