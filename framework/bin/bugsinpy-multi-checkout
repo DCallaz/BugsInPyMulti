@@ -1,10 +1,11 @@
 #!/bin/bash
-USAGE="bugsinpy-multi-checkout -p <project> -i <version> [-w <work dir>]"
+USAGE="USAGE: bugsinpy-multi-checkout -p <project> -i <version> [-w <work dir>]"
 yellow=`tput setaf 3`
 reset=`tput sgr0`
 
 work_dir="$PWD"
-while getopts ":hp:i:w:" opt; do
+verbose="/dev/null"
+while getopts ":hvp:i:w:" opt; do
   case ${opt} in
     h )
       echo "$USAGE"
@@ -15,6 +16,9 @@ while getopts ":hp:i:w:" opt; do
       ;;
     i )
       v="$OPTARG"
+      ;;
+    v )
+      verbose="/dev/stdout"
       ;;
     w )
       work_dir="$OPTARG"
@@ -53,7 +57,7 @@ fi
 bugsinpy-checkout -p "$project" -i "$v" -v "0" -w "$work_dir"
 cd "$work_dir/$project"
 # Compile the project before transplanting (needed for some projects)
-bugsinpy-compile &> /dev/null
+bugsinpy-compile &> "$verbose"
 echo "$project,$v" > bugsinpy_version.info
 # Loop over all tests and transplant
 while read -u 10 -r line; do
