@@ -1,0 +1,76 @@
+#!/bin/bash
+USAGE="USAGE: bugsinpy-identify [-w <work dir>] [-b <backtracks dir>]"
+yellow=`tput setaf 3`
+reset=`tput sgr0`
+# Convert to absolute path
+home="$(dirname $0)/../../"
+home="$(readlink -f "$(echo ${home/"~"/~})")"
+# Defaults
+back_dir="$home/backtracks"
+work_dir="$PWD"
+# Get cmd line options
+while getopts ":hw:b:" opt; do
+  case ${opt} in
+    h )
+      echo "$USAGE"
+      exit 0
+      ;;
+    w )
+      work_dir="$OPTARG"
+      ;;
+    b )
+      back_dir="$OPTARG"
+      ;;
+    \? )
+      echo "Invalid option: $OPTARG" 1>&2
+      ;;
+    : )
+      echo "Invalid option: $OPTARG requires an argument" 1>&2
+      ;;
+  esac
+done
+shift $((OPTIND -1))
+# Convert to absolute path
+work_dir="$(readlink -f "$(echo ${work_dir/"~"/~})")"
+back_dir="$(readlink -f "$(echo ${back_dir/"~"/~})")"
+if [ ! -d "$back_dir" ]; then
+  echo "${yellow}Backtrack directory \"$back_dir\" does not exist${reset}"
+  echo "$USAGE"
+  exit 0
+elif [ ! -f "$work_dir/bugsinpy_version.info" ]; then
+  echo "${yellow}The directory \"$work_dir\" is not a checked out multi-fault project ${reset}"
+  echo "$USAGE"
+  exit 0
+elif [ ! -f "$work_dir/coverage.tcm" ]; then
+  echo "${yellow}Coverage file not available, please run:${reset}"
+  echo "  bugsinpy-to-tcm"
+  echo "${yellow}to produce the coverage file before running this script${reset}"
+  exit 0
+fi
+project="$(cat "$work_dir/bugsinpy_version.info" | cut -d ',' -f 1)"
+v="$(cat "$work_dir/bugsinpy_version.info" | cut -d ',' -f 2)"
+if [ ! -f "$back_dir/${project}_backtrack.json" ]; then
+  echo "${yellow}Backtracking file for $project not found at \"$back_dir/${project}_backtrack.json\"${reset}"
+  echo "$USAGE"
+  exit 0
+fi
+bugs="$(cat "$home/versions/$project/$v/bugs.txt" | cut -d ',' -f 1 | sort -n | uniq)"
+for bug in $bugs; do
+  found=0
+  # Loop over each file for the bug
+  while read full_line || [ -n "$full_line" ]; do
+    file="$(echo "$full_line" | cut -d ',' -f 1)"
+    lines=( $(echo "$full_line" | cut -d ',' --complement -f 1 | tr ',' ' ') )
+    # Loop over each line in file for the bug
+    for line in ${lines[@]}; do
+      l="$(grep -n "$file:$line" coverage.tcm | cut -d ':' -f 1)"
+      if [ "$l" ]; then
+        sed -i "${l}s/$/ | ${bug}/" coverage.tcm
+        found=1
+      fi
+    done
+  done < <(python3 "$home/framework/bin/backtrack.py" "$back_dir" "$project" "$bug" "$v")
+  if [ "$found" -eq 0 ]; then
+    echo "${yellow}Could not identify bug $bug${reset}"
+  fi
+done

@@ -42,7 +42,7 @@ def linesin(imprt, test, code):
 
 if __name__ == "__main__":
     if (len(sys.argv) < 2):
-        print("USAGE: splice <test file> [<test class>] <test_method>")
+        print("USAGE: bugsinpy-splice <test file> [<test class>] <test_method>")
     sys.path.insert(1, os.getcwd())
     test_file = sys.argv[1]
     test_method = sys.argv[-1]

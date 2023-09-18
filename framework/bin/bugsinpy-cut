@@ -10,7 +10,7 @@ import glob
 if __name__ == "__main__":
     end = "# BLOCK\n"
     if (len(sys.argv) < 2):
-        print("USAGE: cut <test file> [<test class>] <test_method>")
+        print("USAGE: bugsinpy-cut <test file> [<test class>] <test_method>")
         quit()
     sys.path.insert(1, os.getcwd())
     test_module = importlib.import_module(sys.argv[1])

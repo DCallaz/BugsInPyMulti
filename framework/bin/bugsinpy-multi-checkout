@@ -54,12 +54,13 @@ bugsinpy-checkout -p "$project" -i "$v" -v "0" -w "$work_dir"
 cd "$work_dir/$project"
 # Compile the project before transplanting (needed for some projects)
 bugsinpy-compile &> /dev/null
+echo "$project,$v" > bugsinpy_version.info
 # Loop over all tests and transplant
 while read -u 10 -r line; do
   bug="$(echo "$line" | cut -d ',' -f 1)"
   if [ "$bug" != "$v" ]; then
     test_pts="$(echo "$line" | cut -d ',' -f 2)"
     test_diff="$(cat "$home/versions/$project/$v/$test_pts.diff")"
-    echo "$test_diff" | $home/splice $test_pts
+    echo "$test_diff" | bugsinpy-splice $test_pts
   fi
 done 10< "$home/versions/$project/$v/bugs.txt"

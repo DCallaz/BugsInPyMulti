@@ -25,7 +25,6 @@ if [ $# -lt 1 ]; then
   exit 0
 fi
 project=$1
-top_dir="$PWD"
 log_dir="$(readlink -f "$(echo ${log_dir/"~"/~})")"
 if [ -d "$log_dir/$project" ]; then
   rm -r "$log_dir/$project"
@@ -96,7 +95,7 @@ for (( b=1; b<=$bugs; b++ )); do
       awk_cmd='match($0, /(.+)\.py(::([A-Z][^:]*))?::(.+)/, ary) {print ary[1],ary[3],ary[4]}'
     fi
     test_pts[$t]="$(echo "$t" | awk "$awk_cmd" | sed 's/\//./g;s/ \+/ /g')"
-    test_diffs[$t]="$($top_dir/cut ${test_pts[$t]})"
+    test_diffs[$t]="$(bugsinpy-cut ${test_pts[$t]})"
     echo "$b,${test_pts[$t]}" >> "$log_dir/$project/$b/bugs.txt"
     echo "${test_diffs[$t]}" > "$log_dir/$project/$b/${test_pts[$t]}.diff"
     #echo "${test_diffs[$t]}" > "$log_dir/$project/$b/${test_pts[$t]// /.}.patch"
@@ -112,7 +111,7 @@ for (( b=1; b<=$bugs; b++ )); do
     brk=1
     for t in "${tests[@]}"; do
       # Splice in the code for this test for bug b
-      echo "${test_diffs[$t]}" | $top_dir/splice ${test_pts[$t]}
+      echo "${test_diffs[$t]}" | bugsinpy-splice ${test_pts[$t]}
       # Get expected and actual output for test
       expected_output="$(bugsinpy-test -t "$t" -w "$temp/$project-$b/$project")"
       test_output="$(bugsinpy-test -t "$t")"

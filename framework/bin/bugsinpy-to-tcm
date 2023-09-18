@@ -3,6 +3,7 @@ import sys
 import json
 import subprocess
 import re
+import os
 
 usage = "USAGE: bugsinpy-to-tcm [<coverage.py json report> [<tcm output file>]]"
 
@@ -12,10 +13,16 @@ if (len(sys.argv) > 1):
     cov_file = sys.argv[1]
 if (len(sys.argv) > 2):
     tcm_file = sys.argv[2]
+if (not os.path.isfile(cov_file)):
+    print("Coverage not yet run. Please run:")
+    print(" bugsinpy-coverage -a")
+    print("to produce the coverage needed for this script.")
+    quit()
 js = json.load(open(cov_file))
 tests = []
 locs = []
 coverage = {}
+# Extract coverage from coverage.py's json file
 for file, content in js['files'].items():
     for line, context in content['contexts'].items():
         loc = str(file) + ":" + str(line)
@@ -33,6 +40,7 @@ for file, content in js['files'].items():
                 i = len(tests)
                 tests.append(test)
             coverage.setdefault(i, []).append(j)
+# Extract pass/fail info from coverage.py's output
 if (subprocess.getoutput('grep unittest bugsinpy_run_test.sh')):
     all_failed = subprocess.getoutput('grep "^\\(ERROR\\|FAIL\\):" coverage_alltest_bugsinpy.txt')
     pat = "^(?:ERROR|FAIL): (\S+) \((.*)\)"
