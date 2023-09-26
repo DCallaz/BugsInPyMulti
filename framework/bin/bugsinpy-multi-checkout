@@ -1,11 +1,13 @@
 #!/bin/bash
-USAGE="USAGE: bugsinpy-multi-checkout -p <project> -i <version> [-w <work dir>]"
+USAGE="USAGE: bugsinpy-multi-checkout -p <project> -i <version> [-w <work dir>, -b <backtrack dir> -V <versions dir>]"
+BACK_STR="Bug not found: failed to apply backtrack"
 yellow=`tput setaf 3`
 reset=`tput sgr0`
 
 work_dir="$PWD"
 verbose="/dev/null"
-while getopts ":hvp:i:w:" opt; do
+unchecked=0
+while getopts ":hvup:i:w:b:V:" opt; do
   case ${opt} in
     h )
       echo "$USAGE"
@@ -20,8 +22,17 @@ while getopts ":hvp:i:w:" opt; do
     v )
       verbose="/dev/stdout"
       ;;
+    u )
+      unchecked=1
+      ;;
     w )
       work_dir="$OPTARG"
+      ;;
+    b )
+      back_dir="$OPTARG"
+      ;;
+    V )
+      ver_dir="$OPTARG"
       ;;
     \? )
       echo "Invalid option: $OPTARG" 1>&2
@@ -36,6 +47,18 @@ shift $((OPTIND -1))
 work_dir="$(readlink -f "$(echo ${work_dir/"~"/~})")"
 home="$(dirname $0)/../../"
 home="$(readlink -f "$(echo ${home/"~"/~})")"
+# Assigning backtracks directory
+if [ ! "$back_dir" ]; then
+  back_dir="$home/backtracks"
+else
+  back_dir="$(readlink -f "$(echo ${back_dir/"~"/~})")"
+fi
+# Assigning versions directory
+if [ ! "$ver_dir" ]; then
+  ver_dir="$home/versions"
+else
+  ver_dir="$(readlink -f "$(echo ${ver_dir/"~"/~})")"
+fi
 if [ ! "$project" ]; then
   echo "${yellow}Please specify a project${reset}"
   echo "$USAGE"
@@ -44,27 +67,42 @@ elif [ ! "$v" ]; then
   echo "${yellow}Please specify a version${reset}"
   echo "$USAGE"
   exit 0
-elif [ ! -d "$home/versions/$project" ]; then
+elif [ ! -d "$ver_dir/$project" ]; then
   echo "${yellow}Version search for $project has not been run yet. Please run:${reset}"
   echo "  $home/version_search $project |& tee ${project}_search.log"
   echo "${yellow}to find available multi-fault versions for this project${reset}"
+  exit 0
+elif [ $unchecked -eq 0 ] && [ ! -f "$back_dir/${project}_backtrack.json" ]; then
+  echo "${yellow}Backtracking file for $project not found at \"$back_dir/${project}_backtrack.json\"${reset}"
+  echo "$USAGE"
   exit 0
 fi
 if [ -d "$work_dir/$project-$v" ]; then
   rm -rf "$work_dir/$project-$v"
 fi
 # Checkout the project using base bugsinpy
-bugsinpy-checkout -p "$project" -i "$v" -v "0" -w "$work_dir"
+bugsinpy-checkout -p "$project" -i "$v" -v "0" -w "$work_dir" &> "$verbose"
 cd "$work_dir/$project"
 # Compile the project before transplanting (needed for some projects)
 bugsinpy-compile &> "$verbose"
 echo "$project,$v" > bugsinpy_version.info
+echo -n "available bugs:" >> bugsinpy_version.info
 # Loop over all tests and transplant
-while read -u 10 -r line; do
-  bug="$(echo "$line" | cut -d ',' -f 1)"
-  if [ "$bug" != "$v" ]; then
-    test_pts="$(echo "$line" | cut -d ',' -f 2)"
-    test_diff="$(cat "$home/versions/$project/$v/$test_pts.diff")"
-    echo "$test_diff" | bugsinpy-splice $test_pts
+while read -u 10 -r bug; do
+  if [ $unchecked -eq 0 ]; then
+    bt="$(python3 "$home/framework/bin/backtrack.py" "$back_dir" "$project" "$bug" "$v")"
   fi
-done 10< "$home/versions/$project/$v/bugs.txt"
+  if [ "$bug" != "$v" ] && [ "$bt" != "$BACK_STR" ]; then
+    echo "Transplanting $bug" > "$verbose"
+    echo -n " $bug" >> bugsinpy_version.info
+    while read -u 11 -r line; do
+      test_pts="$(echo "$line" | cut -d ',' -f 2)"
+      echo "Doing test $test_pts" > "$verbose"
+      test_diff="$(cat "$home/versions/$project/$v/$test_pts.diff")"
+      echo "$test_diff" | bugsinpy-splice $test_pts
+    done 11< <(grep "^$bug," "$ver_dir/$project/$v/bugs.txt")
+  else
+    echo "Could not transplant $bug into $v" > /dev/stderr
+  fi
+done 10< <(cat "$ver_dir/$project/$v/bugs.txt" | cut -d ',' -f 1 | sort -n | uniq)
+echo "" >> bugsinpy_version.info
