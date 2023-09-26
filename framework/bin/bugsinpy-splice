@@ -1,4 +1,4 @@
-#!/bin/python3
+#!env/bin/python3
 import inspect
 import importlib.util
 import importlib
@@ -43,6 +43,7 @@ def linesin(imprt, test, code):
 if __name__ == "__main__":
     if (len(sys.argv) < 2):
         print("USAGE: bugsinpy-splice <test file> [<test class>] <test_method>")
+        quit()
     sys.path.insert(1, os.getcwd())
     test_file = sys.argv[1]
     test_method = sys.argv[-1]

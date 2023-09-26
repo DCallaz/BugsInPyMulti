@@ -11,7 +11,7 @@ def get_backtrack(backtracks_dir, project, bugId, version):
         if (bugId in bug["bug"].keys()):
             if (bugId == version):
                 bugFix = bug["bug"]
-            else:
+            elif (version in bug):
                 bugFix = bug[version]
             break
     if (bugFix is not None):

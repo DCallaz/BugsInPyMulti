@@ -47,8 +47,8 @@ elif [ ! -f "$work_dir/coverage.tcm" ]; then
   echo "${yellow}to produce the coverage file before running this script${reset}"
   exit 0
 fi
-project="$(cat "$work_dir/bugsinpy_version.info" | cut -d ',' -f 1)"
-v="$(cat "$work_dir/bugsinpy_version.info" | cut -d ',' -f 2)"
+project="$(head -n 1 "$work_dir/bugsinpy_version.info" | cut -d ',' -f 1)"
+v="$(head -n 1 "$work_dir/bugsinpy_version.info" | cut -d ',' -f 2)"
 if [ ! -f "$back_dir/${project}_backtrack.json" ]; then
   echo "${yellow}Backtracking file for $project not found at \"$back_dir/${project}_backtrack.json\"${reset}"
   echo "$USAGE"
@@ -59,11 +59,14 @@ for bug in $bugs; do
   found=0
   # Loop over each file for the bug
   while read full_line || [ -n "$full_line" ]; do
+    if [ "$full_line" == "Bug not found: failed to apply backtrack" ]; then
+      break
+    fi
     file="$(echo "$full_line" | cut -d ',' -f 1)"
     lines=( $(echo "$full_line" | cut -d ',' --complement -f 1 | tr ',' ' ') )
     # Loop over each line in file for the bug
     for line in ${lines[@]}; do
-      l="$(grep -n "$file:$line" coverage.tcm | cut -d ':' -f 1)"
+      l="$(grep -n "$file:$line$" coverage.tcm | cut -d ':' -f 1)"
       if [ "$l" ]; then
         sed -i "${l}s/$/ | ${bug}/" coverage.tcm
         found=1
