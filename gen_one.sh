@@ -51,5 +51,5 @@ echo "${green}Collecting coverage...${reset}"
 bugsinpy-coverage -a &> "$verbose"
 echo "${green}Creating TCM...${reset}"
 bugsinpy-to-tcm
-bugsinpy-identify -b ../../
+bugsinpy-identify
 echo "${green}Done${reset}"

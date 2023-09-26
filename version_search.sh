@@ -4,7 +4,7 @@ green=`tput setaf 2`
 yellow=`tput setaf 3`
 blue=`tput setaf 4`
 reset=`tput sgr0`
-USAGE="USAGE: ./version_search.sh [-l] <project>"
+USAGE="USAGE: ./version_search.sh [-l <log dir>] <project>"
 log_dir="$PWD/versions"
 while getopts ":hl:" opt; do
   case ${opt} in
