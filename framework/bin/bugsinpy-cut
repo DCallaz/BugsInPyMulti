@@ -52,6 +52,8 @@ if __name__ == "__main__":
     pat = ("[ \t]*(?:from[ \t]+[A-z0-9_.]+)?[ \t]*import[ \t]+"
            "(?:[A-z0-9_., \t]+|\\[\s]+|\([A-z0-9_.,\s]+\))")
     all_imports = re.findall(pat, full_code)
+    imports_to_add = {}
+    funcs_to_print = []
     for (name, type_) in sorted(calls.items(), key=lambda c: c[1], reverse=True):
         if (type_ == 'function'):
             if (hasattr(test_module, name) and
@@ -63,18 +65,34 @@ if __name__ == "__main__":
             else:
                 used = ""
             if (used and used in full_code):
-                print(used, end=end)
+                funcs_to_print.append(used)
             else:  # change type to import if not found in code
                 type_ = 'import'
         if (type_ == 'import'):
-            r = re.compile("^[\s]*(from [A-z0-9_.]+)?[\s]*import(.|\n)*[\s,]+"
-                           + str(name)+"([\s,]+|$)")
-            name_import = list(filter(r.match, all_imports))
-            if (name_import):
-                # Don't print imports that have already been printed
-                all_imports.remove(name_import[0])
-                print(name_import[0].rstrip('\n'), end='\n'+end)
-            # print("import", name)
+            r = re.compile(("^[\s]*(?:from ([A-z0-9_.]+))?[\s]*"
+                            "import(?:.|\n)*[\s,]+(" + str(name)+")"
+                            "(?:[\s,]+|$)"))
+            name_imports = list(filter(r.match, all_imports))
+            imports = [r.match(val).groups()
+                       for val in all_imports if r.match(val)]
+            for package, imp in imports:
+                imports_to_add.setdefault(package, []).append(imp)
+    # print each import needed
+    for package, imps in imports_to_add.items():
+        if (package):
+            if (len(imps) < 4):
+                print("from", package, "import", ",".join(imps), end="\n"+end)
+            else:
+                print("from", package, "import (\n", end="")
+                for imp in imps:
+                    print("\t".expandtabs(4)+imp+",")
+                print(")\n", end=end)
+        else:
+            for imp in imps:
+                print("import", imp, end="\n"+end)
+    # print each function needed
+    for func in funcs_to_print:
+        print(func, end=end)
     # Get this test source
     print(inspect.getsource(test_method), end="")
     consts = list(test_method.__code__.co_consts)

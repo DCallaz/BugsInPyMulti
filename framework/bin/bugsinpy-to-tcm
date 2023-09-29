@@ -46,7 +46,6 @@ if (subprocess.getoutput('grep unittest bugsinpy_run_test.sh')):
     pat = "^(?:ERROR|FAIL): (\S+) \((.*)\)"
     failed = all_failed.splitlines()
     for i in range(len(failed)):
-        print(failed[i])
         match = re.match(pat, failed[i])
         if (match is not None):
             failed[i] = match.group(2) + "." + match.group(1)
