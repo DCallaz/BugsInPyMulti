@@ -44,7 +44,8 @@ if __name__ == "__main__":
     if (len(sys.argv) < 2):
         print("USAGE: bugsinpy-splice <test file> [<test class>] <test_method>")
         quit()
-    sys.path.insert(1, os.getcwd())
+    sys.path.insert(0, os.getcwd())
+    #sys.path.insert(1, os.path.dirname(sys.argv[1].replace(".", "/")+".py"))
     test_file = sys.argv[1]
     test_method = sys.argv[-1]
     test_class = None
