@@ -34,8 +34,11 @@ if __name__ == "__main__":
     for (i, instr) in enumerate(reversed(instrs)):
         if (instr.opname == 'LOAD_GLOBAL'):
             calls[instr.argval] = 'import'
-        if (instr.opname == 'CALL_FUNCTION'):
-            argval = instrs[len(instrs)-i+instr.arg].argval
+        if (instr.opname.startswith('CALL_FUNCTION')):
+            offset = 0
+            if (instr.opname.endswith('KW')):
+                offset = 1
+            argval = instrs[len(instrs)-i+instr.arg+offset].argval
             if (argval in calls):
                 calls[argval] = 'function'
     full_code = inspect.getsource(test_module)
@@ -61,12 +64,15 @@ if __name__ == "__main__":
     imports_to_add = {}
     funcs_to_print = []
     for (name, type_) in sorted(calls.items(), key=lambda c: c[1], reverse=True):
-        if (type_ == 'function'):
+        # Check both functions and imports
+        if (type_ == 'function' or type_ == 'import'):
             if (hasattr(test_module, name) and
-                    inspect.isroutine(getattr(test_module, name))):
+                    (inspect.isroutine(getattr(test_module, name)) or
+                     inspect.isclass(getattr(test_module, name)))):
                 used = inspect.getsource(getattr(test_module, name))
             elif (test_class and hasattr(test_class, name) and
-                    inspect.isroutine(getattr(test_class, name))):
+                    (inspect.isroutine(getattr(test_class, name)) or
+                     inspect.isclass(getattr(test_class, name)))):
                 used = inspect.getsource(getattr(test_class, name))
             else:
                 used = ""
