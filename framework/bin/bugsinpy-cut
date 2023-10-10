@@ -10,10 +10,12 @@ import glob
 # Get all the imports and required functions used in this attribute
 def getDependencies(attr, full_code):
     calls = {}
+    if (inspect.isclass(attr)):
+        attr = compile(inspect.getsource(attr), '<string>', 'exec')
     instrs = list(dis.get_instructions(attr))[::-1]
     # Add function calls and imports
     for (i, instr) in enumerate(reversed(instrs)):
-        if (instr.opname == 'LOAD_GLOBAL'):
+        if (instr.opname == 'LOAD_GLOBAL' or instr.opname == 'LOAD_NAME'):
             calls[instr.argval] = 'import'
         if (instr.opname.startswith('CALL_FUNCTION')):
             offset = 0
@@ -86,7 +88,10 @@ if __name__ == "__main__":
                         (inspect.isroutine(getattr(test_contain, name)) or
                          inspect.isclass(getattr(test_contain, name)))):
                     attr = getattr(test_contain, name)
-                    used = inspect.getsource(attr)
+                    try:
+                        used = inspect.getsource(attr)
+                    except OSError:
+                        used = ""
                 # check if the attribute is a global variable
                 elif (gv_search):
                     used = gv_search.group(1)
@@ -127,7 +132,7 @@ if __name__ == "__main__":
             for imp in imps:
                 print("import", imp, end="\n"+end)
     # print each function needed
-    for func in funcs_to_print:
+    for func in reversed(funcs_to_print):
         print(func, end=end)
     # Get this test source
     print(inspect.getsource(test_method), end="")
