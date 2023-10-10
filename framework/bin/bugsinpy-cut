@@ -7,6 +7,39 @@ import os
 import re
 import glob
 
+# Get all the imports and required functions used in this attribute
+def getDependencies(attr, full_code):
+    calls = {}
+    instrs = list(dis.get_instructions(attr))[::-1]
+    # Add function calls and imports
+    for (i, instr) in enumerate(reversed(instrs)):
+        if (instr.opname == 'LOAD_GLOBAL'):
+            calls[instr.argval] = 'import'
+        if (instr.opname.startswith('CALL_FUNCTION')):
+            offset = 0
+            if (instr.opname.endswith('KW')):
+                offset = 1
+            argval = instrs[len(instrs)-i+instr.arg+offset].argval
+            if (argval in calls):
+                calls[argval] = 'function'
+    # Add fixture calls if pytest function
+    if (inspect.isroutine(attr) and "pytest" in full_code):
+        for param in inspect.signature(attr).parameters:
+            calls[param] = 'function'
+        m = [i[1] for i in inspect.getmembers(attr) if i[0] == 'pytestmark']
+        if (m):
+            for mark in m[0]:
+                if (mark.name == 'parametrize'):
+                    params = mark.args[0].split(', ')
+                elif (mark.name == 'usefixtures' or hasattr(mark, 'args')):
+                    params = list(mark.args)
+                else:
+                    params = []
+                for param in params:
+                    if (param != ""):
+                        calls[param] = 'function'
+    return calls
+
 if __name__ == "__main__":
     end = "# BLOCK\n"
     if (len(sys.argv) < 2):
@@ -27,68 +60,59 @@ if __name__ == "__main__":
         test_class = None
         test_method = getattr(test_module, sys.argv[2])
     code, _ = inspect.findsource(test_module)
-    # Get all the imports and required functions used for this test
-    calls = {}
-    instrs = list(dis.get_instructions(test_method))[::-1]
-    # Add function calls and imports
-    for (i, instr) in enumerate(reversed(instrs)):
-        if (instr.opname == 'LOAD_GLOBAL'):
-            calls[instr.argval] = 'import'
-        if (instr.opname.startswith('CALL_FUNCTION')):
-            offset = 0
-            if (instr.opname.endswith('KW')):
-                offset = 1
-            argval = instrs[len(instrs)-i+instr.arg+offset].argval
-            if (argval in calls):
-                calls[argval] = 'function'
     full_code = inspect.getsource(test_module)
-    # Add fixture calls if pytest
-    if ("pytest" in full_code):
-        for param in inspect.signature(test_method).parameters:
-            calls[param] = 'function'
-        m = [i[1] for i in inspect.getmembers(test_method) if i[0] == 'pytestmark']
-        if (m):
-            for mark in m[0]:
-                if (mark.name == 'parametrize'):
-                    params = mark.args[0].split(', ')
-                elif (mark.name == 'usefixtures' or hasattr(mark, 'args')):
-                    params = list(mark.args)
-                else:
-                    params = []
-                for param in params:
-                    if (param != ""):
-                        calls[param] = 'function'
+    calls = getDependencies(test_method, full_code)
     pat = ("[ \t]*(?:from[ \t]+[A-z0-9_.]+)?[ \t]*import[ \t]+"
            "(?:[A-z0-9_., \t]+|\\[\s]+|\([A-z0-9_.,\s]+\))")
     all_imports = re.findall(pat, full_code)
     imports_to_add = {}
     funcs_to_print = []
-    for (name, type_) in sorted(calls.items(), key=lambda c: c[1], reverse=True):
-        # Check both functions and imports
-        if (type_ == 'function' or type_ == 'import'):
-            if (hasattr(test_module, name) and
-                    (inspect.isroutine(getattr(test_module, name)) or
-                     inspect.isclass(getattr(test_module, name)))):
-                used = inspect.getsource(getattr(test_module, name))
-            elif (test_class and hasattr(test_class, name) and
-                    (inspect.isroutine(getattr(test_class, name)) or
-                     inspect.isclass(getattr(test_class, name)))):
-                used = inspect.getsource(getattr(test_class, name))
-            else:
-                used = ""
-            if (used and used in full_code):
-                funcs_to_print.append(used)
-            else:  # change type to import if not found in code
-                type_ = 'import'
-        if (type_ == 'import'):
-            r = re.compile(("^[\s]*(?:from ([A-z0-9_.]+))?[\s]*"
-                            "import(?:.|\n)*[\s,]+(" + str(name)+")"
-                            "(?:[\s,]+|$)"))
-            name_imports = list(filter(r.match, all_imports))
-            imports = [r.match(val).groups()
-                       for val in all_imports if r.match(val)]
-            for package, imp in imports:
-                imports_to_add.setdefault(package, []).append(imp)
+    while calls:
+        new_calls = {}
+        for (name, type_) in calls.items():
+            name = str(name)
+            # Check both functions and imports
+            if (type_ == 'function' or type_ == 'import'):
+                gv_search = re.search("\n({}\s*=[\s\S]*?\n)\n".format(name), full_code)
+                test_contain = None
+                # check if the module or class contains the attribute
+                if (hasattr(test_module, name)):
+                    test_contain = test_module
+                elif (test_class and hasattr(test_class, name)):
+                    test_contain = test_class
+                attr = None
+                # check if the attribute is a routine or class
+                if (test_contain and
+                        (inspect.isroutine(getattr(test_contain, name)) or
+                         inspect.isclass(getattr(test_contain, name)))):
+                    attr = getattr(test_contain, name)
+                    used = inspect.getsource(attr)
+                # check if the attribute is a global variable
+                elif (gv_search):
+                    used = gv_search.group(1)
+                    attr = compile(used, '<string>', 'exec')
+                else:
+                    used = ""
+                if (used and used in full_code):
+                    if (used not in funcs_to_print):
+                        funcs_to_print.append(used)
+                        new_calls.update(getDependencies(attr, full_code))
+                else:  # change type to import if not found in code
+                    type_ = 'import'
+            if (type_ == 'import'):
+                r = re.compile(("^[\s]*(?:from ([A-z0-9_.]+))?[\s]*"
+                                "import(?:.|\n)*[\s,]+(" + str(name)+")"
+                                "(?:[\s,]+|$)"))
+                name_imports = list(filter(r.match, all_imports))
+                imports = [r.match(val).groups()
+                           for val in all_imports if r.match(val)]
+                for package, imp in imports:
+                    imports_to_add.setdefault(package, []).append(imp)
+        # Only process calls that haven't been processed yet
+        for call in calls:
+            if (call in new_calls):
+                del new_calls[call]
+        calls = new_calls
     # print each import needed
     for package, imps in imports_to_add.items():
         if (package):
