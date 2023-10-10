@@ -13,6 +13,10 @@ def getDependencies(attr, full_code):
     if (inspect.isclass(attr)):
         attr = compile(inspect.getsource(attr), '<string>', 'exec')
     instrs = list(dis.get_instructions(attr))[::-1]
+    list_comps = [i.argval for i in list(reversed(instrs))
+                  if i.opname == 'LOAD_CONST' and inspect.iscode(i.argval)]
+    for lc in list_comps:
+        instrs += list(dis.get_instructions(lc))[::-1]
     # Add function calls and imports
     for (i, instr) in enumerate(reversed(instrs)):
         if (instr.opname == 'LOAD_GLOBAL' or instr.opname == 'LOAD_NAME'):
