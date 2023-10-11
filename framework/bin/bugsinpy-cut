@@ -12,6 +12,9 @@ def getDependencies(attr, full_code):
     calls = {}
     if (inspect.isclass(attr)):
         attr = compile(inspect.getsource(attr), '<string>', 'exec')
+    elif (hasattr(attr, '_pytestfixturefunction') and hasattr(attr, '__dict__')
+          and '__wrapped__' in attr.__dict__):
+        attr = attr.__dict__['__wrapped__']
     instrs = list(dis.get_instructions(attr))[::-1]
     list_comps = [i.argval for i in list(reversed(instrs))
                   if i.opname == 'LOAD_CONST' and inspect.iscode(i.argval)]
@@ -30,6 +33,7 @@ def getDependencies(attr, full_code):
                 calls[argval] = 'function'
     # Add fixture calls if pytest function
     if (inspect.isroutine(attr) and "pytest" in full_code):
+        calls['pytest'] = 'import'
         for param in inspect.signature(attr).parameters:
             calls[param] = 'function'
         m = [i[1] for i in inspect.getmembers(attr) if i[0] == 'pytestmark']
@@ -94,12 +98,16 @@ if __name__ == "__main__":
                     attr = getattr(test_contain, name)
                     try:
                         used = inspect.getsource(attr)
-                    except OSError:
+                    except (OSError, TypeError):
                         used = ""
                 # check if the attribute is a global variable
                 elif (gv_search):
                     used = gv_search.group(1)
-                    attr = compile(used, '<string>', 'exec')
+                    try:
+                        attr = compile(used, '<string>', 'exec')
+                    except SyntaxError:
+                        used = ""
+                        attr = None
                 else:
                     used = ""
                 if (used and used in full_code):

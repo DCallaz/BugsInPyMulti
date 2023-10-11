@@ -131,7 +131,9 @@ for (( b=1; b<=$bugs; b++ )); do
       fi
       # Replace any occurence of this version in error string with the bug version
       test_error="${test_error//$project-$v/$project-$b}"
-      if [ "$test_error" != "$expected_error" ] || [ "$fail_or_error" == "" ]; then
+      #if [ "$test_error" != "$expected_error" ] || [ "$fail_or_error" == "" ]; then
+      if [ "$(diff <(echo "$test_error" | sort) <(echo "$expected_error" | sort))" ] ||
+         [ "$fail_or_error" == "" ]; then
         if [ "$fail_or_error" == "error" ]; then
           echo "${yellow}  failed to compile test case${reset}"
           echo "${test_diffs[$t]}"
