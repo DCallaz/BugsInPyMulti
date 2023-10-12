@@ -6,6 +6,7 @@ import dis
 import os
 import re
 import glob
+from pathlib import Path
 
 # Get all the imports and required functions used in this attribute
 def getDependencies(attr, full_code):
@@ -56,12 +57,20 @@ if __name__ == "__main__":
         print("USAGE: bugsinpy-cut <test file> [<test class>] <test_method>")
         quit()
     sys.path.insert(0, os.getcwd())
+    init_file = None
+    if (Path('tests/').exists()):
+        init_file = Path('tests/__init__.py')
+        init_file.touch()
     # sys.path.insert(1, os.path.dirname(sys.argv[1].replace(".", "/")+".py"))
     try:
         test_module = importlib.import_module(sys.argv[1])
     except ModuleNotFoundError as mnf:
         print("CUT ERROR: module not found error for", *sys.argv[1:], file=sys.stderr)
         print("ModuleNotFoundError:", mnf, file=sys.stderr)
+        quit()
+    except ImportError as impe:
+        print("CUT ERROR: import error for", *sys.argv[1:], file=sys.stderr)
+        print("ImportError:", impe, file=sys.stderr)
         quit()
     if (len(sys.argv) == 4):
         test_class = getattr(test_module, sys.argv[2])
@@ -169,3 +178,5 @@ if __name__ == "__main__":
         lines = file.read()
         print("# FILE:", f)
         print(lines.rstrip('\n'))
+    if (init_file):
+        init_file.unlink()
