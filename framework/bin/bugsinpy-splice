@@ -20,19 +20,21 @@ def linesin(imprt, test, code):
             return None
         cur = 1
         end = start + 1
-        while (cur < len(imprt)):
+        while (cur < len(imprt) and end < len(code)):
             if (imprt[cur] == code[end]):
                 cur += 1
                 end += 1
             elif (code[end] in imprt[cur:]):
-                new = imprt.index(code[end], cur)
-                for i in range(new-1, cur-1, -1):
-                    for iden in re.findall("[A-z0-9_]+", imprt[i]):
-                        if (iden in test):
-                            break
-                    else:
-                        imprt.pop(i)
+                # new = imprt.index(code[end], cur)
+                # for i in range(new-1, cur-1, -1):
+                #     for iden in re.findall("[A-z0-9_]+", imprt[i]):
+                #         if (iden in test):
+                #             break
+                #     else:
+                #         imprt.pop(i)
                 cur = imprt.index(code[end], cur)
+            elif (code[end] == '\n'):
+                return (start, end-1)
             else:
                 imprt.insert(cur, code[end])
         if (cur == len(imprt)):

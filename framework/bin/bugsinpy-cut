@@ -83,7 +83,7 @@ if __name__ == "__main__":
             name = str(name)
             # Check both functions and imports
             if (type_ == 'function' or type_ == 'import'):
-                gv_search = re.search("\n({}\s*=[\s\S]*?\n)\n".format(name), full_code)
+                gv_search = re.search("\n\n((?:.|[^\n]\n)*{}\s*=[\s\S]*?\n)\n".format(name), full_code)
                 test_contain = None
                 # check if the module or class contains the attribute
                 if (hasattr(test_module, name)):
