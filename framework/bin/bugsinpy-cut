@@ -60,7 +60,8 @@ if __name__ == "__main__":
     init_file = None
     if (Path('tests/').exists()):
         init_file = Path('tests/__init__.py')
-        init_file.touch()
+        if (not init_file.exists()):
+            init_file.touch()
     # sys.path.insert(1, os.path.dirname(sys.argv[1].replace(".", "/")+".py"))
     try:
         test_module = importlib.import_module(sys.argv[1])
