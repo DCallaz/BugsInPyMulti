@@ -8,6 +8,7 @@ import re
 import glob
 from pathlib import Path
 
+
 # Get all the imports and required functions used in this attribute
 def getDependencies(attr, full_code):
     calls = {}
@@ -49,7 +50,20 @@ def getDependencies(attr, full_code):
                 for param in params:
                     if (param != ""):
                         calls[param] = 'function'
+    # Add decorator calls
+    if (hasattr(attr, "__name__")):
+        decor_calls = re.match("\n((?:@.*\n)*)def {}\\(".format(attr.__name__),
+                               full_code)
+        if (decor_calls):
+            for call in decor_calls.group(1).strip().split("\n"):
+                name = re.match("@([^(]*)\\(?", call).group(1)
+                calls[name] = 'function'
     return calls
+
+
+def validFilename(filename):
+    return re.match("[A-Za-z0-9._-]", filename) is not None
+
 
 if __name__ == "__main__":
     end = "# BLOCK\n"
@@ -57,12 +71,14 @@ if __name__ == "__main__":
         print("USAGE: bugsinpy-cut <test file> [<test class>] <test_method>")
         quit()
     sys.path.insert(0, os.getcwd())
+    sys.path.append(os.path.dirname(sys.argv[1].replace(".", "/")+".py"))
     init_file = None
+    init_file_created = False
     if (Path('tests/').exists()):
         init_file = Path('tests/__init__.py')
         if (not init_file.exists()):
             init_file.touch()
-    # sys.path.insert(1, os.path.dirname(sys.argv[1].replace(".", "/")+".py"))
+            init_file_created = True
     try:
         test_module = importlib.import_module(sys.argv[1])
     except ModuleNotFoundError as mnf:
@@ -93,7 +109,7 @@ if __name__ == "__main__":
             name = str(name)
             # Check both functions and imports
             if (type_ == 'function' or type_ == 'import'):
-                gv_search = re.search("\n\n((?:.|[^\n]\n)*{}\s*=[\s\S]*?\n)\n".format(name), full_code)
+                gv_search = re.search("\n\n((?:.|[^\n]\n)*\n\s*{}\s*=[\s\S]*?\n)\n".format(name), full_code)
                 test_contain = None
                 # check if the module or class contains the attribute
                 if (hasattr(test_module, name)):
@@ -134,7 +150,9 @@ if __name__ == "__main__":
                 imports = [r.match(val).groups()
                            for val in all_imports if r.match(val)]
                 for package, imp in imports:
-                    imports_to_add.setdefault(package, []).append(imp)
+                    imports_to_add.setdefault(package, [])
+                    if (imp not in imports_to_add[package]):
+                        imports_to_add[package].append(imp)
         # Only process calls that haven't been processed yet
         for call in calls:
             if (call in new_calls):
@@ -163,21 +181,27 @@ if __name__ == "__main__":
         consts.extend(test_method.__dict__['__wrapped__'].__code__.co_consts)
     used_files = []
     for const in consts:
-        if (const is not None and type(const) is str and const != ""):
+        if (const is not None and type(const) is str and const != "" and
+                validFilename(const)):
             if (os.path.isfile(const)):
                 used_files.append(const)
             else:
                 found = False
                 for const_ext in glob.glob(str(const)+".*"):
-                    used_files.append(const_ext)
+                    if (os.path.isfile(const_ext)):
+                        used_files.append(const_ext)
                     found = True
                 if (not found):
                     for const_ext in glob.glob("test*/**/"+str(const)+".*", recursive=True):
-                        used_files.append(const_ext)
+                        if (os.path.isfile(const_ext)):
+                            used_files.append(const_ext)
     for f in used_files:
-        file = open(f)
-        lines = file.read()
+        try:
+            file = open(f)
+            lines = file.read()
+        except (OSError, UnicodeDecodeError):
+            continue
         print("# FILE:", f)
         print(lines.rstrip('\n'))
-    if (init_file):
+    if (init_file_created):
         init_file.unlink()
