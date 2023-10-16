@@ -148,6 +148,11 @@ if __name__ == "__main__":
                                       "except.*\n"
                                       "([ \t]+.+\n)*"
                                       ), full_code)
+                cond_imp = cond_imp or re.search(("if(\s+|\().*\n"
+                                      "(\s*.\n)*.*import\s+"+str(name)+".*\n"
+                                      "else.*\n"
+                                      "([ \t]+.+\n)*"
+                                      ), full_code)
                 if (cond_imp):
                     funcs_to_print.append(cond_imp.group(0))
                 else:
