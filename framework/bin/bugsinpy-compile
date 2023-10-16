@@ -66,6 +66,7 @@ else
 	fi
   source env/bin/activate
   dos2unix $work_dir/bugsinpy_requirements.txt
+  find env/ -exec dos2unix '{}' \;
 fi
 ###Add pythonpath
 pythonpath_set=""
@@ -176,7 +177,7 @@ deactivate
         done <  ~/.bashrc 
         if [[ "$pythonpath_exist" == "NO" ]]; then
             should_change="NO"
-            temp_path_not_exist='PYTHONPATH="$pythonpath_set:$PYTHONPATH"'
+            temp_path_not_exist="PYTHONPATH=\"$pythonpath_set:\$PYTHONPATH\""
             echo "$temp_path_not_exist" >> ~/.bashrc 
             echo "export PYTHONPATH" >> ~/.bashrc 
             source ~/.bashrc
