@@ -56,8 +56,10 @@ def getDependencies(attr, full_code):
                                 full_code)
         if (decor_calls):
             for call in decor_calls.group(1).strip().split("\n"):
-                name = re.match("@([^(]*)\(?", call).group(1)
-                calls[name] = 'function'
+                if (call != ""):
+                    names = re.findall("[A-Za-z0-9_]+", call)
+                    for name in names:
+                        calls[name] = 'function'
     return calls
 
 
