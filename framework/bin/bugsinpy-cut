@@ -52,11 +52,11 @@ def getDependencies(attr, full_code):
                         calls[param] = 'function'
     # Add decorator calls
     if (hasattr(attr, "__name__")):
-        decor_calls = re.match("\n((?:@.*\n)*)def {}\\(".format(attr.__name__),
-                               full_code)
+        decor_calls = re.search("\n((?:@.*\n)*)def {}\(".format(attr.__name__),
+                                full_code)
         if (decor_calls):
             for call in decor_calls.group(1).strip().split("\n"):
-                name = re.match("@([^(]*)\\(?", call).group(1)
+                name = re.match("@([^(]*)\(?", call).group(1)
                 calls[name] = 'function'
     return calls
 
@@ -143,16 +143,23 @@ if __name__ == "__main__":
                 else:  # change type to import if not found in code
                     type_ = 'import'
             if (type_ == 'import'):
-                r = re.compile(("^[\s]*(?:from ([A-z0-9_.]+))?[\s]*"
-                                "import(?:.|\n)*[\s,]+(" + str(name)+")"
-                                "(?:[\s,]+|$)"))
-                name_imports = list(filter(r.match, all_imports))
-                imports = [r.match(val).groups()
-                           for val in all_imports if r.match(val)]
-                for package, imp in imports:
-                    imports_to_add.setdefault(package, [])
-                    if (imp not in imports_to_add[package]):
-                        imports_to_add[package].append(imp)
+                cond_imp = re.search(("try:\n"
+                                      "(\s*.\n)*.*import\s+"+str(name)+".*\n"
+                                      "except.*\n"
+                                      "([ \t]+.+\n)*"
+                                      ), full_code)
+                if (cond_imp):
+                    funcs_to_print.append(cond_imp.group(0))
+                else:
+                    r = re.compile(("^[\s]*(?:from ([A-z0-9_.]+))?[\s]*"
+                                    "import(?:.|\n)*[\s,]+(" + str(name)+")"
+                                    "(?:[\s,]+|$)"))
+                    imports = [r.match(val).groups()
+                               for val in all_imports if r.match(val)]
+                    for package, imp in imports:
+                        imports_to_add.setdefault(package, [])
+                        if (imp not in imports_to_add[package]):
+                            imports_to_add[package].append(imp)
         # Only process calls that haven't been processed yet
         for call in calls:
             if (call in new_calls):
@@ -162,7 +169,7 @@ if __name__ == "__main__":
     for package, imps in imports_to_add.items():
         if (package):
             if (len(imps) < 4):
-                print("from", package, "import", ",".join(imps), end="\n"+end)
+                print("from", package, "import", ", ".join(imps), end="\n"+end)
             else:
                 print("from", package, "import (\n", end="")
                 for imp in imps:
