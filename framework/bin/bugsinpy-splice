@@ -63,11 +63,13 @@ if __name__ == "__main__":
     if (test_exists):
         test_module = importlib.import_module(test_file)
         code, m_sloc = inspect.findsource(test_module)
+        m_eloc = m_sloc + len(code)
         test_c_module = None
         if (test_class is not None):
             if (hasattr(test_module, test_class)):
                 test_c_module = getattr(test_module, test_class)
-                c_sloc = inspect.findsource(test_c_module)[1]
+                class_source, c_sloc = inspect.findsource(test_c_module)
+                c_eloc = c_sloc + len(class_source)
             else:
                 cut_parts.append("class "+test_class+":\n")
         splices = []
@@ -87,19 +89,28 @@ if __name__ == "__main__":
                 sloc, eloc = (test_lines[1]-1, test_lines[1]+len(test_lines[0])-2)
             else:
                 if (test_c_module and splice[0].startswith((' ', '\t'))):
-                    sloc = c_sloc
+                    if ([True for i in splice if "import" in i]):
+                        sloc = c_sloc
+                    else:
+                        sloc = c_eloc
                 else:
-                    sloc = m_sloc
+                    if ([True for i in splice if "import" in i]):
+                        sloc = m_sloc
+                    else:
+                        sloc = m_eloc
                 # skip variable declarations & imports
-                while (code[sloc].strip() != "" or "import" in code[sloc+1]):
+                while (sloc < len(code) and
+                       (code[sloc].strip() != "" or "import" in code[sloc+1])):
                     sloc += 1
                 # add blank line before and after
+                if (sloc >= len(code)):
+                    code.append("\n")
                 sloc += 1
                 eloc = sloc - 2
             splices.append((sloc, eloc, splice))
             # print(*code, sep="", end="")
-        # Sort by start location and then indentation and then imports
-        splices.sort(key=lambda x: (x[0], x[2][0].startswith((' ', '\t')),
+        # Sort by start, then end location and then indentation and then imports
+        splices.sort(key=lambda x: (x[0], x[1], x[2][0].startswith((' ', '\t')),
                      not any("import" in y for y in x[2])), reverse=True)
         for s in splices:
             sloc, eloc, splice = s
