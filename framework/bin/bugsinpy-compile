@@ -42,37 +42,16 @@ elif [[ ! -e "$work_dir/bugsinpy_run_test.sh" ]]; then
    exit
 fi
 
-###Check dos2unix
-#check_dos2unix=$(dos2unix --version 2>&1)
-#if [ "$check_dos2unix" == *"not found"* ]; then
-#   echo "Please install dos2unix (sudo apt-get dos2unix)"
-#   exit
-#fi
+###Directory of BugsInPy
+home="$(dirname $0)/../../"
+home="$(readlink -f "$(echo ${home/"~"/~})")"
 
-###Remove environment if exist
-rm -r -f env/
-
-###Add environment
-python -m venv env
-
-###Activate environment
-if [ -d "env/Scripts" ]; then
-  source env/Scripts/activate
-else
-  check_dos2unix=$(dos2unix --version 2>&1)
-	if [ "$check_dos2unix" == *"not found"* ]; then
-	   echo "Please install dos2unix (sudo apt-get dos2unix)"
-	   exit
-	fi
-  source env/bin/activate
-  dos2unix $work_dir/bugsinpy_requirements.txt
-  find env/ -exec dos2unix '{}' \;
-fi
 ###Add pythonpath
 pythonpath_set=""
 pythonpath_without_folder=""
 buggy_commit=""
 fix_commit=""
+python_version=""
 
 ###Read bug.info file
 DONE=false
@@ -85,6 +64,8 @@ elif [[ "$REPLY" == "fixed_commit_id"* ]]; then
 elif [[ "$REPLY" == "test_file"* ]]; then
    test_file_all="$(cut -d'"' -f 2 <<< $REPLY)"
    IFS=';' read -r -a test_file <<< "$test_file_all"
+elif [[ "$REPLY" == "python_version"* ]]; then
+   python_version="$(cut -d'"' -f 2 <<< $REPLY)"
 elif [[ "$REPLY" == "pythonpath"* ]]; then
    pythonpath_all="$(cut -d'"' -f 2 <<< $REPLY)"
    if [ "$pythonpath_all" != "" ]; then
@@ -105,6 +86,52 @@ elif [[ "$REPLY" == "pythonpath"* ]]; then
 fi
 done < "$work_dir/bugsinpy_bug.info"
 
+
+###Check dos2unix
+#check_dos2unix=$(dos2unix --version 2>&1)
+#if [ "$check_dos2unix" == *"not found"* ]; then
+#   echo "Please install dos2unix (sudo apt-get dos2unix)"
+#   exit
+#fi
+
+###Remove environment if exist
+rm -r -f env/
+
+###Install the python version if it does not exist
+if [ ! -d "$home/python_versions/py-$python_version" ]; then
+  echo "Downloading python version $python_version..."
+  cur_dir="$(pwd)"
+  cd "$home/python_versions"
+  wget "https://www.python.org/ftp/python/$python_version/Python-$python_version.tgz" &&
+  tar xzf "Python-$python_version.tgz" &&
+  cd "Python-$python_version/" &&
+  ./configure --prefix "$home/python_versions/py-$python_version" &&
+  make &&
+  make altinstall
+  cd ../
+  rm -rf "Python-$python_version*"
+  cd "$cur_dir"
+  if [ ! -d "$home/python_versions/py-$python_version" ]; then
+    echo "ERROR: could not install python version $python_version"
+    exit 1
+  fi
+fi
+###Add environment
+virtualenv env -p "$home/python_versions/py-$python_version/bin/python${python_version%.*}"
+
+###Activate environment
+if [ -d "env/Scripts" ]; then
+  source env/Scripts/activate
+else
+  check_dos2unix=$(dos2unix --version 2>&1)
+	if [ "$check_dos2unix" == *"not found"* ]; then
+	   echo "Please install dos2unix (sudo apt-get dos2unix)"
+	   exit
+	fi
+  source env/bin/activate
+  dos2unix $work_dir/bugsinpy_requirements.txt
+  find env/ -exec dos2unix '{}' \;
+fi
 
 ###Read setup.sh
   run_setup_all=""
@@ -140,7 +167,7 @@ if grep -q '[^[:space:]]' "$work_dir/bugsinpy_requirements.txt"; then
 fi
 deactivate
 
-
+: ' Old pythonpath adjustment (in bashrc)
 ###Add pythonpath
   if [ "$pythonpath_set" != "" ]; then
      if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
@@ -210,6 +237,16 @@ deactivate
         fi
       fi
   fi
+'
+
+if [ "$pythonpath_set" != "" ]; then
+  if [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    pth_loc="$(find env/ -type d -name 'site-packages' | head -n 1)"
+    if [ "$pth_loc" ]; then
+      echo "$pythonpath_set" >> "$work_dir/$pth_loc/bugsinpy.pth"
+    fi
+  fi
+fi
 
 
 ###Add compile flag
