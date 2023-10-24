@@ -35,8 +35,10 @@ def linesin(imprt, test, code):
                 cur = imprt.index(code[end], cur)
             elif (code[end] == '\n'):
                 return (start, end-1)
-            else:
+            elif ("import" in code[end]):
                 imprt.insert(cur, code[end])
+            else:
+                end += 1
         if (cur == len(imprt)):
             return (start, end-1)
     return None
@@ -47,7 +49,7 @@ if __name__ == "__main__":
         print("USAGE: bugsinpy-splice <test file> [<test class>] <test_method>")
         quit()
     sys.path.insert(0, os.getcwd())
-    #sys.path.insert(1, os.path.dirname(sys.argv[1].replace(".", "/")+".py"))
+    sys.path.append(os.path.dirname(sys.argv[1].replace(".", "/")+".py"))
     test_file = sys.argv[1]
     test_method = sys.argv[-1]
     test_class = None
@@ -68,7 +70,7 @@ if __name__ == "__main__":
         if (test_class is not None):
             if (hasattr(test_module, test_class)):
                 test_c_module = getattr(test_module, test_class)
-                class_source, c_sloc = inspect.findsource(test_c_module)
+                class_source, c_sloc = inspect.getsourcelines(test_c_module)
                 c_eloc = c_sloc + len(class_source)
             else:
                 cut_parts.append("class "+test_class+":\n")
@@ -89,18 +91,20 @@ if __name__ == "__main__":
                 sloc, eloc = (test_lines[1]-1, test_lines[1]+len(test_lines[0])-2)
             else:
                 if (test_c_module and splice[0].startswith((' ', '\t'))):
-                    if ([True for i in splice if "import" in i]):
+                    if (any("import" in i for i in splice)):
                         sloc = c_sloc
                     else:
                         sloc = c_eloc
                 else:
-                    if ([True for i in splice if "import" in i]):
+                    if (any("import" in i for i in splice)):
                         sloc = m_sloc
                     else:
                         sloc = m_eloc
                 # skip variable declarations & imports
                 while (sloc < len(code) and
-                       (code[sloc].strip() != "" or "import" in code[sloc])):
+                       (code[sloc].strip() != "" or "import" in code[sloc]
+                        or "except" in code[sloc]
+                        or (sloc+1 < len(code) and "import" in code[sloc+1]))):
                     sloc += 1
                 # add blank line before and after
                 if (sloc >= len(code)):

@@ -111,7 +111,7 @@ if __name__ == "__main__":
             name = str(name)
             # Check both functions and imports
             if (type_ == 'function' or type_ == 'import'):
-                re_s = "\n\n((?:(?:.|\n[^\n])*\n)?[ \t]*{}[ \t]*=[\s\S]*?\n)\n"
+                re_s = "\n\n((?:.+\n)*[ \t]*{}[ \t]*=[\s\S]*?\n)\n"
                 gv_search = re.search(re_s.format(name), full_code)
                 test_contain = None
                 # check if the module or class contains the attribute
@@ -187,7 +187,7 @@ if __name__ == "__main__":
             for imp in imps:
                 print("import", imp, end="\n"+end)
     # print each function needed
-    for func in reversed(funcs_to_print):
+    for func in reversed(sorted(funcs_to_print, key=lambda x: "import" in x)):
         print(func, end=end)
     # Get this test source
     print(inspect.getsource(test_method), end="")
