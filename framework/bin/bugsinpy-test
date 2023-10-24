@@ -165,7 +165,11 @@ elif [[ "$run_all" == "1" ]]; then
 
 elif [ "$single_test" != "" ]; then
   if [[ "$pytest" == "1" ]]; then
-     res_first=$(pytest $single_test 2>&1)
+     if [ "$(echo "${run_command[0]}" | grep "^pytest")" ]; then
+       res_first=$(pytest $single_test 2>&1)
+     else
+       res_first=$(python -m pytest $single_test 2>&1)
+     fi
      echo "$res_first"
      echo "pytest $single_test" &>>"$work_dir/bugsinpy_singletest.txt"
      echo "$res_first" &>>"$work_dir/bugsinpy_singletest.txt"
