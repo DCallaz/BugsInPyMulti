@@ -74,7 +74,7 @@ if __name__ == "__main__":
                 cut_parts.append("class "+test_class+":\n")
         splices = []
         # inject each block into the code
-        for part in cut_parts:
+        for part in reversed(cut_parts):
             method_name_list = re.findall("\s*def\s+([A-z0-9_]+)\s*\(", part)
             method_name = method_name_list[0] if method_name_list else None
             splice = part.splitlines(True)
@@ -100,7 +100,7 @@ if __name__ == "__main__":
                         sloc = m_eloc
                 # skip variable declarations & imports
                 while (sloc < len(code) and
-                       (code[sloc].strip() != "" or "import" in code[sloc+1])):
+                       (code[sloc].strip() != "" or "import" in code[sloc])):
                     sloc += 1
                 # add blank line before and after
                 if (sloc >= len(code)):
