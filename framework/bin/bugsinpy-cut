@@ -64,7 +64,7 @@ def getDependencies(attr, full_code):
 
 
 def validFilename(filename):
-    return re.match("[A-Za-z0-9._-]", filename) is not None
+    return re.fullmatch("[A-Za-z0-9._-]+", filename) is not None
 
 
 if __name__ == "__main__":
@@ -75,12 +75,16 @@ if __name__ == "__main__":
     sys.path.insert(0, os.getcwd())
     sys.path.append(os.path.dirname(sys.argv[1].replace(".", "/")+".py"))
     init_file = None
-    init_file_created = False
-    if (Path('tests/').exists()):
-        init_file = Path('tests/__init__.py')
+    test_dir = "tests"
+    m = re.match("(.*?test[^/]*)/", sys.argv[1].replace('.', '/'))
+    if (m and Path(m.group(1)).is_dir()):
+        test_dir = m.group(1)
+        sys.path.append(test_dir)
+        init_file = Path(test_dir+'/__init__.py')
         if (not init_file.exists()):
             init_file.touch()
-            init_file_created = True
+        else:
+            init_file = None
     try:
         test_module = importlib.import_module(sys.argv[1])
     except ModuleNotFoundError as mnf:
@@ -137,6 +141,11 @@ if __name__ == "__main__":
                     except SyntaxError:
                         used = ""
                         attr = None
+                    else:
+                        # global variables can't be inside functions
+                        if (re.search("\s*def\s+", used)):
+                            used = ""
+                            attr = None
                 else:
                     used = ""
                 if (used and used in full_code):
@@ -207,7 +216,7 @@ if __name__ == "__main__":
                         used_files.append(const_ext)
                     found = True
                 if (not found):
-                    for const_ext in glob.glob("test*/**/"+str(const)+".*", recursive=True):
+                    for const_ext in glob.glob(test_dir+"/**/"+str(const)+".*", recursive=True):
                         if (os.path.isfile(const_ext)):
                             used_files.append(const_ext)
     for f in used_files:
@@ -218,5 +227,5 @@ if __name__ == "__main__":
             continue
         print("# FILE:", f)
         print(lines.rstrip('\n'))
-    if (init_file_created):
+    if (init_file):
         init_file.unlink()

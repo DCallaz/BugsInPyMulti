@@ -5,6 +5,7 @@ import importlib
 import sys
 import os
 import re
+from pathlib import Path
 
 
 def linesin(imprt, test, code):
@@ -50,6 +51,16 @@ if __name__ == "__main__":
         quit()
     sys.path.insert(0, os.getcwd())
     sys.path.append(os.path.dirname(sys.argv[1].replace(".", "/")+".py"))
+    init_file = None
+    m = re.match("(.*?test[^/]*)/", sys.argv[1].replace('.', '/'))
+    if (m and Path(m.group(1)).is_dir()):
+        test_dir = m.group(1)
+        sys.path.append(test_dir)
+        init_file = Path(test_dir+'/__init__.py')
+        if (not init_file.exists()):
+            init_file.touch()
+        else:
+            init_file = None
     test_file = sys.argv[1]
     test_method = sys.argv[-1]
     test_class = None
@@ -142,3 +153,5 @@ if __name__ == "__main__":
         file_out = open(filename, 'w')
         print(*lines, sep="\n", file=file_out)
         file_out.close()
+    if (init_file):
+        init_file.unlink()
