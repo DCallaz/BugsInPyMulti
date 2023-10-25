@@ -111,11 +111,11 @@ if __name__ == "__main__":
                         sloc = m_sloc
                     else:
                         sloc = m_eloc
-                # skip variable declarations & imports
+                # skip comments, variable declarations & imports
                 while (sloc < len(code) and
-                       (code[sloc].strip() != "" or "import" in code[sloc]
-                        or "except" in code[sloc]
-                        or (sloc+1 < len(code) and "import" in code[sloc+1]))):
+                       (code[sloc].strip() != "" or (sloc+1 < len(code) and
+                        ("import" in code[sloc+1] or "except" in code[sloc+1]
+                         or code[sloc+1].startswith("#"))))):
                     sloc += 1
                 # add blank line before and after
                 if (sloc >= len(code)):
