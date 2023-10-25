@@ -34,11 +34,19 @@ temp="$PWD/temp"
 if [ ! -d "$temp" ]; then
   mkdir -p "$temp"
 fi
-bugs=$(bugsinpy-info -p $project | grep "Number of bugs" | cut -d ':' -f 2 | xargs)
 cd "$temp"
+# check for current files
+if [ "$(find -maxdepth 1 -name "*.current")" ]; then
+  echo -e "Found current files:\n$(find -maxdepth 1 -name "*.current")"
+  find -maxdepth 1 -name "*.current" -exec basename -s ".current" "{}" + |
+    xargs -I %% rm -rf "%%/"
+  find -maxdepth 1 -name "*.current" -delete
+fi
+bugs=$(bugsinpy-info -p $project | grep "Number of bugs" | cut -d ':' -f 2 | xargs)
 echo "${blue}Checking out versions...${reset}"
 for (( b=1; b<=$bugs; b++ )); do
   echo "  $project-$b"
+  touch "$project-$b.current"
   # create the log dir for this version
   mkdir -p "$log_dir/$project/$b"
   # Skip downloading project if it is already there
@@ -59,6 +67,7 @@ for (( b=1; b<=$bugs; b++ )); do
   # Track the current changes so we can return to them
   git add -A .
   cd "$temp"
+  rm "$project-$b.current"
 done
 echo "${blue}Done checking out versions.${reset}"
 for (( b=1; b<=$bugs; b++ )); do
