@@ -67,7 +67,7 @@ else
   source env/bin/activate
 fi
 
-pytest="0"
+pytest="1"
 #read file run_test.sh
 run_command_all=""
 DONE=false
@@ -75,8 +75,8 @@ until $DONE ;do
 read || DONE=true
 if [ "$REPLY" != "" ]; then
    run_command_all+="$REPLY;"
-   if [[ "$REPLY" == *"pytest"* || "$REPLY" == *"py.test"* ]]; then
-       pytest="1"
+   if [[ "$REPLY" == *"unittest"* ]]; then
+       pytest="0"
    fi
    echo $REPLY
 fi
@@ -165,20 +165,20 @@ elif [[ "$run_all" == "1" ]]; then
 
 elif [ "$single_test" != "" ]; then
   if [[ "$pytest" == "1" ]]; then
-     if [ "$(echo "${run_command[0]}" | grep "^pytest")" ]; then
-       res_first=$(pytest $single_test 2>&1)
-     else
-       res_first=$(python -m pytest $single_test 2>&1)
-     fi
-     echo "$res_first"
-     echo "pytest $single_test" &>>"$work_dir/bugsinpy_singletest.txt"
-     echo "$res_first" &>>"$work_dir/bugsinpy_singletest.txt"
+     cmd="$(echo "${run_command[0]}" | sed "s|\S*::\S*|$single_test|g")"
+     #if [ "$(echo "${run_command[0]}" | grep "^pytest")" ]; then
+       #res_first=$(pytest $single_test 2>&1)
+     #else
+       #res_first=$(python -m pytest $single_test 2>&1)
+     #fi
   else
-     res_first=$(python -m unittest -q $single_test 2>&1)
-     echo "$res_first"
-     echo "python -m unittest -q $single_test" &>>"$work_dir/bugsinpy_singletest.txt"
-     echo "$res_first" &>>"$work_dir/bugsinpy_singletest.txt"
+    cmd="$(echo "${run_command[0]}" | sed "s|\S*\.\S*|$single_test|g")"
+     #res_first=$(python -m unittest -q $single_test 2>&1)
   fi
+  res_first=$($cmd 2>&1)
+  echo "$res_first"
+  echo "$cmd" &>>"$work_dir/bugsinpy_singletest.txt"
+  echo "$res_first" &>>"$work_dir/bugsinpy_singletest.txt"
 fi
 
 ###Deactivate the environment
