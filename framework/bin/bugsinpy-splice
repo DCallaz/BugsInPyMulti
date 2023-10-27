@@ -45,6 +45,14 @@ def linesin(imprt, test, code):
     return None
 
 
+def is_import(code):
+    pat = ("[ \t]*(?:from[ \t]+[A-z0-9_.]+)?[ \t]*import[ \t]+"
+           "(?:[A-z0-9_., \t]+|\\[\s]+|\([A-z0-9_.,\s]+\))\n?")
+    if (re.fullmatch(pat, code)):
+        return True
+    return False
+
+
 if __name__ == "__main__":
     if (len(sys.argv) < 2):
         print("USAGE: bugsinpy-splice <test file> [<test class>] <test_method>")
@@ -68,6 +76,13 @@ if __name__ == "__main__":
         test_class = sys.argv[2]
     full_diff = sys.stdin.read()
     full_diff, *files = full_diff.split("# FILE: ")
+    # get the class line if it exists and remove from full_diff
+    class_line = None
+    if ("# CLASS:" in full_diff):
+        class_line_match = re.search("# CLASS: (.*\n)", full_diff)
+        if (class_line_match):
+            class_line = class_line_match.group(1)
+            full_diff = full_diff.replace(class_line_match.group(0), "")
     cut_parts = full_diff.split('# BLOCK\n')
     try:
         test_exists = importlib.util.find_spec(test_file) is not None
@@ -83,8 +98,11 @@ if __name__ == "__main__":
                 test_c_module = getattr(test_module, test_class)
                 class_source, c_sloc = inspect.getsourcelines(test_c_module)
                 c_eloc = c_sloc + len(class_source)
-            else:
-                cut_parts.append("class "+test_class+":\n")
+            else:  # If the class doesn't exist, add the class description
+                if (not class_line):
+                    class_line = "class "+test_class+":\n"
+        if (class_line):
+            cut_parts.append(class_line)
         splices = []
         # inject each block into the code
         for part in reversed(cut_parts):
@@ -102,12 +120,12 @@ if __name__ == "__main__":
                 sloc, eloc = (test_lines[1]-1, test_lines[1]+len(test_lines[0])-2)
             else:
                 if (test_c_module and splice[0].startswith((' ', '\t'))):
-                    if (any("import" in i for i in splice)):
+                    if (is_import(splice[0])):
                         sloc = c_sloc
                     else:
                         sloc = c_eloc
                 else:
-                    if (any("import" in i for i in splice)):
+                    if (is_import(splice[0])):
                         sloc = m_sloc
                     else:
                         sloc = m_eloc
@@ -135,9 +153,10 @@ if __name__ == "__main__":
         if (test_class is not None):
             # insert the class starter after imports
             i = 0
-            while (i < len(code) and not code[i].startswith((' ', '\t'))):
+            # TODO: change the following condition
+            while (i < len(code) and not re.match("[ \t]+def", code[i])):
                 i += 1
-            code.insert(i, "class "+test_class+":\n")
+            code.insert(i, class_line if (class_line) else "class "+test_class+":\n")
         if ("pytest" in full_diff):
             code.insert(0, "import pytest\n")
     filename = test_file.replace('.', '/')+".py"

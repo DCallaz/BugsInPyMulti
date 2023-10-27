@@ -101,7 +101,7 @@ if __name__ == "__main__":
     else:
         test_class = None
         test_method = getattr(test_module, sys.argv[2])
-    code, _ = inspect.findsource(test_module)
+    #code, _ = inspect.findsource(test_module)
     full_code = inspect.getsource(test_module)
     calls = getDependencies(test_method, full_code)
     pat = ("[ \t]*(?:from[ \t]+[A-z0-9_.]+)?[ \t]*import[ \t]+"
@@ -182,6 +182,12 @@ if __name__ == "__main__":
             if (call in new_calls):
                 del new_calls[call]
         calls = new_calls
+    # get the class line if available
+    if (test_class):
+        class_line = re.search("\n(class {}.*:\n)".format(sys.argv[2]),
+                               full_code)
+        if(class_line):
+            print("# CLASS:", class_line.group(1), end="")
     # print each import needed
     for package, imps in imports_to_add.items():
         if (package):
@@ -196,7 +202,8 @@ if __name__ == "__main__":
             for imp in imps:
                 print("import", imp, end="\n"+end)
     # print each function needed
-    for func in reversed(sorted(funcs_to_print, key=lambda x: "import" in x)):
+    for func in reversed(sorted(funcs_to_print, key=lambda x: ("import" in x,
+                                not x.startswith(("\t", " "))))):
         print(func, end=end)
     # Get this test source
     print(inspect.getsource(test_method), end="")
