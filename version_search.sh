@@ -6,6 +6,7 @@ blue=`tput setaf 4`
 reset=`tput sgr0`
 USAGE="USAGE: ./version_search.sh [-l <log dir>] <project>"
 log_dir="$PWD/versions"
+home="$PWD"
 while getopts ":hl:" opt; do
   case ${opt} in
     l )
@@ -58,6 +59,7 @@ for (( b=1; b<=$bugs; b++ )); do
     git reset > /dev/null
     git add -A .
     cd "$temp"
+    rm "$project-$b.current"
     continue
   fi
   bugsinpy-checkout -p $project -i $b -v 0 -w $temp/$project-$b &> /dev/null
@@ -141,7 +143,7 @@ for (( b=1; b<=$bugs; b++ )); do
       # Replace any occurence of this version in error string with the bug version
       test_error="${test_error//$project-$v/$project-$b}"
       #if [ "$test_error" != "$expected_error" ] || [ "$fail_or_error" == "" ]; then
-      if [ "$(diff <(echo "$test_error" | sort) <(echo "$expected_error" | sort))" ] ||
+      if [ "$(java -cp "$home" lcs "$test_error" "$expected_error")" -lt 85 ] ||
          [ "$fail_or_error" == "" ]; then
         if [ "$fail_or_error" == "error" ]; then
           echo "${yellow}  failed to compile test case${reset}"
@@ -158,6 +160,7 @@ for (( b=1; b<=$bugs; b++ )); do
           echo "  $test_error"
           echo "  Expected:"
           echo "  $expected_error"
+          echo "  With score: $(java -cp "$home" lcs "$test_error" "$expected_error")"
         else
           echo "${yellow}  test case passing${reset}"
           echo "${test_diffs[$t]}"
