@@ -128,12 +128,13 @@ for (( b=1; b<=$bugs; b++ )); do
       test_output="$(bugsinpy-test -t "$t")"
 
       if [ "$unittest" == 1 ]; then
-        awk_cmd='/-{70}/{n++;next};n%2==1'
-        grp='^\(Traceback\|[ ]\+File\|$\)'
-        expected_error=$(echo "$expected_output" | awk "$awk_cmd" | grep -v "$grp" | sed 's/ : .*//g' | tail -n 2)
-        test_error=$(echo "$test_output" | awk "$awk_cmd" | grep -v "$grp" | sed 's/ : .*//g' | tail -n 2)
+        awk_cmd='/[=-]{70}/{n++;next};n%2==0 && n>0'
+        grp='^\(Traceback\|[ ]\+\|$\)'
+        expected_error=$(echo "$expected_output" | awk "$awk_cmd" | grep -v "$grp")
+        test_error=$(echo "$test_output" | awk "$awk_cmd" | grep -v "$grp")
+        awk_cmd='/[=-]{70}/{n++;next};n%2==1'
         sed_cmd='s/FAIL.*/fail/g;s/ERROR.*/error/g'
-        fail_or_error=$(echo "$test_output" | grep "^\(FAIL\|ERROR\):" | sed "$sed_cmd")
+        fail_or_error=$(echo "$test_output" | awk "$awk_cmd" | grep "^\(FAIL\|ERROR\):" | sed "$sed_cmd")
       else
         expected_error=$(echo "$expected_output" | grep "^E\s\+")
         test_error=$(echo "$test_output" | grep "^E\s\+")
