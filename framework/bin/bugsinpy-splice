@@ -91,13 +91,15 @@ if __name__ == "__main__":
     if (test_exists):
         test_module = importlib.import_module(test_file)
         code, m_sloc = inspect.findsource(test_module)
-        m_eloc = m_sloc + len(code)
+        m_sloc = max(0, m_sloc-1)
+        m_eloc = m_sloc + len(code) - 1
         test_c_module = None
         if (test_class is not None):
             if (hasattr(test_module, test_class)):
                 test_c_module = getattr(test_module, test_class)
                 class_source, c_sloc = inspect.getsourcelines(test_c_module)
-                c_eloc = c_sloc + len(class_source)
+                c_sloc = max(0, c_sloc-1)
+                c_eloc = c_sloc + len(class_source) - 1
             else:  # If the class doesn't exist, add the class description
                 if (not class_line):
                     class_line = "class "+test_class+":\n"
@@ -106,8 +108,8 @@ if __name__ == "__main__":
         splices = []
         # inject each block into the code
         for part in reversed(cut_parts):
-            method_name_list = re.findall("\s*def\s+([A-z0-9_]+)\s*\(", part)
-            method_name = method_name_list[0] if method_name_list else None
+            method_name_re = re.search("\s*(def|class)\s+([A-z0-9_]+)\s*(?:\(|:)", part)
+            method_name = method_name_re.group(2) if method_name_re else None
             splice = part.splitlines(True)
             if (method_name is None and linesin(splice, cut_parts[-1], code)):
                 sloc, eloc = linesin(splice, cut_parts[-1], code)
@@ -115,25 +117,34 @@ if __name__ == "__main__":
             elif (method_name and hasattr(test_module, method_name)):
                 test_lines = inspect.getsourcelines(getattr(test_module, method_name))
                 sloc, eloc = (test_lines[1]-1, test_lines[1]+len(test_lines[0])-2)
+                if (method_name_re.group(1) == "class"):
+                    eloc = sloc
             elif (method_name and test_c_module and hasattr(test_c_module, method_name)):
                 test_lines = inspect.getsourcelines(getattr(test_c_module, method_name))
                 sloc, eloc = (test_lines[1]-1, test_lines[1]+len(test_lines[0])-2)
+                if (method_name_re.group(1) == "class"):
+                    eloc = sloc
             else:
+                skip = False
                 if (test_c_module and splice[0].startswith((' ', '\t'))):
-                    if (is_import(splice[0])):
+                    if (is_import(part)):
                         sloc = c_sloc
+                        skip = True
                     else:
                         sloc = c_eloc
                 else:
-                    if (is_import(splice[0])):
+                    if (is_import(part)):
                         sloc = m_sloc
+                        skip = True
                     else:
                         sloc = m_eloc
                 # skip comments, variable declarations & imports
-                while (sloc < len(code) and
-                       (code[sloc].strip() != "" or (sloc+1 < len(code) and
-                        ("import" in code[sloc+1] or "except" in code[sloc+1]
-                         or code[sloc+1].startswith("#"))))):
+                if (skip):
+                    while (sloc+1 < len(code) and (code[sloc+1].strip() == "" or
+                           "import" in code[sloc+1] or "except" in code[sloc+1] or
+                           code[sloc+1].startswith("#") or code[sloc].strip() != "")):
+                        sloc += 1
+                else:
                     sloc += 1
                 # add blank line before and after
                 if (sloc >= len(code)):
@@ -149,16 +160,21 @@ if __name__ == "__main__":
             sloc, eloc, splice = s
             code = code[:sloc] + splice + code[eloc+1:]
     else:
-        code = full_diff.replace("# BLOCK\n", "\n").splitlines(True)
+        code_parts = full_diff.split("# BLOCK\n")
         if (test_class is not None):
             # insert the class starter after imports
             i = 0
-            # TODO: change the following condition
-            while (i < len(code) and not re.match("[ \t]+def", code[i])):
+            while (i < len(code_parts) and not code_parts[i].startswith(("\t", " "))):
                 i += 1
-            code.insert(i, class_line if (class_line) else "class "+test_class+":\n")
+            code_parts.insert(i, class_line if (class_line)
+                                    else "class "+test_class+":\n")
         if ("pytest" in full_diff):
-            code.insert(0, "import pytest\n")
+            code_parts.insert(0, "import pytest\n")
+        code = []
+        for part in code_parts:
+            code.extend(part.splitlines(True))
+            code.append("\n")
+        code.pop()
     filename = test_file.replace('.', '/')+".py"
     if (os.path.dirname(filename) != ''):
         os.makedirs(os.path.dirname(filename), exist_ok=True)

@@ -95,12 +95,18 @@ if __name__ == "__main__":
         print("CUT ERROR: import error for", *sys.argv[1:], file=sys.stderr)
         print("ImportError:", impe, file=sys.stderr)
         quit()
-    if (len(sys.argv) == 4):
-        test_class = getattr(test_module, sys.argv[2])
-        test_method = getattr(test_class, sys.argv[3])
-    else:
-        test_class = None
-        test_method = getattr(test_module, sys.argv[2])
+    try:
+        if (len(sys.argv) == 4):
+            test_class = getattr(test_module, sys.argv[2])
+            test_method = getattr(test_class, sys.argv[3])
+        else:
+            test_class = None
+            test_method = getattr(test_module, sys.argv[2])
+    except AttributeError as ae:
+        print("ERROR: bugsinpy-cut could not find test method or class",
+              file=sys.stderr)
+        print("AttributeError:", ae, file=sys.stderr)
+        quit()
     #code, _ = inspect.findsource(test_module)
     full_code = inspect.getsource(test_module)
     calls = getDependencies(test_method, full_code)
