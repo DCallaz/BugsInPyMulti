@@ -107,6 +107,11 @@ for (( b=1; b<=$bugs; b++ )); do
     fi
     test_pts[$t]="$(echo "$t" | awk "$awk_cmd" | sed 's/\//./g;s/ \+/ /g')"
     test_diffs[$t]="$(bugsinpy-cut ${test_pts[$t]})"
+    if [ "$?" -ne 0 ] || [ "${test_diffs[$t]}" == "" ]; then
+      echo "ERROR: bugsinpy-cut did not succeed, skipping test $t for bug $b..."
+      test_diffs[$t]=""
+      continue
+    fi
     echo "$b,${test_pts[$t]}" >> "$log_dir/$project/$b/bugs.txt"
     echo "${test_diffs[$t]}" > "$log_dir/$project/$b/${test_pts[$t]}.diff"
     #echo "${test_diffs[$t]}" > "$log_dir/$project/$b/${test_pts[$t]// /.}.patch"
@@ -121,6 +126,10 @@ for (( b=1; b<=$bugs; b++ )); do
     # check expected and actual outputs for each test
     brk=1
     for t in "${tests[@]}"; do
+      if [ "${test_diffs[$t]}" == "" ]; then
+        echo "${yellow}  cut command failed for ${test_pts[$t]}${reset}"
+        continue
+      fi
       # Splice in the code for this test for bug b
       echo "${test_diffs[$t]}" | bugsinpy-splice ${test_pts[$t]}
       # Get expected and actual output for test
