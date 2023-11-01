@@ -71,7 +71,7 @@ if __name__ == "__main__":
     end = "# BLOCK\n"
     if (len(sys.argv) < 2):
         print("USAGE: bugsinpy-cut <test file> [<test class>] <test_method>")
-        quit()
+        quit(0)
     sys.path.insert(0, os.getcwd())
     sys.path.append(os.path.dirname(sys.argv[1].replace(".", "/")+".py"))
     init_file = None
@@ -90,11 +90,11 @@ if __name__ == "__main__":
     except ModuleNotFoundError as mnf:
         print("CUT ERROR: module not found error for", *sys.argv[1:], file=sys.stderr)
         print("ModuleNotFoundError:", mnf, file=sys.stderr)
-        quit()
+        quit(1)
     except ImportError as impe:
         print("CUT ERROR: import error for", *sys.argv[1:], file=sys.stderr)
         print("ImportError:", impe, file=sys.stderr)
-        quit()
+        quit(1)
     try:
         if (len(sys.argv) == 4):
             test_class = getattr(test_module, sys.argv[2])
@@ -103,10 +103,10 @@ if __name__ == "__main__":
             test_class = None
             test_method = getattr(test_module, sys.argv[2])
     except AttributeError as ae:
-        print("ERROR: bugsinpy-cut could not find test method or class",
-              file=sys.stderr)
+        print("CUT ERROR: could not find test method or class for",
+              *sys.argv[1:], file=sys.stderr)
         print("AttributeError:", ae, file=sys.stderr)
-        quit()
+        quit(1)
     #code, _ = inspect.findsource(test_module)
     full_code = inspect.getsource(test_module)
     calls = getDependencies(test_method, full_code)
@@ -174,15 +174,17 @@ if __name__ == "__main__":
                 if (cond_imp):
                     funcs_to_print.append(cond_imp.group(0))
                 else:
-                    r = re.compile(("^[\s]*(?:from ([A-z0-9_.]+))?[\s]*"
-                                    "import(?:.|\n)*[\s,]+(" + str(name)+")"
+                    r = re.compile(("^[\s]*(?:from ([A-z0-9_.]+))?[\s]*import"
+                                    "(?:.|\n)*?[\s,]+(?:([A-z0-9_]*) as)?\s*("
+                                    + str(name) + ")"
                                     "(?:[\s,]+|$)"))
                     imports = [r.match(val).groups()
                                for val in all_imports if r.match(val)]
-                    for package, imp in imports:
+                    for package, imp, rename in imports:
                         imports_to_add.setdefault(package, [])
-                        if (imp not in imports_to_add[package]):
-                            imports_to_add[package].append(imp)
+                        imprt = (imp, rename) if imp else (rename,)
+                        if (imprt not in imports_to_add[package]):
+                            imports_to_add[package].append(imprt)
         # Only process calls that haven't been processed yet
         for call in calls:
             if (call in new_calls):
@@ -197,16 +199,19 @@ if __name__ == "__main__":
     # print each import needed
     for package, imps in imports_to_add.items():
         if (package):
-            if (len(imps) < 4):
-                print("from", package, "import", ", ".join(imps), end="\n"+end)
+            imp_sum = sum([len(" as ".join(imp))+2 for imp in imps])-2
+            if (imp_sum < 70):
+                print("from", package,
+                      "import", ", ".join([" as ".join(i) for i in imps]),
+                      end="\n"+end)
             else:
                 print("from", package, "import (\n", end="")
                 for imp in imps:
-                    print("\t".expandtabs(4)+imp+",")
+                    print("\t".expandtabs(4)+" as ".join(imp)+",")
                 print(")\n", end=end)
         else:
             for imp in imps:
-                print("import", imp, end="\n"+end)
+                print("import", " as ".join(imp), end="\n"+end)
     # print each function needed
     for func in reversed(sorted(funcs_to_print, key=lambda x: ("import" in x,
                                 not x.startswith(("\t", " "))))):

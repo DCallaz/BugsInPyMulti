@@ -155,7 +155,7 @@ if __name__ == "__main__":
             # print(*code, sep="", end="")
         # Sort by start, then end location and then indentation and then imports
         splices.sort(key=lambda x: (x[0], x[1], x[2][0].startswith((' ', '\t')),
-                     not any("import" in y for y in x[2])), reverse=True)
+                     not is_import("\n".join(x[2]))), reverse=True)
         for s in splices:
             sloc, eloc, splice = s
             code = code[:sloc] + splice + code[eloc+1:]
