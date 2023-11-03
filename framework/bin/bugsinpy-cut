@@ -175,7 +175,7 @@ if __name__ == "__main__":
                     funcs_to_print.append(cond_imp.group(0))
                 else:
                     r = re.compile(("^[\s]*(?:from ([A-z0-9_.]+))?[\s]*import"
-                                    "(?:.|\n)*?[\s,]+(?:([A-z0-9_]*) as)?\s*("
+                                    "(?:.|\n)*?[\s,]+(?:([A-z0-9_.]*) as)?\s*("
                                     + str(name) + ")"
                                     "(?:[\s,]+|$)"))
                     imports = [r.match(val).groups()
