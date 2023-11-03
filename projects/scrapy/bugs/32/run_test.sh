@@ -1,1 +1,1 @@
-python -m unittest -q tests.test_crawler.CrawlerProcessTest.test_crawler_process_accepts_dict
+python -m unittest -q tests.test_downloadermiddleware_redirect.RedirectMiddlewareTest.test_request_meta_handling

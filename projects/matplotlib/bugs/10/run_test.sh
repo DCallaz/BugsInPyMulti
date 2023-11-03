@@ -1,1 +1,1 @@
-pytest lib/matplotlib/tests/test_axes.py::test_offset_text_visible
+pytest lib/matplotlib/tests/test_axes.py::test_lines_with_colors

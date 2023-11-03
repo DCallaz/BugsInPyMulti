@@ -1,4 +1,4 @@
 python_version="3.8.3"
-buggy_commit_id="f249b309ab779b5ab518f54f309d7a4ac6661ec7"
-fixed_commit_id="03f1720afb4a437314659a306286f440df664a0b"
-test_file="tests/test_settings/__init__.py"
+buggy_commit_id="a35aec71e96b0c0288c370afa425e8e700dca8b3"
+fixed_commit_id="bb2cf7c0d7199fffe0aa100e5c8a51c6b4b82fc2"
+test_file="tests/test_exporters.py"

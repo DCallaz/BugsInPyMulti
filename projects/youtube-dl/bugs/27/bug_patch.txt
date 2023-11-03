@@ -1,16 +1,14 @@
-diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py
-index ee20c3d9b..5b396ede8 100644
---- a/youtube_dl/utils.py
-+++ b/youtube_dl/utils.py
-@@ -1982,9 +1982,9 @@ def parse_dfxp_time_expr(time_expr):
-     if mobj:
-         return float(mobj.group('time_offset'))
+diff --git a/youtube_dl/YoutubeDL.py b/youtube_dl/YoutubeDL.py
+index 5a79e5f1d..6478d05dc 100755
+--- a/youtube_dl/YoutubeDL.py
++++ b/youtube_dl/YoutubeDL.py
+@@ -1005,6 +1005,9 @@ class YoutubeDL(object):
+                 format_spec = selector.selector
  
--    mobj = re.match(r'^(\d+):(\d\d):(\d\d(?:\.\d+)?)$', time_expr)
-+    mobj = re.match(r'^(\d+):(\d\d):(\d\d(?:(?:\.|:)\d+)?)$', time_expr)
-     if mobj:
--        return 3600 * int(mobj.group(1)) + 60 * int(mobj.group(2)) + float(mobj.group(3))
-+        return 3600 * int(mobj.group(1)) + 60 * int(mobj.group(2)) + float(mobj.group(3).replace(':', '.'))
- 
- 
- def srt_subtitles_timecode(seconds):
+                 def selector_function(formats):
++                    formats = list(formats)
++                    if not formats:
++                        return
+                     if format_spec == 'all':
+                         for f in formats:
+                             yield f

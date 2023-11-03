@@ -1,4 +1,4 @@
 python_version="3.8.3"
-buggy_commit_id="a35aec71e96b0c0288c370afa425e8e700dca8b3"
-fixed_commit_id="bb2cf7c0d7199fffe0aa100e5c8a51c6b4b82fc2"
-test_file="tests/test_exporters.py"
+buggy_commit_id="41588397c04356f2b0c393b61ed68271a08d6ccd"
+fixed_commit_id="cabed6f183cfb2ab778c57be8c75802fec5e54d4"
+test_file="tests/test_responsetypes.py"

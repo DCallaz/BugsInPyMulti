@@ -1,33 +1,17 @@
 diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py
-index 2770c5f1c..1a5ce8688 100644
+index d39f313a4..b7013a6aa 100644
 --- a/youtube_dl/utils.py
 +++ b/youtube_dl/utils.py
-@@ -2345,11 +2345,18 @@ def _match_one(filter_part, dct):
-     m = operator_rex.search(filter_part)
-     if m:
-         op = COMPARISON_OPERATORS[m.group('op')]
--        if m.group('strval') is not None:
-+        actual_value = dct.get(m.group('key'))
-+        if (m.group('strval') is not None or
-+            # If the original field is a string and matching comparisonvalue is
-+            # a number we should respect the origin of the original field
-+            # and process comparison value as a string (see
-+            # https://github.com/rg3/youtube-dl/issues/11082).
-+            actual_value is not None and m.group('intval') is not None and
-+                isinstance(actual_value, compat_str)):
-             if m.group('op') not in ('=', '!='):
-                 raise ValueError(
-                     'Operator %s does not support string values!' % m.group('op'))
--            comparison_value = m.group('strval')
-+            comparison_value = m.group('strval') or m.group('intval')
+@@ -396,7 +396,11 @@ def _htmlentity_transform(entity):
+             numstr = '0%s' % numstr
          else:
-             try:
-                 comparison_value = int(m.group('intval'))
-@@ -2361,7 +2368,6 @@ def _match_one(filter_part, dct):
-                     raise ValueError(
-                         'Invalid integer value %r in filter part %r' % (
-                             m.group('intval'), filter_part))
--        actual_value = dct.get(m.group('key'))
-         if actual_value is None:
-             return m.group('none_inclusive')
-         return op(actual_value, comparison_value)
+             base = 10
+-        return compat_chr(int(numstr, base))
++        # See https://github.com/rg3/youtube-dl/issues/7518
++        try:
++            return compat_chr(int(numstr, base))
++        except ValueError:
++            pass
+ 
+     # Unknown entity in name, return its literal representation
+     return ('&%s;' % entity)

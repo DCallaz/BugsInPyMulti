@@ -1,1 +1,4 @@
-pytest pandas/tests/dtypes/test_dtypes.py::TestCategoricalDtype::test_not_string
+pytest pandas/tests/indexing/test_scalar.py::test_at_with_tuple_index_get 
+pytest pandas/tests/indexing/test_scalar.py::test_at_with_tuple_index_set
+pytest pandas/tests/indexing/test_scalar.py::test_multiindex_at_get
+pytest pandas/tests/indexing/test_scalar.py::test_multiindex_at_set

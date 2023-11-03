@@ -1,1 +1,1 @@
-pytest pandas/tests/arithmetic/test_period.py::TestPeriodIndexSeriesMethods::test_pi_sub_period
+pytest pandas/tests/indexes/datetimes/test_insert.py::TestInsert::test_insert_mismatched_types_raises

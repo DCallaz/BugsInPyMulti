@@ -1,4 +1,4 @@
 python_version="3.8.3"
-buggy_commit_id="6658d89"
-fixed_commit_id="13dc13f12c0fca943979cde065b7484bb0e40d66"
-test_file="pandas/tests/indexes/datetimes/test_to_period.py"
+buggy_commit_id="40fd73a"
+fixed_commit_id="ef9b9387c88cf12b20dd8656dfedfc236e0f3352"
+test_file="pandas/tests/test_strings.py"

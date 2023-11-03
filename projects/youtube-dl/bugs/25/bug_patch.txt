@@ -1,22 +1,14 @@
 diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py
-index 35362e767..0c36c1b80 100644
+index 7b3f79141..d39f313a4 100644
 --- a/youtube_dl/utils.py
 +++ b/youtube_dl/utils.py
-@@ -2038,14 +2038,14 @@ def js_to_json(code):
-             }.get(m.group(0), m.group(0)), v[1:-1])
+@@ -911,7 +911,8 @@ def unified_strdate(date_str, day_first=True):
+         timetuple = email.utils.parsedate_tz(date_str)
+         if timetuple:
+             upload_date = datetime.datetime(*timetuple[:6]).strftime('%Y%m%d')
+-    return compat_str(upload_date)
++    if upload_date is not None:
++        return compat_str(upload_date)
  
-         INTEGER_TABLE = (
--            (r'^0[xX][0-9a-fA-F]+', 16),
--            (r'^0+[0-7]+', 8),
-+            (r'^(0[xX][0-9a-fA-F]+)\s*:?$', 16),
-+            (r'^(0+[0-7]+)\s*:?$', 8),
-         )
  
-         for regex, base in INTEGER_TABLE:
-             im = re.match(regex, v)
-             if im:
--                i = int(im.group(0), base)
-+                i = int(im.group(1), base)
-                 return '"%d":' % i if v.endswith(':') else '%d' % i
- 
-         return '"%s"' % v
+ def determine_ext(url, default_ext='unknown_video'):

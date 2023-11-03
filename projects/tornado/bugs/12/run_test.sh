@@ -1,1 +1,1 @@
-python -m unittest -q tornado.test.auth_test.AuthTest.test_facebook_login
+python -m unittest -q tornado.test.http1connection_test.HTTP1ConnectionTest.test_http10_no_content_length

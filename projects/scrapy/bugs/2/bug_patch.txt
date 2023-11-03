@@ -1,16 +1,23 @@
-diff --git a/scrapy/utils/datatypes.py b/scrapy/utils/datatypes.py
-index df2b99c2..f7e3240c 100644
---- a/scrapy/utils/datatypes.py
-+++ b/scrapy/utils/datatypes.py
-@@ -315,8 +315,9 @@ class LocalCache(collections.OrderedDict):
-         self.limit = limit
- 
-     def __setitem__(self, key, value):
--        while len(self) >= self.limit:
--            self.popitem(last=False)
-+        if self.limit:
-+            while len(self) >= self.limit:
-+                self.popitem(last=False)
-         super(LocalCache, self).__setitem__(key, value)
- 
+diff --git a/scrapy/spidermiddlewares/offsite.py b/scrapy/spidermiddlewares/offsite.py
+index 232e96cb..36f80969 100644
+--- a/scrapy/spidermiddlewares/offsite.py
++++ b/scrapy/spidermiddlewares/offsite.py
+@@ -54,12 +54,16 @@ class OffsiteMiddleware(object):
+         if not allowed_domains:
+             return re.compile('')  # allow all by default
+         url_pattern = re.compile("^https?://.*$")
++        domains = []
+         for domain in allowed_domains:
+-            if url_pattern.match(domain):
++            if domain is None:
++                continue
++            elif url_pattern.match(domain):
+                 message = ("allowed_domains accepts only domains, not URLs. "
+                            "Ignoring URL entry %s in allowed_domains." % domain)
+                 warnings.warn(message, URLWarning)
+-        domains = [re.escape(d) for d in allowed_domains if d is not None]
++            else:
++                domains.append(re.escape(domain))
+         regex = r'^(.*\.)?(%s)$' % '|'.join(domains)
+         return re.compile(regex)
  

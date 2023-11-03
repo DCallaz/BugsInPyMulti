@@ -1,1 +1,1 @@
-pytest pandas/tests/test_strings.py::TestStringMethods::test_repeat_with_null 
+pytest pandas/tests/extension/test_categorical.py::TestComparisonOps::test_not_equal_with_na 

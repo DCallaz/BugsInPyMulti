@@ -1,1 +1,1 @@
-python -m unittest -q tests.test_utils_misc.__init__.UtilsMiscTestCase.test_create_instance
+python -m unittest -q tests.test_command_version.VersionTest.test_output

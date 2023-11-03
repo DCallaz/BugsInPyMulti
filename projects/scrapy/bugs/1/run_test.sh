@@ -1,2 +1,1 @@
-python -m unittest -q tests.test_spidermiddleware_offsite.TestOffsiteMiddleware4._get_spiderargs
-python -m unittest -q tests.test_spidermiddleware_offsite.TestOffsiteMiddleware4.test_process_spider_output
+python -m unittest -q tests.test_utils_misc.__init__.UtilsMiscTestCase.test_create_instance

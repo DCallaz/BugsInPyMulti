@@ -1,1 +1,1 @@
-pytest lib/matplotlib/tests/test_axes.py::test_set_ticks_inverted
+pytest lib/matplotlib/tests/test_colorbar.py::test_colorbar_label

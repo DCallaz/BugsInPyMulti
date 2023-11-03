@@ -1,1 +1,1 @@
-python -m unittest -q tests.test_downloadermiddleware_redirect.RedirectMiddlewareTest.test_redirect_302_relative
+python -m unittest -q tests.test_utils_datatypes.LocalCacheTest.test_cache_without_limit

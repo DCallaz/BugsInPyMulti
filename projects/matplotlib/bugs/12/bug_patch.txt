@@ -1,58 +1,29 @@
-diff --git a/lib/matplotlib/axes/_axes.py b/lib/matplotlib/axes/_axes.py
-index f6fe59e4c..de807b686 100644
---- a/lib/matplotlib/axes/_axes.py
-+++ b/lib/matplotlib/axes/_axes.py
-@@ -1123,15 +1123,19 @@ class Axes(_AxesBase):
-         if not np.iterable(xmax):
-             xmax = [xmax]
+diff --git a/lib/matplotlib/path.py b/lib/matplotlib/path.py
+index 93165dc68..f56746b88 100644
+--- a/lib/matplotlib/path.py
++++ b/lib/matplotlib/path.py
+@@ -330,6 +330,7 @@ class Path:
+         if not args:
+             return Path(np.empty([0, 2], dtype=np.float32))
  
--        y, xmin, xmax = cbook.delete_masked_points(y, xmin, xmax)
--
-+        # Create and combine masked_arrays from input
-+        y, xmin, xmax = cbook._combine_masks(y, xmin, xmax)
-         y = np.ravel(y)
--        xmin = np.resize(xmin, y.shape)
--        xmax = np.resize(xmax, y.shape)
-+        xmin = np.ravel(xmin)
-+        xmax = np.ravel(xmax)
++        # concatenate paths
+         vertices = np.concatenate([x.vertices for x in args])
+         codes = np.empty(len(vertices), dtype=cls.code_type)
+         i = 0
+@@ -341,6 +342,16 @@ class Path:
+                 codes[i:i + len(path.codes)] = path.codes
+             i += len(path.vertices)
+ 
++        # remove internal STOP's, replace kinal stop if present
++        last_vert = None
++        if codes.size > 0 and codes[-1] == cls.STOP:
++            last_vert = vertices[-1]
++        vertices = vertices[codes != cls.STOP, :]
++        codes = codes[codes != cls.STOP]
++        if last_vert is not None:
++            vertices = np.append(vertices, [last_vert], axis=0)
++            codes = np.append(codes, cls.STOP)
 +
-+        masked_verts = np.ma.empty((len(y), 2, 2))
-+        masked_verts[:, 0, 0] = xmin
-+        masked_verts[:, 0, 1] = y
-+        masked_verts[:, 1, 0] = xmax
-+        masked_verts[:, 1, 1] = y
+         return cls(vertices, codes)
  
--        verts = [((thisxmin, thisy), (thisxmax, thisy))
--                 for thisxmin, thisxmax, thisy in zip(xmin, xmax, y)]
--        lines = mcoll.LineCollection(verts, colors=colors,
-+        lines = mcoll.LineCollection(masked_verts, colors=colors,
-                                      linestyles=linestyles, label=label)
-         self.add_collection(lines, autolim=False)
-         lines.update(kwargs)
-@@ -1201,15 +1205,19 @@ class Axes(_AxesBase):
-         if not np.iterable(ymax):
-             ymax = [ymax]
- 
--        x, ymin, ymax = cbook.delete_masked_points(x, ymin, ymax)
--
-+        # Create and combine masked_arrays from input
-+        x, ymin, ymax = cbook._combine_masks(x, ymin, ymax)
-         x = np.ravel(x)
--        ymin = np.resize(ymin, x.shape)
--        ymax = np.resize(ymax, x.shape)
-+        ymin = np.ravel(ymin)
-+        ymax = np.ravel(ymax)
-+
-+        masked_verts = np.ma.empty((len(x), 2, 2))
-+        masked_verts[:, 0, 0] = x
-+        masked_verts[:, 0, 1] = ymin
-+        masked_verts[:, 1, 0] = x
-+        masked_verts[:, 1, 1] = ymax
- 
--        verts = [((thisx, thisymin), (thisx, thisymax))
--                 for thisx, thisymin, thisymax in zip(x, ymin, ymax)]
--        lines = mcoll.LineCollection(verts, colors=colors,
-+        lines = mcoll.LineCollection(masked_verts, colors=colors,
-                                      linestyles=linestyles, label=label)
-         self.add_collection(lines, autolim=False)
-         lines.update(kwargs)
+     def __repr__(self):

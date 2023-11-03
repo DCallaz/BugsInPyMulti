@@ -1,44 +1,23 @@
-diff --git a/lib/matplotlib/axis.py b/lib/matplotlib/axis.py
-index 5cbba5b88..261b8e920 100644
---- a/lib/matplotlib/axis.py
-+++ b/lib/matplotlib/axis.py
-@@ -1004,11 +1004,10 @@ class Axis(martist.Artist):
-         the top for the y-axis; the "inverse" direction is increasing to the
-         left for the x-axis and to the bottom for the y-axis.
+diff --git a/lib/matplotlib/collections.py b/lib/matplotlib/collections.py
+index b7a7219ca..74c8b936d 100644
+--- a/lib/matplotlib/collections.py
++++ b/lib/matplotlib/collections.py
+@@ -1470,12 +1470,15 @@ class EventCollection(LineCollection):
+ 
+         .. plot:: gallery/lines_bars_and_markers/eventcollection_demo.py
          """
--        a, b = self.get_view_interval()
--        if inverted:
--            self.set_view_interval(max(a, b), min(a, b), ignore=True)
--        else:
--            self.set_view_interval(min(a, b), max(a, b), ignore=True)
-+        # Currently, must be implemented in subclasses using set_xlim/set_ylim
-+        # rather than generically using set_view_interval, so that shared
-+        # axes get updated as well.
-+        raise NotImplementedError('Derived must override')
- 
-     def set_default_intervals(self):
-         """
-@@ -2156,6 +2155,11 @@ class XAxis(Axis):
-     def get_minpos(self):
-         return self.axes.dataLim.minposx
- 
-+    def set_inverted(self, inverted):
-+        # docstring inherited
-+        a, b = self.get_view_interval()
-+        self.axes.set_xlim(sorted((a, b), reverse=inverted), auto=None)
-+
-     def set_default_intervals(self):
-         # docstring inherited
-         xmin, xmax = 0., 1.
-@@ -2458,6 +2462,11 @@ class YAxis(Axis):
-     def get_minpos(self):
-         return self.axes.dataLim.minposy
- 
-+    def set_inverted(self, inverted):
-+        # docstring inherited
-+        a, b = self.get_view_interval()
-+        self.axes.set_ylim(sorted((a, b), reverse=inverted), auto=None)
-+
-     def set_default_intervals(self):
-         # docstring inherited
-         ymin, ymax = 0., 1.
+-
++        if positions is None:
++            raise ValueError('positions must be an array-like object')
++        # Force a copy of positions
++        positions = np.array(positions, copy=True)
+         segment = (lineoffset + linelength / 2.,
+                    lineoffset - linelength / 2.)
+-        if positions is None or len(positions) == 0:
++        if positions.size == 0:
+             segments = []
+-        elif hasattr(positions, 'ndim') and positions.ndim > 1:
++        elif positions.ndim > 1:
+             raise ValueError('positions cannot be an array with more than '
+                              'one dimension.')
+         elif (orientation is None or orientation.lower() == 'none' or

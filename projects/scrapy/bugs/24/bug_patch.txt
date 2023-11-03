@@ -1,33 +1,13 @@
-diff --git a/scrapy/core/downloader/handlers/http11.py b/scrapy/core/downloader/handlers/http11.py
-index d81093a9..729b80b0 100644
---- a/scrapy/core/downloader/handlers/http11.py
-+++ b/scrapy/core/downloader/handlers/http11.py
-@@ -78,7 +78,7 @@ class TunnelingTCP4ClientEndpoint(TCP4ClientEndpoint):
-     for it.
-     """
+diff --git a/scrapy/spiders/sitemap.py b/scrapy/spiders/sitemap.py
+index eede467a..89d96c33 100644
+--- a/scrapy/spiders/sitemap.py
++++ b/scrapy/spiders/sitemap.py
+@@ -32,7 +32,7 @@ class SitemapSpider(Spider):
  
--    _responseMatcher = re.compile('HTTP/1\.. 200')
-+    _responseMatcher = re.compile(b'HTTP/1\.. 200')
- 
-     def __init__(self, reactor, host, port, proxyConf, contextFactory,
-                  timeout=30, bindAddress=None):
-@@ -92,11 +92,15 @@ class TunnelingTCP4ClientEndpoint(TCP4ClientEndpoint):
- 
-     def requestTunnel(self, protocol):
-         """Asks the proxy to open a tunnel."""
--        tunnelReq = 'CONNECT %s:%s HTTP/1.1\r\n' % (self._tunneledHost,
--                                                  self._tunneledPort)
-+        tunnelReq = (
-+            b'CONNECT ' +
-+            to_bytes(self._tunneledHost, encoding='ascii') + b':' +
-+            to_bytes(str(self._tunneledPort)) +
-+            b' HTTP/1.1\r\n')
-         if self._proxyAuthHeader:
--            tunnelReq += 'Proxy-Authorization: %s\r\n' % self._proxyAuthHeader
--        tunnelReq += '\r\n'
-+            tunnelReq += \
-+                b'Proxy-Authorization: ' + self._proxyAuthHeader + b'\r\n'
-+        tunnelReq += b'\r\n'
-         protocol.transport.write(tunnelReq)
-         self._protocolDataReceived = protocol.dataReceived
-         protocol.dataReceived = self.processProxyResponse
+     def _parse_sitemap(self, response):
+         if response.url.endswith('/robots.txt'):
+-            for url in sitemap_urls_from_robots(response.body):
++            for url in sitemap_urls_from_robots(response.text):
+                 yield Request(url, callback=self._parse_sitemap)
+         else:
+             body = self._get_sitemap_body(response)

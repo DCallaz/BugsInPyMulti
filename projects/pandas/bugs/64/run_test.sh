@@ -1,1 +1,1 @@
-pytest pandas/tests/io/excel/test_writers.py::TestExcelWriter::test_write_subset_columns 
+pytest pandas/tests/io/parser/test_encoding.py::test_binary_mode_file_buffers 

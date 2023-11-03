@@ -1,1 +1,2 @@
-python -m unittest -q tests.test_utils_request.UtilsRequestTest.test_request_httprepr_for_non_http_request
+python -m unittest -q tests.test_downloadermiddleware_httpproxy.TestDefaultHeadersMiddleware.test_proxy_auth
+python -m unittest -q tests.test_downloadermiddleware_httpproxy.TestDefaultHeadersMiddleware.test_proxy_auth_empty_passwd

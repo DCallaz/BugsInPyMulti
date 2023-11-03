@@ -1,4 +1,4 @@
 python_version="3.8.1"
-buggy_commit_id="cdf9e30e4f3fb7747b178ee9c3849dfdebee7bd0"
-fixed_commit_id="fc51b411ba5d0984544ecff97e0a28ea4b6a6d03"
-test_file="lib/matplotlib/tests/test_axes.py"
+buggy_commit_id="9a5473dbac05f3d6773b42c8e16d58a7dc3159b8"
+fixed_commit_id="184225bc5639fbd2f29c1253602806a8b6462d9f"
+test_file="lib/matplotlib/tests/test_collections.py"

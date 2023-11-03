@@ -1,1 +1,1 @@
-pytest pandas/tests/series/indexing/test_xs.py::test_xs_datetimelike_wrapping 
+pytest pandas/tests/frame/indexing/test_indexing.py::test_object_casting_indexing_wraps_datetimelike 

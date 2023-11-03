@@ -1,22 +1,31 @@
 diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py
-index cf46711b9..6c462625b 100644
+index 91917fc96..ee20c3d9b 100644
 --- a/youtube_dl/utils.py
 +++ b/youtube_dl/utils.py
-@@ -2107,7 +2107,7 @@ def js_to_json(code):
-         v = m.group(0)
-         if v in ('true', 'false', 'null'):
-             return v
--        elif v.startswith('/*') or v == ',':
-+        elif v.startswith('/*') or v.startswith('//') or v == ',':
-             return ""
+@@ -1976,7 +1976,7 @@ def match_filter_func(filter_str):
  
-         if v[0] in ("'", '"'):
-@@ -2134,7 +2134,7 @@ def js_to_json(code):
-     return re.sub(r'''(?sx)
-         "(?:[^"\\]*(?:\\\\|\\['"nurtbfx/\n]))*[^"\\]*"|
-         '(?:[^'\\]*(?:\\\\|\\['"nurtbfx/\n]))*[^'\\]*'|
--        /\*.*?\*/|,(?=\s*[\]}])|
-+        /\*.*?\*/|//[^\n]*|,(?=\s*[\]}])|
-         [a-zA-Z_][.a-zA-Z_0-9]*|
-         \b(?:0[xX][0-9a-fA-F]+|0+[0-7]+)(?:\s*:)?|
-         [0-9]+(?=\s*:)
+ def parse_dfxp_time_expr(time_expr):
+     if not time_expr:
+-        return 0.0
++        return
+ 
+     mobj = re.match(r'^(?P<time_offset>\d+(?:\.\d+)?)s?$', time_expr)
+     if mobj:
+@@ -2020,10 +2020,15 @@ def dfxp2srt(dfxp_data):
+         raise ValueError('Invalid dfxp/TTML subtitle')
+ 
+     for para, index in zip(paras, itertools.count(1)):
+-        begin_time = parse_dfxp_time_expr(para.attrib['begin'])
++        begin_time = parse_dfxp_time_expr(para.attrib.get('begin'))
+         end_time = parse_dfxp_time_expr(para.attrib.get('end'))
++        dur = parse_dfxp_time_expr(para.attrib.get('dur'))
++        if begin_time is None:
++            continue
+         if not end_time:
+-            end_time = begin_time + parse_dfxp_time_expr(para.attrib['dur'])
++            if not dur:
++                continue
++            end_time = begin_time + dur
+         out.append('%d\n%s --> %s\n%s\n\n' % (
+             index,
+             srt_subtitles_timecode(begin_time),

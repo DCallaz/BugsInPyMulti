@@ -1,24 +1,26 @@
-diff --git a/scrapy/utils/gz.py b/scrapy/utils/gz.py
-index d035f9fd..cfb65214 100644
---- a/scrapy/utils/gz.py
-+++ b/scrapy/utils/gz.py
-@@ -7,7 +7,7 @@ except ImportError:
- from gzip import GzipFile
+diff --git a/scrapy/downloadermiddlewares/redirect.py b/scrapy/downloadermiddlewares/redirect.py
+index 4ed7e4c2..db276eef 100644
+--- a/scrapy/downloadermiddlewares/redirect.py
++++ b/scrapy/downloadermiddlewares/redirect.py
+@@ -1,9 +1,10 @@
+ import logging
+ from six.moves.urllib.parse import urljoin
  
- import six
--
-+import re
++from w3lib.url import safe_url_string
++
+ from scrapy.http import HtmlResponse
+ from scrapy.utils.response import get_meta_refresh
+-from scrapy.utils.python import to_native_str
+ from scrapy.exceptions import IgnoreRequest, NotConfigured
  
- # - Python>=3.5 GzipFile's read() has issues returning leftover
- #   uncompressed data when input is corrupted
-@@ -50,8 +50,9 @@ def gunzip(data):
-                 raise
-     return output
+ logger = logging.getLogger(__name__)
+@@ -65,8 +66,7 @@ class RedirectMiddleware(BaseRedirectMiddleware):
+         if 'Location' not in response.headers or response.status not in allowed_status:
+             return response
  
-+_is_gzipped_re = re.compile(br'^application/(x-)?gzip\b', re.I)
+-        # HTTP header is ascii or latin1, redirected url will be percent-encoded utf-8
+-        location = to_native_str(response.headers['location'].decode('latin1'))
++        location = safe_url_string(response.headers['location'])
  
- def is_gzipped(response):
-     """Return True if the response is gzipped, or False otherwise"""
-     ctype = response.headers.get('Content-Type', b'')
--    return ctype in (b'application/x-gzip', b'application/gzip')
-+    return _is_gzipped_re.search(ctype) is not None
+         redirected_url = urljoin(request.url, location)
+ 

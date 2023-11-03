@@ -1,1 +1,1 @@
-python -m unittest -q tests.test_utils_response.ResponseUtilsTest.test_response_status_message
+python -m unittest -q tests.test_selector.SelectorTestCase.test_selector_bad_args

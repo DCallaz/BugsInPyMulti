@@ -1,1 +1,1 @@
-pytest pandas/tests/window/test_pairwise.py::TestPairwise::test_corr_freq_memory_error 
+pytest pandas/tests/window/test_grouper.py::TestGrouperGrouping::test_groupby_rolling 

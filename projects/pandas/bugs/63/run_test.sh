@@ -1,1 +1,1 @@
-pytest pandas/tests/indexing/test_scalar.py::TestScalar2::test_series_at_raises_type_error 
+pytest pandas/tests/io/excel/test_writers.py::TestExcelWriter::test_write_subset_columns 

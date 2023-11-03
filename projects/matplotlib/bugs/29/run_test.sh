@@ -1,1 +1,1 @@
-pytest lib/matplotlib/tests/test_axes.py::test_inverted_cla
+pytest lib/matplotlib/tests/test_collections.py::test_EventCollection_nosort

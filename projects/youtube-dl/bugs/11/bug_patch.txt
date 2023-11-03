@@ -1,15 +1,13 @@
-diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py
-index b14603d8a..328f037a8 100644
---- a/youtube_dl/utils.py
-+++ b/youtube_dl/utils.py
-@@ -3519,8 +3519,8 @@ def str_or_none(v, default=None):
+diff --git a/youtube_dl/YoutubeDL.py b/youtube_dl/YoutubeDL.py
+index 89c07be29..f94836d06 100755
+--- a/youtube_dl/YoutubeDL.py
++++ b/youtube_dl/YoutubeDL.py
+@@ -860,7 +860,7 @@ class YoutubeDL(object):
  
- def str_to_int(int_str):
-     """ A more relaxed version of int_or_none """
--    if int_str is None:
--        return None
-+    if not isinstance(int_str, compat_str):
-+        return int_str
-     int_str = re.sub(r'[,\.\+]', '', int_str)
-     return int(int_str)
- 
+             force_properties = dict(
+                 (k, v) for k, v in ie_result.items() if v is not None)
+-            for f in ('_type', 'url', 'ie_key'):
++            for f in ('_type', 'url', 'id', 'extractor', 'extractor_key', 'ie_key'):
+                 if f in force_properties:
+                     del force_properties[f]
+             new_result = info.copy()

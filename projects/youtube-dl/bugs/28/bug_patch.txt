@@ -1,17 +1,14 @@
-diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py
-index d39f313a4..b7013a6aa 100644
---- a/youtube_dl/utils.py
-+++ b/youtube_dl/utils.py
-@@ -396,7 +396,11 @@ def _htmlentity_transform(entity):
-             numstr = '0%s' % numstr
-         else:
-             base = 10
--        return compat_chr(int(numstr, base))
-+        # See https://github.com/rg3/youtube-dl/issues/7518
-+        try:
-+            return compat_chr(int(numstr, base))
-+        except ValueError:
-+            pass
- 
-     # Unknown entity in name, return its literal representation
-     return ('&%s;' % entity)
+diff --git a/youtube_dl/YoutubeDL.py b/youtube_dl/YoutubeDL.py
+index 5deb4848e..5a79e5f1d 100755
+--- a/youtube_dl/YoutubeDL.py
++++ b/youtube_dl/YoutubeDL.py
+@@ -958,8 +958,7 @@ class YoutubeDL(object):
+                     elif string == '/':
+                         first_choice = current_selector
+                         second_choice = _parse_format_selection(tokens, inside_choice=True)
+-                        current_selector = None
+-                        selectors.append(FormatSelector(PICKFIRST, (first_choice, second_choice), []))
++                        current_selector = FormatSelector(PICKFIRST, (first_choice, second_choice), [])
+                     elif string == '[':
+                         if not current_selector:
+                             current_selector = FormatSelector(SINGLE, 'best', [])

@@ -1,1 +1,1 @@
-python -m unittest -q tests.test_downloadermiddleware_redirect.RedirectMiddlewareTest.test_request_meta_handling
+python -m unittest -q tests.test_exporters.PythonItemExporterTest.test_other_python_types_item

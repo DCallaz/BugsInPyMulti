@@ -1,1 +1,1 @@
-pytest pandas/tests/series/indexing/test_getitem.py::TestSeriesGetitemListLike::test_getitem_no_matches
+pytest pandas/tests/window/test_base_indexer.py::test_rolling_forward_window

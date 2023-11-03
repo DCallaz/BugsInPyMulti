@@ -1,21 +1,13 @@
-diff --git a/scrapy/item.py b/scrapy/item.py
-index 8ac27964..138728a9 100644
---- a/scrapy/item.py
-+++ b/scrapy/item.py
-@@ -6,6 +6,7 @@ See documentation in docs/topics/item.rst
- 
- from pprint import pformat
- from collections import MutableMapping
-+
- from abc import ABCMeta
- import six
- 
-@@ -27,7 +28,7 @@ class ItemMeta(ABCMeta):
-         new_bases = tuple(base._class for base in bases if hasattr(base, '_class'))
-         _class = super(ItemMeta, mcs).__new__(mcs, 'x_' + class_name, new_bases, attrs)
- 
--        fields = {}
-+        fields = getattr(_class, 'fields', {})
-         new_attrs = {}
-         for n in dir(_class):
-             v = getattr(_class, n)
+diff --git a/scrapy/utils/request.py b/scrapy/utils/request.py
+index ac415e50..0487d1e1 100644
+--- a/scrapy/utils/request.py
++++ b/scrapy/utils/request.py
+@@ -79,7 +79,7 @@ def request_httprepr(request):
+     parsed = urlparse_cached(request)
+     path = urlunparse(('', '', parsed.path or '/', parsed.params, parsed.query, ''))
+     s = to_bytes(request.method) + b" " + to_bytes(path) + b" HTTP/1.1\r\n"
+-    s += b"Host: " + to_bytes(parsed.hostname) + b"\r\n"
++    s += b"Host: " + to_bytes(parsed.hostname or b'') + b"\r\n"
+     if request.headers:
+         s += request.headers.to_string() + b"\r\n"
+     s += b"\r\n"

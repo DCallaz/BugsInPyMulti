@@ -1,1 +1,1 @@
-pytest pandas/tests/dtypes/test_dtypes.py::TestCategoricalDtype::test_from_values_or_dtype_invalid_dtype 
+pytest pandas/tests/indexing/test_iloc.py::TestiLoc2::test_is_scalar_access 

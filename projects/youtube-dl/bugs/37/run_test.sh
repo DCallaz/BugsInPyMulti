@@ -1,1 +1,1 @@
-python -m unittest -q test.test_utils.TestUtil.test_uppercase_escpae
+python -m unittest -q test.test_all_urls.TestAllURLsMatching.test_facebook_matching

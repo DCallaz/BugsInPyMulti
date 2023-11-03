@@ -1,15 +1,19 @@
-diff --git a/scrapy/downloadermiddlewares/redirect.py b/scrapy/downloadermiddlewares/redirect.py
-index 363e56cb..3cf8d2be 100644
---- a/scrapy/downloadermiddlewares/redirect.py
-+++ b/scrapy/downloadermiddlewares/redirect.py
-@@ -55,7 +55,9 @@ class RedirectMiddleware(BaseRedirectMiddleware):
+diff --git a/scrapy/exporters.py b/scrapy/exporters.py
+index 145468db..c7c78d05 100644
+--- a/scrapy/exporters.py
++++ b/scrapy/exporters.py
+@@ -273,10 +273,10 @@ class PythonItemExporter(BaseItemExporter):
+             return dict(self._serialize_dict(value))
+         if is_listlike(value):
+             return [self._serialize_value(v) for v in value]
+-        if self.binary:
+-            return to_bytes(value, encoding=self.encoding)
+-        else:
+-            return to_unicode(value, encoding=self.encoding)
++        encode_func = to_bytes if self.binary else to_unicode
++        if isinstance(value, (six.text_type, bytes)):
++            return encode_func(value, encoding=self.encoding)
++        return value
  
-     def process_response(self, request, response, spider):
-         if (request.meta.get('dont_redirect', False) or
--               response.status in getattr(spider, 'handle_httpstatus_list', [])):
-+               response.status in getattr(spider, 'handle_httpstatus_list', []) or
-+               response.status in request.meta.get('handle_httpstatus_list', []) or
-+               request.meta.get('handle_httpstatus_all', False)):
-             return response
- 
-         if request.method == 'HEAD':
+     def _serialize_dict(self, value):
+         for key, val in six.iteritems(value):

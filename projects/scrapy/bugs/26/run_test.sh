@@ -1,1 +1,1 @@
-python -m unittest -q tests.test_settings.__init__.BaseSettingsTest.test_getcomposite
+python -m unittest -q tests.test_exporters.XmlItemExporterTest.test_nonstring_types_item

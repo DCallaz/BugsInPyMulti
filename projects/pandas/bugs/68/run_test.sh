@@ -1,1 +1,1 @@
-pytest pandas/tests/arrays/interval/test_interval.py::TestMethods::test_shift 
+pytest pandas/tests/frame/indexing/test_indexing.py::TestDataFrameIndexing::test_reindex_nearest_tz 

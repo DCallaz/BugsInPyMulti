@@ -1,1 +1,1 @@
-pytest pandas/tests/indexes/datetimes/test_misc.py::test_isocalendar_returns_correct_values_close_to_new_year_with_tz
+pytest pandas/tests/arrays/categorical/test_analytics.py::TestCategoricalAnalytics::test_min_max_only_nan

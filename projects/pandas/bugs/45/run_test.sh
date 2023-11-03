@@ -1,1 +1,1 @@
-pytest pandas/tests/frame/test_constructors.py::TestDataFrameConstructorWithDatetimeTZ::test_construction_from_set_raises 
+pytest pandas/tests/reshape/test_pivot.py::TestPivotTable::test_pivot_table_retains_tz 

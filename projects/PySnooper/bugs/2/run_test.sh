@@ -1,1 +1,1 @@
-pytest -q -s tests/test_pysnooper.py::test_custom_repr_single
+pytest -q -s tests/test_chinese.py::test_chinese

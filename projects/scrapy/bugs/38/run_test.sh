@@ -1,1 +1,3 @@
-python -m unittest -q tests.test_http_request.FormRequestTest.test_from_response_clickdata_does_not_ignore_image
+python -m unittest -q tests.test_pipeline_media.BaseMediaPipelineTestCase.test_default_item_completed
+python -m unittest -q tests.test_utils_log.FailureToExcInfoTest.test_failure
+python -m unittest -q tests.test_utils_log.FailureToExcInfoTest.test_non_failure

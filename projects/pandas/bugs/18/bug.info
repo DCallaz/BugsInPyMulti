@@ -1,4 +1,4 @@
 python_version="3.8.3"
-buggy_commit_id="e008a0a"
-fixed_commit_id="cb71376385c33270fa1922aec9eb6c49de4336f4"
-test_file="pandas/tests/window/test_base_indexer.py"
+buggy_commit_id="17dc6b0"
+fixed_commit_id="c6a1638bcd99df677a8f76f036c0b30027eb243c"
+test_file="pandas/tests/indexing/multiindex/test_loc.py;pandas/tests/indexing/multiindex/test_slice.py;pandas/tests/series/indexing/test_getitem.py"

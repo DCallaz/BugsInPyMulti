@@ -1,22 +1,34 @@
-diff --git a/pandas/_testing.py b/pandas/_testing.py
-index d473b453d..f96e3872e 100644
---- a/pandas/_testing.py
-+++ b/pandas/_testing.py
-@@ -1160,7 +1160,7 @@ def assert_series_equal(
-                 f"is not equal to {right._values}."
-             )
-             raise AssertionError(msg)
--    elif is_interval_dtype(left.dtype) or is_interval_dtype(right.dtype):
-+    elif is_interval_dtype(left.dtype) and is_interval_dtype(right.dtype):
-         assert_interval_array_equal(left.array, right.array)
-     elif is_categorical_dtype(left.dtype) or is_categorical_dtype(right.dtype):
-         _testing.assert_almost_equal(
-@@ -1170,7 +1170,7 @@ def assert_series_equal(
-             check_dtype=check_dtype,
-             obj=str(obj),
-         )
--    elif is_extension_array_dtype(left.dtype) or is_extension_array_dtype(right.dtype):
-+    elif is_extension_array_dtype(left.dtype) and is_extension_array_dtype(right.dtype):
-         assert_extension_array_equal(left._values, right._values)
-     elif needs_i8_conversion(left.dtype) or needs_i8_conversion(right.dtype):
-         # DatetimeArray or TimedeltaArray
+diff --git a/pandas/core/ops/__init__.py b/pandas/core/ops/__init__.py
+index ed779c5da..3153a9ac2 100644
+--- a/pandas/core/ops/__init__.py
++++ b/pandas/core/ops/__init__.py
+@@ -711,13 +711,17 @@ def _align_method_FRAME(
+ 
+ 
+ def _should_reindex_frame_op(
+-    left: "DataFrame", right, axis, default_axis: int, fill_value, level
++    left: "DataFrame", right, op, axis, default_axis: int, fill_value, level
+ ) -> bool:
+     """
+     Check if this is an operation between DataFrames that will need to reindex.
+     """
+     assert isinstance(left, ABCDataFrame)
+ 
++    if op is operator.pow or op is rpow:
++        # GH#32685 pow has special semantics for operating with null values
++        return False
++
+     if not isinstance(right, ABCDataFrame):
+         return False
+ 
+@@ -779,7 +783,9 @@ def _arith_method_FRAME(cls, op, special):
+     @Appender(doc)
+     def f(self, other, axis=default_axis, level=None, fill_value=None):
+ 
+-        if _should_reindex_frame_op(self, other, axis, default_axis, fill_value, level):
++        if _should_reindex_frame_op(
++            self, other, op, axis, default_axis, fill_value, level
++        ):
+             return _frame_arith_method_with_reindex(self, other, op)
+ 
+         self, other = _align_method_FRAME(self, other, axis, flex=True, level=level)

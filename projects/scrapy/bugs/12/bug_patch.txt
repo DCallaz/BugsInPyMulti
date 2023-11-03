@@ -1,15 +1,21 @@
-diff --git a/scrapy/selector/unified.py b/scrapy/selector/unified.py
-index 15f3d26d..64cb0232 100644
---- a/scrapy/selector/unified.py
-+++ b/scrapy/selector/unified.py
-@@ -46,6 +46,10 @@ class Selector(_ParselSelector, object_ref):
-     selectorlist_cls = SelectorList
+diff --git a/scrapy/item.py b/scrapy/item.py
+index 138728a9..aa05e9c6 100644
+--- a/scrapy/item.py
++++ b/scrapy/item.py
+@@ -25,6 +25,7 @@ class Field(dict):
+ class ItemMeta(ABCMeta):
  
-     def __init__(self, response=None, text=None, type=None, root=None, _root=None, **kwargs):
-+        if not(response is None or text is None):
-+           raise ValueError('%s.__init__() received both response and text'
-+                            % self.__class__.__name__)
-+
-         st = _st(response, type or self._default_type)
+     def __new__(mcs, class_name, bases, attrs):
++        classcell = attrs.pop('__classcell__', None)
+         new_bases = tuple(base._class for base in bases if hasattr(base, '_class'))
+         _class = super(ItemMeta, mcs).__new__(mcs, 'x_' + class_name, new_bases, attrs)
  
-         if _root is not None:
+@@ -39,6 +40,8 @@ class ItemMeta(ABCMeta):
+ 
+         new_attrs['fields'] = fields
+         new_attrs['_class'] = _class
++        if classcell is not None:
++            new_attrs['__classcell__'] = classcell
+         return super(ItemMeta, mcs).__new__(mcs, class_name, bases, new_attrs)
+ 
+ 

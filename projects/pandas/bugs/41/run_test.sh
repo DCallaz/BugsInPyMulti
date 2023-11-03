@@ -1,2 +1,5 @@
-pytest pandas/tests/indexing/test_iloc.py::TestiLoc2::test_iloc_setitem_categorical_updates_inplace 
-pytest pandas/tests/internals/test_internals.py::TestShouldStore::test_should_store_categorical 
+pytest pandas/tests/util/test_assert_frame_equal.py::test_assert_frame_equal_extension_dtype_mismatch 
+pytest pandas/tests/util/test_assert_frame_equal.py::test_assert_frame_equal_interval_dtype_mismatch
+pytest pandas/tests/util/test_assert_series_equal.py::test_assert_series_equal_extension_dtype_mismatch 
+pytest pandas/tests/util/test_assert_series_equal.py::test_assert_series_equal_interval_dtype_mismatch
+

@@ -1,56 +1,40 @@
-diff --git a/pandas/io/common.py b/pandas/io/common.py
-index 00f2961e4..e506cc155 100644
---- a/pandas/io/common.py
-+++ b/pandas/io/common.py
-@@ -3,7 +3,7 @@
- import bz2
- from collections import abc
- import gzip
--from io import BufferedIOBase, BytesIO
-+from io import BufferedIOBase, BytesIO, RawIOBase
- import mmap
- import os
- import pathlib
-@@ -359,9 +359,9 @@ def get_handle(
-     try:
-         from s3fs import S3File
+diff --git a/pandas/core/generic.py b/pandas/core/generic.py
+index 3bb584d4d..62a4878f1 100644
+--- a/pandas/core/generic.py
++++ b/pandas/core/generic.py
+@@ -3442,15 +3442,14 @@ class NDFrame(PandasObject, SelectionMixin, indexing.IndexingMixin):
+                 new_index = self.index[loc]
  
--        need_text_wrapping = (BufferedIOBase, S3File)
-+        need_text_wrapping = (BufferedIOBase, RawIOBase, S3File)
-     except ImportError:
--        need_text_wrapping = BufferedIOBase  # type: ignore
-+        need_text_wrapping = (BufferedIOBase, RawIOBase)  # type: ignore
+         if is_scalar(loc):
+-            new_values = self._data.fast_xs(loc)
++            # In this case loc should be an integer
++            if self.ndim == 1:
++                # if we encounter an array-like and we only have 1 dim
++                # that means that their are list/ndarrays inside the Series!
++                # so just return them (GH 6394)
++                return self._values[loc]
  
-     handles: List[IO] = list()
-     f = path_or_buf
-@@ -437,7 +437,7 @@ def get_handle(
-         from io import TextIOWrapper
+-            # may need to box a datelike-scalar
+-            #
+-            # if we encounter an array-like and we only have 1 dim
+-            # that means that their are list/ndarrays inside the Series!
+-            # so just return them (GH 6394)
+-            if not is_list_like(new_values) or self.ndim == 1:
+-                return com.maybe_box_datetimelike(new_values)
++            new_values = self._data.fast_xs(loc)
  
-         g = TextIOWrapper(f, encoding=encoding, newline="")
--        if not isinstance(f, BufferedIOBase):
-+        if not isinstance(f, (BufferedIOBase, RawIOBase)):
-             handles.append(g)
-         f = g
+             result = self._constructor_sliced(
+                 new_values,
+diff --git a/pandas/core/internals/managers.py b/pandas/core/internals/managers.py
+index 526863d2e..08ae0b021 100644
+--- a/pandas/core/internals/managers.py
++++ b/pandas/core/internals/managers.py
+@@ -1565,7 +1565,7 @@ class SingleBlockManager(BlockManager):
+         fast path for getting a cross-section
+         return a view of the data
+         """
+-        return self._block.values[loc]
++        raise NotImplementedError("Use series._values[loc] instead")
  
-diff --git a/pandas/io/parsers.py b/pandas/io/parsers.py
-index b38aa9770..8bc8470ae 100755
---- a/pandas/io/parsers.py
-+++ b/pandas/io/parsers.py
-@@ -5,7 +5,7 @@ Module contains tools for processing files into DataFrames or other objects
- from collections import abc, defaultdict
- import csv
- import datetime
--from io import BufferedIOBase, StringIO, TextIOWrapper
-+from io import BufferedIOBase, RawIOBase, StringIO, TextIOWrapper
- import re
- import sys
- from textwrap import fill
-@@ -1872,7 +1872,7 @@ class CParserWrapper(ParserBase):
- 
-             # Handle the file object with universal line mode enabled.
-             # We will handle the newline character ourselves later on.
--            if isinstance(src, BufferedIOBase):
-+            if isinstance(src, (BufferedIOBase, RawIOBase)):
-                 src = TextIOWrapper(src, encoding=encoding, newline="")
- 
-             kwds["encoding"] = "utf-8"
+     def concat(self, to_concat, new_axis) -> "SingleBlockManager":
+         """

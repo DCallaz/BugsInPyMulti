@@ -1,25 +1,13 @@
-diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py
-index 5f1f664c8..92fee966f 100644
---- a/youtube_dl/utils.py
-+++ b/youtube_dl/utils.py
-@@ -2,6 +2,7 @@
- # -*- coding: utf-8 -*-
- 
- import calendar
-+import codecs
- import contextlib
- import ctypes
- import datetime
-@@ -1263,9 +1264,11 @@ class PagedList(object):
- 
- 
- def uppercase_escape(s):
-+    unicode_escape = codecs.getdecoder('unicode_escape')
-     return re.sub(
-         r'\\U[0-9a-fA-F]{8}',
--        lambda m: m.group(0).decode('unicode-escape'), s)
-+        lambda m: unicode_escape(m.group(0))[0],
-+        s)
- 
- try:
-     struct.pack(u'!I', 0)
+diff --git a/youtube_dl/extractor/facebook.py b/youtube_dl/extractor/facebook.py
+index f0cd8f156..f7cf700b5 100644
+--- a/youtube_dl/extractor/facebook.py
++++ b/youtube_dl/extractor/facebook.py
+@@ -20,7 +20,7 @@ from ..utils import (
+ class FacebookIE(InfoExtractor):
+     _VALID_URL = r'''(?x)
+         https?://(?:\w+\.)?facebook\.com/
+-        (?:[^#?]*\#!/)?
++        (?:[^#]*?\#!/)?
+         (?:video/video\.php|photo\.php|video/embed)\?(?:.*?)
+         (?:v|video_id)=(?P<id>[0-9]+)
+         (?:.*)'''

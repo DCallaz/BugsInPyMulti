@@ -1,4 +1,4 @@
 python_version="3.8.3"
-buggy_commit_id="692975acb40c6394424dfb728b1ffa46b3b3c55d"
-fixed_commit_id="a1e8a8525d2312842c7e1cca8ba6e4e1a83084b7"
-test_file="tests/test_spider.py"
+buggy_commit_id="e521740b3951bacc80d3c9c1db8652ed5e914b89"
+fixed_commit_id="773ea5a5ef76426dd91a8669542d2602082a5746"
+test_file="tests/test_item.py"

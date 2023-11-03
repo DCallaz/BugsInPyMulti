@@ -1,12 +1,17 @@
-diff --git a/lib/matplotlib/projections/polar.py b/lib/matplotlib/projections/polar.py
-index 902946c6b..0649a03c8 100644
---- a/lib/matplotlib/projections/polar.py
-+++ b/lib/matplotlib/projections/polar.py
-@@ -949,6 +949,7 @@ class PolarAxes(Axes):
-     @cbook._delete_parameter("3.3", "args")
-     @cbook._delete_parameter("3.3", "kwargs")
-     def draw(self, renderer, *args, **kwargs):
-+        self._unstale_viewLim()
-         thetamin, thetamax = np.rad2deg(self._realViewLim.intervalx)
-         if thetamin > thetamax:
-             thetamin, thetamax = thetamax, thetamin
+diff --git a/lib/matplotlib/axis.py b/lib/matplotlib/axis.py
+index b252f8d3a..cfc7739d8 100644
+--- a/lib/matplotlib/axis.py
++++ b/lib/matplotlib/axis.py
+@@ -824,7 +824,11 @@ class Axis(martist.Artist):
+                 self._minor_tick_kw.update(kwtrans)
+                 for tick in self.minorTicks:
+                     tick._apply_params(**kwtrans)
+-            # special-case label color to also apply to the offset text
++            # labelOn and labelcolor also apply to the offset text.
++            if 'label1On' in kwtrans or 'label2On' in kwtrans:
++                self.offsetText.set_visible(
++                    self._major_tick_kw.get('label1On', False)
++                    or self._major_tick_kw.get('label2On', False))
+             if 'labelcolor' in kwtrans:
+                 self.offsetText.set_color(kwtrans['labelcolor'])
+ 

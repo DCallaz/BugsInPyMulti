@@ -1,26 +1,23 @@
-diff --git a/scrapy/downloadermiddlewares/redirect.py b/scrapy/downloadermiddlewares/redirect.py
-index 4ed7e4c2..db276eef 100644
---- a/scrapy/downloadermiddlewares/redirect.py
-+++ b/scrapy/downloadermiddlewares/redirect.py
-@@ -1,9 +1,10 @@
- import logging
- from six.moves.urllib.parse import urljoin
+diff --git a/scrapy/spiders/__init__.py b/scrapy/spiders/__init__.py
+index 138cdbc6..80768b1b 100644
+--- a/scrapy/spiders/__init__.py
++++ b/scrapy/spiders/__init__.py
+@@ -66,11 +66,14 @@ class Spider(object_ref):
+         crawler.signals.connect(self.close, signals.spider_closed)
  
-+from w3lib.url import safe_url_string
-+
- from scrapy.http import HtmlResponse
- from scrapy.utils.response import get_meta_refresh
--from scrapy.utils.python import to_native_str
- from scrapy.exceptions import IgnoreRequest, NotConfigured
- 
- logger = logging.getLogger(__name__)
-@@ -65,8 +66,7 @@ class RedirectMiddleware(BaseRedirectMiddleware):
-         if 'Location' not in response.headers or response.status not in allowed_status:
-             return response
- 
--        # HTTP header is ascii or latin1, redirected url will be percent-encoded utf-8
--        location = to_native_str(response.headers['location'].decode('latin1'))
-+        location = safe_url_string(response.headers['location'])
- 
-         redirected_url = urljoin(request.url, location)
- 
+     def start_requests(self):
+-        if self.make_requests_from_url is not Spider.make_requests_from_url:
++        cls = self.__class__
++        if cls.make_requests_from_url is not Spider.make_requests_from_url:
+             warnings.warn(
+-                "Spider.make_requests_from_url method is deprecated; "
+-                "it won't be called in future Scrapy releases. "
+-                "Please override start_requests method instead."
++                "Spider.make_requests_from_url method is deprecated; it "
++                "won't be called in future Scrapy releases. Please "
++                "override Spider.start_requests method instead (see %s.%s)." % (
++                    cls.__module__, cls.__name__
++                ),
+             )
+             for url in self.start_urls:
+                 yield self.make_requests_from_url(url)

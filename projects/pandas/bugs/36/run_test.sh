@@ -1,1 +1,1 @@
-pytest pandas/tests/dtypes//test_missing.py::TestIsNA::test_isna_old_datetimelike 
+pytest pandas/tests/arrays/string_/test_string.py::test_astype_int 

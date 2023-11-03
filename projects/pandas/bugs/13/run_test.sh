@@ -1,2 +1,2 @@
-pytest pandas/tests/arrays/categorical/test_missing.py::TestCategoricalMissing::test_use_inf_as_na
-pytest pandas/tests/arrays/categorical/test_missing.py::TestCategoricalMissing::test_use_inf_as_na_outside_context
+pytest pandas/tests/arithmetic/test_datetime64.py::TestDatetime64DateOffsetArithmetic::test_dt64arr_add_sub_offset_array
+pytest pandas/tests/arithmetic/test_timedelta64.py::TestTimedeltaArraylikeAddSubOps::test_td64arr_add_offset_index

@@ -1,2 +1,3 @@
-
-FAIL: 0
+/home/21831599/data/masters/BugsInPy/projects/PySnooper/bugs/1 (pytest -q -s tests/test_chinese.py::test_chinese)
+/home/21831599/data/masters/BugsInPy/projects/PySnooper/bugs/3 (pytest -q -s tests/test_pysnooper.py::test_file_output)
+FAIL: 2

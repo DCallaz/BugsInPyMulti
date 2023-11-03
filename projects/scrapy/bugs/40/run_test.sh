@@ -1,1 +1,1 @@
-python -m unittest -q tests.test_exporters.PythonItemExporterTest.test_other_python_types_item
+python -m unittest -q tests.test_crawler.CrawlerRunnerTestCase.test_spidermanager_deprecation

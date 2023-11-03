@@ -1,32 +1,42 @@
-diff --git a/pandas/core/window/common.py b/pandas/core/window/common.py
-index 8707893dc..082c2f533 100644
---- a/pandas/core/window/common.py
-+++ b/pandas/core/window/common.py
-@@ -337,6 +337,7 @@ def validate_baseindexer_support(func_name: Optional[str]) -> None:
-         "median",
-         "std",
-         "var",
-+        "skew",
-         "kurt",
-         "quantile",
-     }
-diff --git a/pandas/core/window/rolling.py b/pandas/core/window/rolling.py
-index 05400f63d..24130c044 100644
---- a/pandas/core/window/rolling.py
-+++ b/pandas/core/window/rolling.py
-@@ -472,13 +472,13 @@ class _Window(PandasObject, ShallowMixin, SelectionMixin):
+diff --git a/pandas/core/indexing.py b/pandas/core/indexing.py
+index 303365f50..5752f00ca 100644
+--- a/pandas/core/indexing.py
++++ b/pandas/core/indexing.py
+@@ -1082,37 +1082,6 @@ class _LocIndexer(_LocationIndexer):
+             return self._getbool_axis(key, axis=axis)
+         elif is_list_like_indexer(key):
  
-                 def calc(x):
-                     x = np.concatenate((x, additional_nans))
--                    if not isinstance(window, BaseIndexer):
-+                    if not isinstance(self.window, BaseIndexer):
-                         min_periods = calculate_min_periods(
-                             window, self.min_periods, len(x), require_min_periods, floor
-                         )
-                     else:
-                         min_periods = calculate_min_periods(
--                            self.min_periods or 1,
-+                            window_indexer.window_size,
-                             self.min_periods,
-                             len(x),
-                             require_min_periods,
+-            # convert various list-like indexers
+-            # to a list of keys
+-            # we will use the *values* of the object
+-            # and NOT the index if its a PandasObject
+-            if isinstance(labels, ABCMultiIndex):
+-
+-                if isinstance(key, (ABCSeries, np.ndarray)) and key.ndim <= 1:
+-                    # Series, or 0,1 ndim ndarray
+-                    # GH 14730
+-                    key = list(key)
+-                elif isinstance(key, ABCDataFrame):
+-                    # GH 15438
+-                    raise NotImplementedError(
+-                        "Indexing a MultiIndex with a "
+-                        "DataFrame key is not "
+-                        "implemented"
+-                    )
+-                elif hasattr(key, "ndim") and key.ndim > 1:
+-                    raise NotImplementedError(
+-                        "Indexing a MultiIndex with a "
+-                        "multidimensional key is not "
+-                        "implemented"
+-                    )
+-
+-                if (
+-                    not isinstance(key, tuple)
+-                    and len(key)
+-                    and not isinstance(key[0], tuple)
+-                ):
+-                    key = tuple([key])
+-
+             # an iterable multi-selection
+             if not (isinstance(key, tuple) and isinstance(labels, ABCMultiIndex)):
+ 

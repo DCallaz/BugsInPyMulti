@@ -1,51 +1,22 @@
-diff --git a/youtube_dl/postprocessor/ffmpeg.py b/youtube_dl/postprocessor/ffmpeg.py
-index 51256a3fb..f71d413b5 100644
---- a/youtube_dl/postprocessor/ffmpeg.py
-+++ b/youtube_dl/postprocessor/ffmpeg.py
-@@ -585,7 +585,7 @@ class FFmpegSubtitlesConvertorPP(FFmpegPostProcessor):
-                 dfxp_file = old_file
-                 srt_file = subtitles_filename(filename, lang, 'srt')
- 
--                with io.open(dfxp_file, 'rt', encoding='utf-8') as f:
-+                with open(dfxp_file, 'rb') as f:
-                     srt_data = dfxp2srt(f.read())
- 
-                 with io.open(srt_file, 'wt', encoding='utf-8') as f:
 diff --git a/youtube_dl/utils.py b/youtube_dl/utils.py
-index 9e4492d40..b724e0b70 100644
+index cf46711b9..6c462625b 100644
 --- a/youtube_dl/utils.py
 +++ b/youtube_dl/utils.py
-@@ -2572,14 +2572,18 @@ def srt_subtitles_timecode(seconds):
+@@ -2107,7 +2107,7 @@ def js_to_json(code):
+         v = m.group(0)
+         if v in ('true', 'false', 'null'):
+             return v
+-        elif v.startswith('/*') or v == ',':
++        elif v.startswith('/*') or v.startswith('//') or v == ',':
+             return ""
  
- 
- def dfxp2srt(dfxp_data):
-+    '''
-+    @param dfxp_data A bytes-like object containing DFXP data
-+    @returns A unicode object containing converted SRT data
-+    '''
-     LEGACY_NAMESPACES = (
--        ('http://www.w3.org/ns/ttml', [
--            'http://www.w3.org/2004/11/ttaf1',
--            'http://www.w3.org/2006/04/ttaf1',
--            'http://www.w3.org/2006/10/ttaf1',
-+        (b'http://www.w3.org/ns/ttml', [
-+            b'http://www.w3.org/2004/11/ttaf1',
-+            b'http://www.w3.org/2006/04/ttaf1',
-+            b'http://www.w3.org/2006/10/ttaf1',
-         ]),
--        ('http://www.w3.org/ns/ttml#styling', [
--            'http://www.w3.org/ns/ttml#style',
-+        (b'http://www.w3.org/ns/ttml#styling', [
-+            b'http://www.w3.org/ns/ttml#style',
-         ]),
-     )
- 
-@@ -2674,7 +2678,7 @@ def dfxp2srt(dfxp_data):
-         for ns in v:
-             dfxp_data = dfxp_data.replace(ns, k)
- 
--    dfxp = compat_etree_fromstring(dfxp_data.encode('utf-8'))
-+    dfxp = compat_etree_fromstring(dfxp_data)
-     out = []
-     paras = dfxp.findall(_x('.//ttml:p')) or dfxp.findall('.//p')
- 
+         if v[0] in ("'", '"'):
+@@ -2134,7 +2134,7 @@ def js_to_json(code):
+     return re.sub(r'''(?sx)
+         "(?:[^"\\]*(?:\\\\|\\['"nurtbfx/\n]))*[^"\\]*"|
+         '(?:[^'\\]*(?:\\\\|\\['"nurtbfx/\n]))*[^'\\]*'|
+-        /\*.*?\*/|,(?=\s*[\]}])|
++        /\*.*?\*/|//[^\n]*|,(?=\s*[\]}])|
+         [a-zA-Z_][.a-zA-Z_0-9]*|
+         \b(?:0[xX][0-9a-fA-F]+|0+[0-7]+)(?:\s*:)?|
+         [0-9]+(?=\s*:)

@@ -1,2 +1,1 @@
-pytest pandas/tests/arrays/categorical/test_constructors.py::TestCategoricalConstructors::test_from_codes_with_nullable_int 
-pytest pandas/tests/arrays/categorical/test_constructors.py::TestCategoricalConstructors::test_from_codes_with_nullable_int_na_raises 
+pytest pandas/tests/window/test_pairwise.py::TestPairwise::test_corr_freq_memory_error 

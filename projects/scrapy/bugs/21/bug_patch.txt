@@ -1,12 +1,20 @@
-diff --git a/scrapy/downloadermiddlewares/robotstxt.py b/scrapy/downloadermiddlewares/robotstxt.py
-index d4a33dc3..698f394a 100644
---- a/scrapy/downloadermiddlewares/robotstxt.py
-+++ b/scrapy/downloadermiddlewares/robotstxt.py
-@@ -101,4 +101,6 @@ class RobotsTxtMiddleware(object):
-         rp_dfd.callback(rp)
+diff --git a/scrapy/utils/response.py b/scrapy/utils/response.py
+index 73db2641..d9e95146 100644
+--- a/scrapy/utils/response.py
++++ b/scrapy/utils/response.py
+@@ -47,14 +47,8 @@ def get_meta_refresh(response):
  
-     def _robots_error(self, failure, netloc):
--        self._parsers.pop(netloc).callback(None)
-+        rp_dfd = self._parsers[netloc]
-+        self._parsers[netloc] = None
-+        rp_dfd.callback(None)
+ def response_status_message(status):
+     """Return status code plus status text descriptive message
+-
+-    >>> response_status_message(200)
+-    '200 OK'
+-
+-    >>> response_status_message(404)
+-    '404 Not Found'
+     """
+-    return '%s %s' % (status, to_native_str(http.RESPONSES.get(int(status))))
++    return '%s %s' % (status, to_native_str(http.RESPONSES.get(int(status), "Unknown Status")))
+ 
+ 
+ def response_httprepr(response):

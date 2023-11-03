@@ -1,1 +1,2 @@
-pytest pandas/tests/extension/test_categorical.py::TestComparisonOps::test_not_equal_with_na 
+pytest pandas/tests/reshape/merge/test_merge.py::test_categorical_non_unique_monotonic 
+

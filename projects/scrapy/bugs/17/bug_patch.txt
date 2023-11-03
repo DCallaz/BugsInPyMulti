@@ -1,20 +1,15 @@
-diff --git a/scrapy/utils/response.py b/scrapy/utils/response.py
-index 73db2641..d9e95146 100644
---- a/scrapy/utils/response.py
-+++ b/scrapy/utils/response.py
-@@ -47,14 +47,8 @@ def get_meta_refresh(response):
+diff --git a/scrapy/selector/unified.py b/scrapy/selector/unified.py
+index 15f3d26d..64cb0232 100644
+--- a/scrapy/selector/unified.py
++++ b/scrapy/selector/unified.py
+@@ -46,6 +46,10 @@ class Selector(_ParselSelector, object_ref):
+     selectorlist_cls = SelectorList
  
- def response_status_message(status):
-     """Return status code plus status text descriptive message
--
--    >>> response_status_message(200)
--    '200 OK'
--
--    >>> response_status_message(404)
--    '404 Not Found'
-     """
--    return '%s %s' % (status, to_native_str(http.RESPONSES.get(int(status))))
-+    return '%s %s' % (status, to_native_str(http.RESPONSES.get(int(status), "Unknown Status")))
+     def __init__(self, response=None, text=None, type=None, root=None, _root=None, **kwargs):
++        if not(response is None or text is None):
++           raise ValueError('%s.__init__() received both response and text'
++                            % self.__class__.__name__)
++
+         st = _st(response, type or self._default_type)
  
- 
- def response_httprepr(response):
+         if _root is not None:

@@ -1,1 +1,1 @@
-pytest pandas/tests/window/test_grouper.py::TestGrouperGrouping::test_groupby_rolling 
+pytest pandas/tests/indexing/test_indexing.py::TestFancy::test_getitem_ndarray_3d 

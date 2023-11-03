@@ -1,1 +1,1 @@
-pytest tests/keras/engine/test_topology.py::test_layer_sharing_at_heterogeneous_depth_order
+pytest tests/keras/engine/test_training.py::test_sample_weights

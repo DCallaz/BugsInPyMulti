@@ -1,1 +1,1 @@
-pytest lib/matplotlib/tests/test_path.py::test_make_compound_path_stops
+pytest lib/matplotlib/tests/test_text.py::test_fontproperties_kwarg_precedence

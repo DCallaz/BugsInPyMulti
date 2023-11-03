@@ -1,1 +1,1 @@
-pytest pandas/tests/arrays/categorical/test_analytics.py::TestCategoricalAnalytics::test_min_max_only_nan
+pytest pandas/tests/indexes/datetimes/test_to_period.py::TestToPeriod::test_to_period_infer

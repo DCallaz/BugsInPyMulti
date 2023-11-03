@@ -1,1 +1,1 @@
-python -m unittest -q test.test_InfoExtractor.TestInfoExtractor.test_parse_mpd_formats
+python -m unittest -q test.test_utils.TestUtil.test_str_to_int

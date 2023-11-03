@@ -1,2 +1,2 @@
-python -m unittest -q tests.test_utils_gz.GunzipTest.test_is_gzipped_case_insensitive
-python -m unittest -q tests.test_utils_gz.GunzipTest.test_is_gzipped_with_charset
+python -m unittest -q tests.test_downloadermiddleware_redirect.RedirectMiddlewareTest.test_latin1_location
+python -m unittest -q tests.test_downloadermiddleware_redirect.RedirectMiddlewareTest.test_utf8_location

@@ -1,29 +1,38 @@
-diff --git a/scrapy/http/cookies.py b/scrapy/http/cookies.py
-index 740f21d2..e92c3fe7 100644
---- a/scrapy/http/cookies.py
-+++ b/scrapy/http/cookies.py
-@@ -149,11 +149,13 @@ class WrappedRequest(object):
-         return name in self.request.headers
+diff --git a/scrapy/settings/__init__.py b/scrapy/settings/__init__.py
+index 3ae2187a..13656298 100644
+--- a/scrapy/settings/__init__.py
++++ b/scrapy/settings/__init__.py
+@@ -116,9 +116,9 @@ class BaseSettings(MutableMapping):
+     def getbool(self, name, default=False):
+         """
+         Get a setting value as a boolean.
+-        
++
+         ``1``, ``'1'``, and ``True`` return ``True``, while ``0``, ``'0'``,
+-        ``False`` and ``None`` return ``False``. 
++        ``False`` and ``None`` return ``False``.
  
-     def get_header(self, name, default=None):
--        return to_native_str(self.request.headers.get(name, default))
-+        return to_native_str(self.request.headers.get(name, default),
-+                             errors='replace')
+         For example, settings populated through environment variables set to
+         ``'0'`` will return ``False`` when using this method.
+@@ -203,11 +203,17 @@ class BaseSettings(MutableMapping):
+         if basename in self:
+             warnings.warn('_BASE settings are deprecated.',
+                           category=ScrapyDeprecationWarning)
+-            compsett = BaseSettings(self[name + "_BASE"], priority='default')
+-            compsett.update(self[name])
++            # When users defined a _BASE setting, they explicitly don't want to
++            # use any of Scrapy's defaults. Therefore, we only use these entries
++            # from self[name] (where the defaults now live) that have a priority
++            # higher than 'default'
++            compsett = BaseSettings(self[basename], priority='default')
++            for k in self[name]:
++                prio = self[name].getpriority(k)
++                if prio > get_settings_priority('default'):
++                    compsett.set(k, self[name][k], prio)
+             return compsett
+-        else:
+-            return self[name]
++        return self[name]
  
-     def header_items(self):
-         return [
--            (to_native_str(k), [to_native_str(x) for x in v])
-+            (to_native_str(k, errors='replace'),
-+             [to_native_str(x, errors='replace') for x in v])
-             for k, v in self.request.headers.items()
-         ]
- 
-@@ -171,6 +173,7 @@ class WrappedResponse(object):
- 
-     # python3 cookiejars calls get_all
-     def get_all(self, name, default=None):
--        return [to_native_str(v) for v in self.response.headers.getlist(name)]
-+        return [to_native_str(v, errors='replace')
-+                for v in self.response.headers.getlist(name)]
-     # python2 cookiejars calls getheaders
-     getheaders = get_all
+     def getpriority(self, name):
+         """

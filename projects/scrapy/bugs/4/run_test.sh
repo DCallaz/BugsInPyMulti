@@ -1,1 +1,1 @@
-python -m unittest -q tests.test_contracts.ContractsManagerTest.test_errback
+python -m unittest -q tests.test_downloadermiddleware_redirect.RedirectMiddlewareTest.test_redirect_302_relative

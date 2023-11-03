@@ -1,13 +1,16 @@
-diff --git a/keras/wrappers/scikit_learn.py b/keras/wrappers/scikit_learn.py
-index 6ebf6fc8..83c3e3c4 100644
---- a/keras/wrappers/scikit_learn.py
-+++ b/keras/wrappers/scikit_learn.py
-@@ -320,7 +320,7 @@ class KerasRegressor(BaseWrapper):
-                 Predictions.
-         """
-         kwargs = self.filter_sk_params(Sequential.predict, kwargs)
--        return np.squeeze(self.model.predict(x, **kwargs))
-+        return np.squeeze(self.model.predict(x, **kwargs), axis=-1)
- 
-     def score(self, x, y, **kwargs):
-         """Returns the mean loss on the given test data and labels.
+diff --git a/keras/utils/data_utils.py b/keras/utils/data_utils.py
+index 82eb431b..6c8eabc9 100644
+--- a/keras/utils/data_utils.py
++++ b/keras/utils/data_utils.py
+@@ -170,7 +170,10 @@ def get_file(fname,
+         Path to the downloaded file
+     """  # noqa
+     if cache_dir is None:
+-        cache_dir = os.path.join(os.path.expanduser('~'), '.keras')
++        if 'KERAS_HOME' in os.environ:
++            cache_dir = os.environ.get('KERAS_HOME')
++        else:
++            cache_dir = os.path.join(os.path.expanduser('~'), '.keras')
+     if md5_hash is not None and file_hash is None:
+         file_hash = md5_hash
+         hash_algorithm = 'md5'

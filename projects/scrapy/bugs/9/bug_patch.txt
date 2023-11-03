@@ -1,24 +1,16 @@
-diff --git a/scrapy/mail.py b/scrapy/mail.py
-index c6339f25..0bb39552 100644
---- a/scrapy/mail.py
-+++ b/scrapy/mail.py
-@@ -21,6 +21,8 @@ else:
+diff --git a/scrapy/pipelines/images.py b/scrapy/pipelines/images.py
+index 5796bfb8..bc449431 100644
+--- a/scrapy/pipelines/images.py
++++ b/scrapy/pipelines/images.py
+@@ -132,6 +132,11 @@ class ImagesPipeline(FilesPipeline):
+             background = Image.new('RGBA', image.size, (255, 255, 255))
+             background.paste(image, image)
+             image = background.convert('RGB')
++        elif image.mode == 'P':
++            image = image.convert("RGBA")
++            background = Image.new('RGBA', image.size, (255, 255, 255))
++            background.paste(image, image)
++            image = background.convert('RGB')
+         elif image.mode != 'RGB':
+             image = image.convert('RGB')
  
- from twisted.internet import defer, reactor, ssl
- 
-+from .utils.misc import arg_to_iter
-+
- logger = logging.getLogger(__name__)
- 
- 
-@@ -48,6 +50,10 @@ class MailSender(object):
-             msg = MIMEMultipart()
-         else:
-             msg = MIMENonMultipart(*mimetype.split('/', 1))
-+
-+        to = list(arg_to_iter(to))
-+        cc = list(arg_to_iter(cc))
-+
-         msg['From'] = self.mailfrom
-         msg['To'] = COMMASPACE.join(to)
-         msg['Date'] = formatdate(localtime=True)

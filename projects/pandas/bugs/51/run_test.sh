@@ -1,2 +1,1 @@
-pytest pandas/tests/reshape/merge/test_merge.py::test_categorical_non_unique_monotonic 
-
+pytest pandas/tests/groupby/test_function.py::test_series_groupby_nunique 

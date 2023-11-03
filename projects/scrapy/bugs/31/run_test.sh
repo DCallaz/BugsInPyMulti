@@ -1,1 +1,1 @@
-python -m unittest -q tests.test_downloadermiddleware_cookies.CookiesMiddlewareTest.test_do_not_break_on_non_utf8_header
+python -m unittest -q tests.test_settings.__init__.BaseSettingsTest.test_getcomposite

@@ -1,1 +1,1 @@
-python -m unittest -q test.test_jsinterp.TestJSInterpreter.test_call
+python -m unittest -q test.test_utils.TestUtil.test_urljoin

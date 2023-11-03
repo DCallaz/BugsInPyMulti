@@ -29,3 +29,4 @@ tox==3.15.2
 urllib3==1.25.9
 virtualenv==20.0.23
 zipp==3.1.0
+pytest==5.4.2
