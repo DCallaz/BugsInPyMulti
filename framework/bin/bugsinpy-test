@@ -175,7 +175,7 @@ elif [ "$single_test" != "" ]; then
     cmd="$(echo "${run_command[0]}" | sed "s|\S*\.\S*|$single_test|g")"
      #res_first=$(python -m unittest -q $single_test 2>&1)
   fi
-  res_first=$($cmd 2>&1)
+  res_first=$(timeout 1h $cmd 2>&1)
   echo "$res_first"
   echo "$cmd" &>>"$work_dir/bugsinpy_singletest.txt"
   echo "$res_first" &>>"$work_dir/bugsinpy_singletest.txt"
