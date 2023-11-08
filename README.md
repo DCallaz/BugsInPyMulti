@@ -1,4 +1,4 @@
-# Defects4J Multi-fault
+# BugsInPy Multi-fault
 A multifault version of the [BugsInPy](https://github.com/soarsmu/BugsInPy) dataset.
 ## Description
 This repository includes all the necessary scripts and files needed to create a
