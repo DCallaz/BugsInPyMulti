@@ -14,9 +14,9 @@ def getDependencies(attr, full_code):
     calls = {}
     if (inspect.isclass(attr)):
         attr = compile(inspect.getsource(attr), '<string>', 'exec')
-    elif (hasattr(attr, '_pytestfixturefunction') and hasattr(attr, '__dict__')
-          and '__wrapped__' in attr.__dict__):
-        attr = attr.__dict__['__wrapped__']
+    # hasattr(attr, '_pytestfixturefunction') and
+    elif (hasattr(attr, '__dict__') and '__wrapped__' in attr.__dict__):
+        calls.update(getDependencies(attr.__dict__['__wrapped__'], full_code))
     instrs = list(dis.get_instructions(attr))[::-1]
     list_comps = [i.argval for i in list(reversed(instrs))
                   if i.opname == 'LOAD_CONST' and inspect.iscode(i.argval)]
@@ -113,6 +113,15 @@ if __name__ == "__main__":
     pat = ("[ \t]*(?:from[ \t]+[A-z0-9_.]+)?[ \t]*import[ \t]+"
            "(?:[A-z0-9_., \t]+|\\[\s]+|\([A-z0-9_.,\s]+\))")
     all_imports = re.findall(pat, full_code)
+    # get the class line if available
+    if (test_class):
+        class_line = re.search("\n(class {}(?:\((.*)\)):\n)".format(sys.argv[2]),
+                               full_code)
+        if(class_line):
+            print("# CLASS:", class_line.group(1), end="")
+            if (class_line.group(2) is not None):
+                for dep in class_line.group(2).split(','):
+                    calls[dep.strip().split('.')[0]] = 'function'
     imports_to_add = {}
     funcs_to_print = []
     while calls:
@@ -190,12 +199,6 @@ if __name__ == "__main__":
             if (call in new_calls):
                 del new_calls[call]
         calls = new_calls
-    # get the class line if available
-    if (test_class):
-        class_line = re.search("\n(class {}.*:\n)".format(sys.argv[2]),
-                               full_code)
-        if(class_line):
-            print("# CLASS:", class_line.group(1), end="")
     # print each import needed
     for package, imps in imports_to_add.items():
         if (package):

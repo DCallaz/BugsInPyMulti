@@ -168,8 +168,10 @@ if __name__ == "__main__":
                 i += 1
             code_parts.insert(i, class_line if (class_line)
                                     else "class "+test_class+":\n")
-        if ("pytest" in full_diff):
+        if ("pytest" in full_diff or (class_line and "pytest" in class_line)):
             code_parts.insert(0, "import pytest\n")
+        elif ("unittest" in full_diff or (class_line and "unittest" in class_line)):
+            code_parts.insert(0, "import unittest\n")
         code = []
         for part in code_parts:
             code.extend(part.splitlines(True))
