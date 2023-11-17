@@ -95,6 +95,7 @@ while read -u 10 -r bug; do
   if [ "$bug" != "$v" ] && [ "$bt" != "$BACK_STR" ]; then
     echo "Transplanting $bug" > "$verbose"
     echo -n " $bug" >> bugsinpy_version.info
+    echo "$bt" > "bugsinpy_bug_$bug.info"
     while read -u 11 -r line; do
       test_pts="$(echo "$line" | cut -d ',' -f 2)"
       echo "Doing test $test_pts" > "$verbose"
