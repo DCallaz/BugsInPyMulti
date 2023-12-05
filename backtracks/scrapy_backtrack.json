@@ -1,0 +1,556 @@
+[
+{
+"bug": {"1": {"utils/misc.py": [140, 146, 148, 150]}}
+,"2": {"1": {"utils/misc.py": [140, 146, 148, 150]}}
+,"3": {"1": {"utils/misc.py": [135, 141, 143, 145]}}
+,"4": {"1": {"utils/misc.py": [136, 142, 144, 146]}}
+,"5": {"1": {"utils/misc.py": [136, 142, 144, 146]}}
+,"6": {"1": {"utils/misc.py": [134, 140, 142, 144]}}
+,"7": {"1": {"utils/misc.py": [133, 139, 141, 143]}}
+,"8": {"1": {"utils/misc.py": [133, 139, 141, 143]}}
+,"815d6160cfac5c0b764d01fc9d4ebc4ab7793aac": "failed"
+}
+,
+{
+"bug": {"2": {"spidermiddlewares/offsite.py": [57, 58, 62]}}
+,"3": {"2": {"spidermiddlewares/offsite.py": [57, 58, 62]}}
+,"4": {"2": {"spidermiddlewares/offsite.py": [57, 58, 62]}}
+,"5": {"2": {"spidermiddlewares/offsite.py": [57, 58, 62]}}
+,"6": {"2": {"spidermiddlewares/offsite.py": [57, 58]}}
+,"7": {"2": {"spidermiddlewares/offsite.py": [57, 58]}}
+,"8": {"2": {"spidermiddlewares/offsite.py": [57, 58]}}
+,"91ff194d1e9477d2196817ea1dc8beb220c3e058": "failed"
+}
+,
+{
+"bug": {"3": {"utils/datatypes.py": [318, 319]}}
+,"4": {"3": {"utils/datatypes.py": [327, 328]}}
+,"5": {"3": {"utils/datatypes.py": [327, 328]}}
+,"6": {"3": {"utils/datatypes.py": [313, 314]}}
+,"7": {"3": {"utils/datatypes.py": [313, 314]}}
+,"8": {"3": {"utils/datatypes.py": [313, 314]}}
+,"9": {"3": {"utils/datatypes.py": [313, 314]}}
+,"10": {"3": {"utils/datatypes.py": [313, 314]}}
+,"11": {"3": {"utils/datatypes.py": [313, 314]}}
+,"12": {"3": {"utils/datatypes.py": [313, 314]}}
+,"778bed07bf771dd3942ea8cd51b7944065f4e2cd": "failed"
+}
+,
+{
+"bug": {"4": {"downloadermiddlewares/redirect.py": [2, 73]}}
+,"5": {"4": {"downloadermiddlewares/redirect.py": [2, 73]}}
+,"6": {"4": {"downloadermiddlewares/redirect.py": [2, 71]}}
+,"7": {"4": {"downloadermiddlewares/redirect.py": [2, 71]}}
+,"8": {"4": {"downloadermiddlewares/redirect.py": [2, 71]}}
+,"9": {"4": {"downloadermiddlewares/redirect.py": [2, 71]}}
+,"10": {"4": {"downloadermiddlewares/redirect.py": [2, 71]}}
+,"11": {"4": {"downloadermiddlewares/redirect.py": [2, 71]}}
+,"12": {"4": {"downloadermiddlewares/redirect.py": [2, 71]}}
+,"13": {"4": {"downloadermiddlewares/redirect.py": [2, 69]}}
+,"14": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"15": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"16": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"17": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"18": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"19": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"20": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"21": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"22": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"23": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"24": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"25": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"26": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"27": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"29": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"28": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"30": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"31": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"32": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"33": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"34": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"36": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"35": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"37": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"38": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"39": {"4": {"downloadermiddlewares/redirect.py": [2]}}
+,"40": {"4": {"contrib/downloadermiddleware/redirect.py": [1]}}
+,"6f7efa1d1df5e1042fd654fe5aae74ab864b1c4d": "failed"
+}
+,
+{
+"bug": {"5": {"http/request/__init__.py": [69]}}
+,"6": {"5": {"http/request/__init__.py": [61]}}
+,"7": {"5": {"http/request/__init__.py": [61]}}
+,"8": {"5": {"http/request/__init__.py": [61]}}
+,"9": {"5": {"http/request/__init__.py": [57]}}
+,"10": {"5": {"http/request/__init__.py": [56]}}
+,"11": {"5": {"http/request/__init__.py": [56]}}
+,"12": {"5": {"http/request/__init__.py": [56]}}
+,"13": {"5": {"http/request/__init__.py": [56]}}
+,"14": {"5": {"http/request/__init__.py": [56]}}
+,"15": {"5": {"http/request/__init__.py": [56]}}
+,"16": {"5": {"http/request/__init__.py": [56]}}
+,"17": {"5": {"http/request/__init__.py": [56]}}
+,"18": {"5": {"http/request/__init__.py": [56]}}
+,"19": {"5": {"http/request/__init__.py": [56]}}
+,"20": {"5": {"http/request/__init__.py": [56]}}
+,"21": {"5": {"http/request/__init__.py": [56]}}
+,"22": {"5": {"http/request/__init__.py": [56]}}
+,"23": {"5": {"http/request/__init__.py": [56]}}
+,"24": {"5": {"http/request/__init__.py": [56]}}
+,"25": {"5": {"http/request/__init__.py": [56]}}
+,"26": {"5": {"http/request/__init__.py": [56]}}
+,"27": {"5": {"http/request/__init__.py": [56]}}
+,"29": {"5": {"http/request/__init__.py": [56]}}
+,"28": {"5": {"http/request/__init__.py": [56]}}
+,"30": {"5": {"http/request/__init__.py": [56]}}
+,"31": {"5": {"http/request/__init__.py": [56]}}
+,"32": {"5": {"http/request/__init__.py": [56]}}
+,"33": {"5": {"http/request/__init__.py": [56]}}
+,"34": {"5": {"http/request/__init__.py": [56]}}
+,"36": {"5": {"http/request/__init__.py": [56]}}
+,"35": {"5": {"http/request/__init__.py": [56]}}
+,"37": {"5": {"http/request/__init__.py": [58]}}
+,"38": {"5": {"http/request/__init__.py": [58]}}
+,"39": {"5": {"http/request/__init__.py": [58]}}
+,"40": {"5": {"http/request/__init__.py": [58]}}
+,"c4a607fc787b2b1d61bf309c98dc9ced38d9d445": "failed"
+}
+,
+{
+"bug": {"6": {"contracts/__init__.py": [87]}}
+,"7": {"6": {"contracts/__init__.py": [87]}}
+,"8": {"6": {"contracts/__init__.py": [87]}}
+,"9": {"6": {"contracts/__init__.py": [87]}}
+,"10": {"6": {"contracts/__init__.py": [87]}}
+,"11": {"6": {"contracts/__init__.py": [87]}}
+,"12": {"6": {"contracts/__init__.py": [87]}}
+,"13": {"6": {"contracts/__init__.py": [87]}}
+,"14": {"6": {"contracts/__init__.py": [87]}}
+,"15": {"6": {"contracts/__init__.py": [87]}}
+,"16": {"6": {"contracts/__init__.py": [87]}}
+,"17": {"6": {"contracts/__init__.py": [87]}}
+,"18": {"6": {"contracts/__init__.py": [87]}}
+,"19": {"6": {"contracts/__init__.py": [87]}}
+,"20": {"6": {"contracts/__init__.py": [87]}}
+,"21": {"6": {"contracts/__init__.py": [87]}}
+,"22": {"6": {"contracts/__init__.py": [87]}}
+,"23": {"6": {"contracts/__init__.py": [87]}}
+,"24": {"6": {"contracts/__init__.py": [87]}}
+,"25": {"6": {"contracts/__init__.py": [87]}}
+,"26": {"6": {"contracts/__init__.py": [87]}}
+,"27": {"6": {"contracts/__init__.py": [87]}}
+,"29": {"6": {"contracts/__init__.py": [87]}}
+,"28": {"6": {"contracts/__init__.py": [87]}}
+,"30": {"6": {"contracts/__init__.py": [87]}}
+,"31": {"6": {"contracts/__init__.py": [87]}}
+,"32": {"6": {"contracts/__init__.py": [87]}}
+,"33": {"6": {"contracts/__init__.py": [87]}}
+,"34": {"6": {"contracts/__init__.py": [87]}}
+,"36": {"6": {"contracts/__init__.py": [87]}}
+,"35": {"6": {"contracts/__init__.py": [87]}}
+,"37": {"6": {"contracts/__init__.py": [87]}}
+,"38": {"6": {"contracts/__init__.py": [87]}}
+,"39": {"6": {"contracts/__init__.py": [87]}}
+,"40": {"6": {"contracts/__init__.py": [87]}}
+,"7130df2d96836467c33f87196699076f159df9f0": "failed"
+}
+,
+{
+"bug": {"7": {}}
+,"dd064413a46356940151ac3f9ccd8a45bca2cbd8": "failed"
+}
+,
+{
+"bug": {"8": {"http/response/__init__.py": [123]}}
+,"9": {"8": {"http/response/__init__.py": [123]}}
+,"10": {"8": {"http/response/__init__.py": [123]}}
+,"11": {"8": {"http/response/__init__.py": [123]}}
+,"2674f317df9e4970f5953db3a6df04331246d8c9": "failed"
+}
+,
+{
+"bug": {"9": {}}
+,"1a452c038cc0547924051a7cd0786215ec7c2104": "failed"
+}
+,
+{
+"bug": {"10": {"spiders/__init__.py": [69, 71, 72, 73]}}
+,"692975acb40c6394424dfb728b1ffa46b3b3c55d": "failed"
+}
+,
+{
+"bug": {"11": {"http/request/form.py": [8, 9, 11, 54]}}
+,"12": {"11": {"http/request/form.py": [8, 9, 11, 54]}}
+,"13": {"11": {"http/request/form.py": [8, 9, 11, 54]}}
+,"14": {"11": {"http/request/form.py": [8, 9, 11, 54]}}
+,"15": {"11": {"http/request/form.py": [8, 9, 11, 54]}}
+,"16": {"11": {"http/request/form.py": [8, 9, 11, 54]}}
+,"17": {"11": {"http/request/form.py": [8, 9, 11, 54]}}
+,"18": {"11": {"http/request/form.py": [8, 9, 11, 54]}}
+,"19": {"11": {"http/request/form.py": [8, 9, 11, 54]}}
+,"20": {"11": {"http/request/form.py": [8, 9, 11, 54]}}
+,"21": {"11": {"http/request/form.py": [8, 9, 11, 54]}}
+,"22": {"11": {"http/request/form.py": [8, 9, 11, 54]}}
+,"23": {"11": {"http/request/form.py": [8, 9, 11, 54]}}
+,"24": {"11": {"http/request/form.py": [8, 9, 11, 54]}}
+,"25": {"11": {"http/request/form.py": [8, 9, 11, 54]}}
+,"26": {"11": {"http/request/form.py": [8, 9, 11, 54]}}
+,"27": {"11": {"http/request/form.py": [8, 9, 11, 54]}}
+,"29": {"11": {"http/request/form.py": [8, 9, 11, 54]}}
+,"28": {"11": {"http/request/form.py": [8, 9, 11, 48]}}
+,"30": {"11": {"http/request/form.py": [8, 9, 11, 48]}}
+,"31": {"11": {"http/request/form.py": [8, 9, 11]}}
+,"32": {"11": {"http/request/form.py": [8, 9, 11]}}
+,"33": {"11": {"http/request/form.py": [8, 9, 11]}}
+,"34": {"11": {"http/request/form.py": [8, 9, 10]}}
+,"36": {"11": {"http/request/form.py": [8, 9, 10]}}
+,"35": {"11": {"http/request/form.py": [8, 9, 10]}}
+,"37": {"11": {"http/request/form.py": [8, 9, 10]}}
+,"38": {"11": {"http/request/form.py": [8, 9, 10]}}
+,"39": {"11": {"http/request/form.py": [8, 9, 10]}}
+,"40": {"11": {"http/request/form.py": [8, 9, 10]}}
+,"a11ef7fba704c68049516a323bcca69d6fc4d03b": "failed"
+}
+,
+{
+"bug": {"12": {"item.py": [28, 42]}}
+,"13": {"12": {"item.py": [28, 42]}}
+,"14": {"12": {"item.py": [28, 42]}}
+,"15": {"12": {"item.py": [28, 42]}}
+,"16": {"12": {"item.py": [28, 42]}}
+,"17": {"12": {"item.py": [28, 42]}}
+,"18": {"12": {"item.py": [28, 42]}}
+,"19": {"12": {"item.py": [28, 42]}}
+,"20": {"12": {"item.py": [28, 42]}}
+,"21": {"12": {"item.py": [28, 42]}}
+,"22": {"12": {"item.py": [28, 42]}}
+,"23": {"12": {"item.py": [28, 42]}}
+,"24": {"12": {"item.py": [28, 42]}}
+,"25": {"12": {"item.py": [28, 42]}}
+,"26": {"12": {"item.py": [28, 42]}}
+,"27": {"12": {"item.py": [28, 42]}}
+,"29": {"12": {"item.py": [28, 42]}}
+,"28": {"12": {"item.py": [28, 42]}}
+,"30": {"12": {"item.py": [28, 42]}}
+,"31": {"12": {"item.py": [28, 42]}}
+,"32": {"12": {"item.py": [28, 42]}}
+,"33": {"12": {"item.py": [28, 42]}}
+,"34": {"12": {"item.py": [28, 42]}}
+,"36": {"12": {"item.py": [28, 42]}}
+,"35": {"12": {"item.py": [28, 42]}}
+,"37": {"12": {"item.py": [28, 42]}}
+,"38": {"12": {"item.py": [28, 42]}}
+,"39": {"12": {"item.py": [27, 41]}}
+,"7871acd66553dca4d787d2d6fbff174851a10acd": "failed"
+}
+,
+{
+"bug": {"13": {}}
+,"67bc2e0b18d990f08bfeb913be0c5bd7f299015a": "failed"
+}
+,
+{
+"bug": {"14": {"downloadermiddlewares/redirect.py": [4, 6, 68, 69]}}
+,"15": {"14": {"downloadermiddlewares/redirect.py": [4, 6, 68, 69]}}
+,"16": {"14": {"downloadermiddlewares/redirect.py": [4, 6, 68, 69]}}
+,"17": {"14": {"downloadermiddlewares/redirect.py": [4, 6, 68, 69]}}
+,"18": {"14": {"downloadermiddlewares/redirect.py": [4, 6, 68, 69]}}
+,"19": {"14": {"downloadermiddlewares/redirect.py": [4, 6, 68, 69]}}
+,"20": {"14": {"downloadermiddlewares/redirect.py": [4, 6, 68, 69]}}
+,"21": {"14": {"downloadermiddlewares/redirect.py": [4, 6, 68, 69]}}
+,"22": {"14": {"downloadermiddlewares/redirect.py": [4, 6, 68, 69]}}
+,"23": {"14": {"downloadermiddlewares/redirect.py": [4, 6, 68, 69]}}
+,"24": {"14": {"downloadermiddlewares/redirect.py": [4, 6, 68, 69]}}
+,"25": {"14": {"downloadermiddlewares/redirect.py": [4, 6, 68, 69]}}
+,"26": {"14": {"downloadermiddlewares/redirect.py": [4, 6, 68, 69]}}
+,"27": {"14": {"downloadermiddlewares/redirect.py": [4, 6, 68, 69]}}
+,"29": {"14": {"downloadermiddlewares/redirect.py": [4, 6, 68, 69]}}
+,"28": {"14": {"downloadermiddlewares/redirect.py": [4, 6, 68, 69]}}
+,"30": {"14": {"downloadermiddlewares/redirect.py": [4, 6, 68, 69]}}
+,"31": {"14": {"downloadermiddlewares/redirect.py": [4, 6, 68, 69]}}
+,"32": {"14": {"downloadermiddlewares/redirect.py": [4]}}
+,"33": {"14": {"downloadermiddlewares/redirect.py": [4]}}
+,"34": {"14": {"downloadermiddlewares/redirect.py": [4]}}
+,"36": {"14": {"downloadermiddlewares/redirect.py": [4]}}
+,"35": {"14": {"downloadermiddlewares/redirect.py": [4]}}
+,"37": {"14": {"downloadermiddlewares/redirect.py": [4]}}
+,"38": {"14": {"downloadermiddlewares/redirect.py": [4]}}
+,"39": {"14": {"downloadermiddlewares/redirect.py": [4]}}
+,"40": {"14": {"contrib/downloadermiddleware/redirect.py": [4]}}
+,"1330697c3dc9cc64189b0da9506767bbbe6d70f4": "failed"
+}
+,
+{
+"bug": {"15": {}}
+,"bb3b806467c1a79ad0ff3c8012e9366cc6066f2a": "failed"
+}
+,
+{
+"bug": {"16": {}}
+,"17": {"16": {}}
+,"643dbeffcf6951991fdeed0069690c55684e66ff": "failed"
+}
+,
+{
+"bug": {"17": {}}
+,"643dbeffcf6951991fdeed0069690c55684e66ff": "failed"
+}
+,
+{
+"bug": {"18": {}}
+,"1779f5fecacb49d59461799115fb02b6f80e974f": "failed"
+}
+,
+{
+"bug": {"19": {"utils/url.py": [44, 46]}}
+,"68dedf54cb27847f6d035099b61aa06226549fad": "failed"
+}
+,
+{
+"bug": {"20": {"utils/url.py": [10, 12, 18, 40, 45, 46, 49, 50, 52, 53, 57, 58, 59, 63, 64, 65, 67, 69, 75, 84]}}
+,"21": {"20": {"utils/url.py": [10, 12, 18, 40, 45, 46, 49, 50, 52, 53, 57, 58, 59, 63, 64, 65, 67, 69, 75, 84]}}
+,"22": {"20": {"utils/url.py": [10, 12, 18, 40, 45, 46, 49, 50, 52, 53, 57, 58, 59, 63, 64, 65, 67, 69, 75, 84]}}
+,"23": {"20": {"utils/url.py": [10, 12, 18, 40, 45, 46, 49, 50, 52, 53, 57, 58, 59, 63, 64, 65, 67, 69, 75, 84]}}
+,"24": {"20": {"utils/url.py": [10, 12, 18, 40, 45, 46, 49, 50, 52, 53, 57, 58, 59, 63, 64, 65, 67, 69, 75, 84]}}
+,"25": {"20": {"utils/url.py": [10, 12, 18, 40, 45, 46, 49, 50, 52, 53, 57, 58, 59, 63, 64, 65, 67, 69, 75, 84]}}
+,"26": {"20": {"utils/url.py": [10, 12, 18, 40, 45, 46, 49, 50, 52, 53, 57, 58, 59, 63, 64, 65, 67, 69, 75, 84]}}
+,"27": {"20": {"utils/url.py": [10, 12, 18, 40, 45, 46, 49, 50, 52, 53, 57, 58, 59, 63, 64, 65, 67, 69, 75, 84]}}
+,"29": {"20": {"utils/url.py": [10, 12, 18, 40, 45, 46, 49, 50, 52, 53, 57, 58, 59, 63, 64, 65, 67, 69, 75, 84]}}
+,"28": {"20": {"utils/url.py": [10, 12, 18, 40, 45, 46, 49, 50, 52, 53, 57, 58, 59, 63, 64, 65, 67, 69, 75, 84]}}
+,"30": {"20": {"utils/url.py": [10, 12, 18, 40, 45, 46, 49, 50, 52, 53, 57, 58, 59, 63, 64, 65, 67, 69, 75, 84]}}
+,"31": {"20": {"utils/url.py": [9, 11, 17, 39, 44, 45, 48, 49, 51, 52, 56, 57, 58, 62, 63, 64, 66, 68, 74, 83]}}
+,"32": {"20": {"utils/url.py": [9, 11, 17, 39, 44, 45, 48, 49, 51, 52, 56, 57, 58, 62, 63, 64, 66, 68, 74, 83]}}
+,"33": {"20": {"utils/url.py": [9, 11, 17, 39, 44, 45, 48, 49, 51, 52, 56, 57, 58, 62, 63, 64, 66, 68, 74, 83]}}
+,"34": {"20": {"utils/url.py": [9, 11, 17, 39, 44, 45, 48, 49, 51, 52, 56, 57, 58, 62, 63, 64, 66, 68, 74, 83]}}
+,"36": {"20": {"utils/url.py": [9, 11, 17, 39, 44, 45, 48, 49, 51, 52, 56, 57, 58, 62, 63, 64, 66, 68, 74, 83]}}
+,"35": {"20": {"utils/url.py": [9, 11, 17, 39, 44, 45, 48, 49, 51, 52, 56, 57, 58, 62, 63, 64, 66, 68, 74, 83]}}
+,"37": {"20": {"utils/url.py": [9, 11, 38, 43, 44, 47, 48, 50, 51, 55, 56, 57, 60, 62, 68]}}
+,"38": {"20": {"utils/url.py": [9, 11, 38, 43, 44, 47, 48, 50, 51, 55, 56, 57, 60, 62, 68]}}
+,"39": {"20": {"utils/url.py": [9, 11, 38, 43, 44, 47, 48, 50, 51, 55, 56, 57, 60, 62, 68]}}
+,"40": {"20": {"utils/url.py": [9, 11, 38, 43, 44, 47, 48, 50, 51, 55, 56, 57, 60, 62, 68]}}
+,"30803b9e89427f70fae5e5d809ddc8940b33984a": "failed"
+}
+,
+{
+"bug": {"21": {"utils/response.py": [50, 51, 52, 53, 54, 55, 57]}}
+,"22": {"21": {"utils/response.py": [50, 51, 52, 53, 54, 55, 57]}}
+,"23": {"21": {"utils/response.py": [50, 51, 52, 53, 54, 55, 57]}}
+,"24": {"21": {"utils/response.py": [50, 51, 52, 53, 54, 55, 57]}}
+,"25": {"21": {"utils/response.py": [50, 51, 52, 53, 54, 55, 57]}}
+,"26": {"21": {"utils/response.py": [50, 51, 52, 53, 54, 55, 57]}}
+,"27": {"21": {"utils/response.py": [50, 51, 52, 53, 54, 55, 57]}}
+,"29": {"21": {"utils/response.py": [50, 51, 52, 53, 54, 55, 57]}}
+,"28": {"21": {"utils/response.py": [50, 51, 52, 53, 54, 55, 57]}}
+,"30": {"21": {"utils/response.py": [50, 51, 52, 53, 54, 55, 57]}}
+,"31": {"21": {"utils/response.py": [50, 51, 52, 53, 54, 55, 57]}}
+,"32": {"21": {"utils/response.py": [51, 52, 53, 54, 55, 56]}}
+,"33": {"21": {"utils/response.py": [51, 52, 53, 54, 55, 56]}}
+,"34": {"21": {"utils/response.py": [51, 52, 53, 54, 55, 56]}}
+,"36": {"21": {"utils/response.py": [51, 52, 53, 54, 55, 56]}}
+,"35": {"21": {"utils/response.py": [51, 52, 53, 54, 55, 56]}}
+,"37": {"21": {"utils/response.py": [49, 50, 51, 52, 53, 54]}}
+,"38": {"21": {"utils/response.py": [49, 50, 51, 52, 53, 54]}}
+,"39": {"21": {"utils/response.py": [49, 50, 51, 52, 53, 54]}}
+,"40": {"21": {"utils/response.py": [49, 50, 51, 52, 53, 54]}}
+,"7eaa3ed24dbd5ef3062017233ced2256f4d31e53": "failed"
+}
+,
+{
+"bug": {"22": {"responsetypes.py": [62]}}
+,"23": {"22": {"responsetypes.py": [62]}}
+,"24": {"22": {"responsetypes.py": [62]}}
+,"25": {"22": {"responsetypes.py": [62]}}
+,"26": {"22": {"responsetypes.py": [62]}}
+,"27": {"22": {"responsetypes.py": [62]}}
+,"29": {"22": {"responsetypes.py": [62]}}
+,"28": {"22": {"responsetypes.py": [62]}}
+,"30": {"22": {"responsetypes.py": [62]}}
+,"31": {"22": {"responsetypes.py": [62]}}
+,"32": {"22": {"responsetypes.py": [61]}}
+,"33": {"22": {"responsetypes.py": [61]}}
+,"34": {"22": {"responsetypes.py": [61]}}
+,"36": {"22": {"responsetypes.py": [61]}}
+,"35": {"22": {"responsetypes.py": [61]}}
+,"37": {"22": {"responsetypes.py": [60]}}
+,"38": {"22": {"responsetypes.py": [60]}}
+,"39": {"22": {"responsetypes.py": [60]}}
+,"40": {"22": {"responsetypes.py": [60]}}
+,"e25bfa5d88be33063ff0d2e0c0aac3380cef3570": "failed"
+}
+,
+{
+"bug": {"23": {"http/cookies.py": [140, 145, 146]}}
+,"24": {"23": {"http/cookies.py": [140, 145, 146]}}
+,"25": {"23": {"http/cookies.py": [140, 145, 146]}}
+,"26": {"23": {"http/cookies.py": [140, 145, 146]}}
+,"27": {"23": {"http/cookies.py": [140, 145, 146]}}
+,"29": {"23": {"http/cookies.py": [140, 145, 146]}}
+,"28": {"23": {"http/cookies.py": [140, 145, 146]}}
+,"30": {"23": {"http/cookies.py": [140, 145, 146]}}
+,"31": {"23": {"http/cookies.py": [140, 145, 146]}}
+,"32": {"23": {"http/cookies.py": [140, 145, 146]}}
+,"33": {"23": {"http/cookies.py": [140, 145, 146]}}
+,"34": {"23": {"http/cookies.py": [140, 145, 146]}}
+,"36": {"23": {"http/cookies.py": [140, 145, 146]}}
+,"35": {"23": {"http/cookies.py": [140, 145, 146]}}
+,"37": {"23": {"http/cookies.py": [136, 137]}}
+,"38": {"23": {"http/cookies.py": [136, 137]}}
+,"39": {"23": {"http/cookies.py": [136, 137]}}
+,"40": {"23": {"http/cookies.py": [136, 137]}}
+,"5861b345c72c817a53148316fdc1dc351af5d186": "failed"
+}
+,
+{
+"bug": {"24": {"spiders/sitemap.py": [35]}}
+,"25": {"24": {"spiders/sitemap.py": [35]}}
+,"26": {"24": {"spiders/sitemap.py": [35]}}
+,"27": {"24": {"spiders/sitemap.py": [35]}}
+,"29": {"24": {"spiders/sitemap.py": [35]}}
+,"28": {"24": {"spiders/sitemap.py": [35]}}
+,"30": {"24": {"spiders/sitemap.py": [35]}}
+,"31": {"24": {"spiders/sitemap.py": [35]}}
+,"32": {"24": {"spiders/sitemap.py": [33]}}
+,"33": {"24": {"spiders/sitemap.py": [33]}}
+,"34": {"24": {"spiders/sitemap.py": [33]}}
+,"36": {"24": {"spiders/sitemap.py": [33]}}
+,"35": {"24": {"spiders/sitemap.py": [33]}}
+,"37": {"24": {"spiders/sitemap.py": [33]}}
+,"38": {"24": {"spiders/sitemap.py": [33]}}
+,"39": {"24": {"spiders/sitemap.py": [33]}}
+,"40": {"24": {"contrib/spiders/sitemap.py": [30]}}
+,"57c43fdce6809382b360e1dff61b1289d62ce679": "failed"
+}
+,
+{
+"bug": {"25": {}}
+,"c6591b5c9f46271731ee711a23da952037a15388": "failed"
+}
+,
+{
+"bug": {"26": {"exporters.py": [147, 149]}}
+,"27": {"26": {"exporters.py": [147, 149]}}
+,"29": {"26": {"exporters.py": [145, 147]}}
+,"28": {"26": {"exporters.py": [145, 147]}}
+,"30": {"26": {"exporters.py": [145, 147]}}
+,"31": {"26": {"exporters.py": [145, 147]}}
+,"32": {"26": {"exporters.py": [145, 147]}}
+,"33": {"26": {"exporters.py": [145, 147]}}
+,"34": {"26": {"exporters.py": [145, 147]}}
+,"36": {"26": {"exporters.py": [145, 147]}}
+,"35": {"26": {"exporters.py": [145, 147]}}
+,"37": {"26": {"exporters.py": [145, 147]}}
+,"38": {"26": {"exporters.py": [145, 147]}}
+,"39": {"26": {"exporters.py": [145, 147]}}
+,"40": {"26": {"exporters.py": [145, 147]}}
+}
+,
+{
+"bug": {"27": {"exporters.py": [276, 277, 278, 279]}}
+,"c76190d491fca9f35b6758bdc06c34d77f5d9be9": "failed"
+}
+,
+{
+"bug": {"28": {"core/downloader/handlers/http11.py": [81, 95, 96, 98, 99]}}
+,"30": {"28": {"core/downloader/handlers/http11.py": [80, 94, 95, 97, 98]}}
+,"31": {"28": {"core/downloader/handlers/http11.py": [80, 94, 95, 97, 98]}}
+,"32": {"28": {"core/downloader/handlers/http11.py": [80, 94, 95, 97, 98]}}
+,"33": {"28": {"core/downloader/handlers/http11.py": [80, 94, 95, 97, 98]}}
+,"34": {"28": {"core/downloader/handlers/http11.py": [80, 94, 95, 97, 98]}}
+,"36": {"28": {"core/downloader/handlers/http11.py": [80, 94, 95, 97, 98]}}
+,"35": {"28": {"core/downloader/handlers/http11.py": [80, 94, 95, 97, 98]}}
+,"37": {"28": {"core/downloader/handlers/http11.py": [80, 94, 95, 97, 98]}}
+,"38": {"28": {"core/downloader/handlers/http11.py": [80, 94, 95, 97, 98]}}
+,"39": {"28": {"core/downloader/handlers/http11.py": [80, 94, 95, 97, 98]}}
+,"40": {"28": {"core/downloader/handlers/http11.py": [78, 92, 93, 95, 96]}}
+,"7f053cc1d27d565c8a44f4135949087d3197e18f": "failed"
+}
+,
+{
+"bug": {"29": {"downloadermiddlewares/httpproxy.py": [12, 29, 55]}}
+,"28": {"29": {"downloadermiddlewares/httpproxy.py": [12, 29, 55]}}
+,"30": {"29": {"downloadermiddlewares/httpproxy.py": [12, 29, 55]}}
+,"31": {"29": {"downloadermiddlewares/httpproxy.py": [12, 29, 55]}}
+,"32": {"29": {"downloadermiddlewares/httpproxy.py": [12, 29, 55]}}
+,"33": {"29": {"downloadermiddlewares/httpproxy.py": [12, 29, 55]}}
+,"34": {"29": {"downloadermiddlewares/httpproxy.py": [12, 29, 55]}}
+,"36": {"29": {"downloadermiddlewares/httpproxy.py": [12, 29, 55]}}
+,"35": {"29": {"downloadermiddlewares/httpproxy.py": [12, 29, 55]}}
+,"37": {"29": {"downloadermiddlewares/httpproxy.py": [12, 29, 55]}}
+,"38": {"29": {"downloadermiddlewares/httpproxy.py": [12, 29, 55]}}
+,"39": {"29": {"downloadermiddlewares/httpproxy.py": [12, 29, 55]}}
+,"40": {"29": {"contrib/downloadermiddleware/httpproxy.py": [12, 29, 55]}}
+,"bc64ca3e1372e40b8b89bbacac23a18661cdcf15": "failed"
+}
+,
+{
+"bug": {"30": {}}
+,"fc2639731953fb35fd52c374215ae40f5db80665": "failed"
+}
+,
+{
+"bug": {"31": {"settings/__init__.py": [119, 121, 206, 207, 209, 210]}}
+,"26586ef5a605c6f6a23143b22812779857cd4e3e": "failed"
+}
+,
+{
+"bug": {"32": {"downloadermiddlewares/redirect.py": [58]}}
+,"33": {"32": {"downloadermiddlewares/redirect.py": [58]}}
+,"34": {"32": {"downloadermiddlewares/redirect.py": [58]}}
+,"36": {"32": {"downloadermiddlewares/redirect.py": [58]}}
+,"35": {"32": {"downloadermiddlewares/redirect.py": [58]}}
+,"c908d3166015a9014b3b4ece54f313614cc43032": "failed"
+}
+,
+{
+"bug": {"33": {}}
+,"e2f31f3018c0037f65982209c22f93b80a5d6e7b": "failed"
+}
+,
+{
+"bug": {"34": {"utils/request.py": [82]}}
+,"36": {"34": {"utils/request.py": [82]}}
+,"35": {"34": {"utils/request.py": [82]}}
+,"7874bb9f13cc4ec797925adc99bf58742071ed6c": "failed"
+}
+,
+{
+"bug": {"35": {"http/cookies.py": [152, 156, 174]}}
+,"5f02ef82e8560242eb34b336f385addfdef3211d": "failed"
+}
+,
+{
+"bug": {"36": {"cmdline.py": [21, 23, 24], "utils/testproc.py": [38, 39]}}
+,"35": {"36": {"cmdline.py": [21, 23, 24], "utils/testproc.py": [38, 39]}}
+,"37": {"36": {"cmdline.py": [21, 23, 24], "utils/testproc.py": [38, 39]}}
+,"38": {"36": {"cmdline.py": [21, 23, 24], "utils/testproc.py": [38, 39]}}
+,"39": {"36": {"cmdline.py": [21, 23, 24], "utils/testproc.py": [38, 39]}}
+,"40": {"36": {"cmdline.py": [21, 23, 24], "utils/testproc.py": [38, 39]}}
+,"b11e11037f94f6fc23c5fd4052108edda6b57d05": "failed"
+}
+,
+{
+"bug": {"37": {"crawler.py": [212, 213]}}
+,"38": {"37": {"crawler.py": [211, 212]}}
+,"39": {"37": {"crawler.py": [211, 212]}}
+,"8baad552676de1ea0f3789a03279a025ed26f17e": "failed"
+}
+,
+{
+"bug": {"38": {"core/engine.py": [19, 138, 141, 144, 156, 271], "core/scraper.py": [13, 110, 156, 205, 230], "downloadermiddlewares/robotstxt.py": [14, 62], "extensions/feedexport.py": [25, 187], "log.py": [11, 51], "pipelines/files.py": [28, 215], "pipelines/media.py": [11, 73, 130], "utils/log.py": [3, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 61, 62, 63, 64, 65, 69], "utils/signal.py": [11, 50]}}
+,"39": {"38": {"core/engine.py": [19, 138, 141, 144, 156, 271], "core/scraper.py": [13, 110, 156, 205, 230], "downloadermiddlewares/robotstxt.py": [14, 62], "extensions/feedexport.py": [25, 187], "log.py": [11, 51], "pipelines/files.py": [28, 215], "pipelines/media.py": [11, 73, 130], "utils/log.py": [3, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 61, 62, 63, 64, 65, 69], "utils/signal.py": [11, 49]}}
+,"40": {"38": {"contrib/downloadermiddleware/robotstxt.py": [13], "contrib/pipeline/files.py": [28], "contrib/pipeline/media.py": [10], "utils/signal.py": [9]}}
+,"83dcf8aff91d0178ffbf4978fb757fc7e6d5d08c": "failed"
+}
+,
+{
+"bug": {"39": {"item.py": [9, 30]}}
+,"40": {"39": {"item.py": [9, 27]}}
+,"e8504a054cf1ab8e5887561f79101bac9803aad4": "failed"
+}
+,
+{
+"bug": {"40": {"crawler.py": [195, 196]}}
+,"403e7c7c7059486c5a4c59f900a65378de2ba3d2": "failed"
+}
+]

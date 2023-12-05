@@ -1,0 +1,952 @@
+[
+{
+"bug": {"1": {"backend/tensorflow_backend.py": [17, 1206, 1220, 1234, 2883, 2902, 2903], "backend/theano_backend.py": [1381, 1382], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218, 254]}}
+,"2": {"1": {"backend/tensorflow_backend.py": [17, 1206, 1220, 1234, 2861, 2880, 2881], "backend/theano_backend.py": [1402, 1403], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218, 254]}}
+,"3": {"1": {"backend/tensorflow_backend.py": [2654, 2690, 2691], "backend/theano_backend.py": [1402, 1403], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"4": {"1": {"backend/tensorflow_backend.py": [2650, 2686, 2687], "backend/theano_backend.py": [1402, 1403], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"5": {"1": {"backend/tensorflow_backend.py": [2650, 2686, 2687], "backend/theano_backend.py": [1402, 1403], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"6": {"1": {"backend/tensorflow_backend.py": [2626, 2662, 2663], "backend/theano_backend.py": [1402, 1403], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"7": {"1": {"backend/tensorflow_backend.py": [2626, 2662, 2663], "backend/theano_backend.py": [1402, 1403], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"8": {"1": {"backend/tensorflow_backend.py": [2626, 2662, 2663], "backend/theano_backend.py": [1402, 1403], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"9": {"1": {"backend/tensorflow_backend.py": [2624, 2660, 2661], "backend/theano_backend.py": [1402, 1403], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"10": {"1": {"backend/tensorflow_backend.py": [2622, 2658, 2659], "backend/theano_backend.py": [1402, 1403], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"11": {"1": {"backend/tensorflow_backend.py": [2448, 2484, 2485], "backend/theano_backend.py": [1402, 1403], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"12": {"1": {"backend/tensorflow_backend.py": [2446, 2482, 2483], "backend/theano_backend.py": [1383, 1384], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"13": {"1": {"backend/tensorflow_backend.py": [2446, 2482, 2483], "backend/theano_backend.py": [1383, 1384], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"14": {"1": {"backend/tensorflow_backend.py": [2446, 2482, 2483], "backend/theano_backend.py": [1383, 1384], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"15": {"1": {"backend/tensorflow_backend.py": [2446, 2482, 2483], "backend/theano_backend.py": [1383, 1384], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"16": {"1": {"backend/tensorflow_backend.py": [2446, 2482, 2483], "backend/theano_backend.py": [1383, 1384], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"17": {"1": {"backend/tensorflow_backend.py": [2446, 2482, 2483], "backend/theano_backend.py": [1395, 1396], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"18": {"1": {"backend/tensorflow_backend.py": [2426, 2462, 2463], "backend/theano_backend.py": [1395, 1396], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"19": {"1": {"backend/tensorflow_backend.py": [2426, 2462, 2463], "backend/theano_backend.py": [1395, 1396], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"20": {"1": {"backend/tensorflow_backend.py": [2426, 2462, 2463], "backend/theano_backend.py": [1395, 1396], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"21": {"1": {"backend/tensorflow_backend.py": [2406, 2442, 2443], "backend/theano_backend.py": [1327, 1328], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"22": {"1": {"backend/tensorflow_backend.py": [2416, 2452, 2453], "backend/theano_backend.py": [1268, 1269], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"23": {"1": {"backend/tensorflow_backend.py": [2411, 2447, 2448], "backend/theano_backend.py": [1272, 1273], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"24": {"1": {"backend/tensorflow_backend.py": [2362, 2398, 2399], "backend/theano_backend.py": [1244, 1245], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"25": {"1": {"backend/tensorflow_backend.py": [2362, 2398, 2399], "backend/theano_backend.py": [1244, 1245], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"26": {"1": {"backend/tensorflow_backend.py": [2362, 2398, 2399], "backend/theano_backend.py": [1244, 1245], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"27": {"1": {"backend/tensorflow_backend.py": [2353, 2389, 2390], "backend/theano_backend.py": [1234, 1235], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"28": {"1": {"backend/tensorflow_backend.py": [2353, 2389, 2390], "backend/theano_backend.py": [1234, 1235], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"29": {"1": {"backend/tensorflow_backend.py": [2353, 2389, 2390], "backend/theano_backend.py": [1234, 1235], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"30": {"1": {"backend/tensorflow_backend.py": [2350, 2386, 2387], "backend/theano_backend.py": [1222, 1223], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"31": {"1": {"backend/tensorflow_backend.py": [2350, 2386, 2387], "backend/theano_backend.py": [1222, 1223], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"32": {"1": {"backend/tensorflow_backend.py": [2350, 2386, 2387], "backend/theano_backend.py": [1222, 1223], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"33": {"1": {"backend/tensorflow_backend.py": [2349, 2385, 2386], "backend/theano_backend.py": [1222, 1223], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"34": {"1": {"backend/tensorflow_backend.py": [2349, 2385, 2386], "backend/theano_backend.py": [1222, 1223], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"35": {"1": {"backend/tensorflow_backend.py": [2349, 2385, 2386], "backend/theano_backend.py": [1222, 1223], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"36": {"1": {"backend/tensorflow_backend.py": [2346, 2382, 2383], "backend/theano_backend.py": [1222, 1223], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"37": {"1": {"backend/tensorflow_backend.py": [2346, 2382, 2383], "backend/theano_backend.py": [1222, 1223], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"38": {"1": {"backend/tensorflow_backend.py": [2346, 2382, 2383], "backend/theano_backend.py": [1222, 1223], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"39": {"1": {"backend/tensorflow_backend.py": [2346, 2382, 2383], "backend/theano_backend.py": [1222, 1223], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"40": {"1": {"backend/tensorflow_backend.py": [2331, 2367, 2368], "backend/theano_backend.py": [1219, 1220], "initializers.py": [78, 79, 106, 107, 139, 140, 207, 208, 211, 212]}}
+,"41": {"1": {"backend/tensorflow_backend.py": [2228, 2264, 2265], "backend/theano_backend.py": [1219, 1220], "initializers.py": [78, 79, 106, 107, 139, 140, 207, 208, 211, 212]}}
+,"42": {"1": {"backend/tensorflow_backend.py": [2223, 2259, 2260], "backend/theano_backend.py": [1218, 1219], "initializers.py": [78, 79, 106, 107, 139, 140, 207, 208, 211, 212]}}
+,"43": {"1": {"backend/tensorflow_backend.py": [2223, 2259, 2260], "backend/theano_backend.py": [1218, 1219], "initializers.py": [78, 79, 106, 107, 139, 140, 207, 208, 211, 212]}}
+,"44": {"1": {"backend/tensorflow_backend.py": [2219, 2255, 2256], "backend/theano_backend.py": [1218, 1219], "initializers.py": [78, 79, 106, 107, 139, 140, 207, 208, 211, 212]}}
+,"45": {"1": {"backend/tensorflow_backend.py": [2219, 2255, 2256], "backend/theano_backend.py": [1218, 1219], "initializers.py": [78, 79, 106, 107, 139, 140, 207, 208, 211, 212]}}
+}
+,
+{
+"bug": {"2": {"backend/numpy_backend.py": [319]}}
+,"3": {"2": {"backend/numpy_backend.py": [319]}}
+,"4": {"2": {"backend/numpy_backend.py": [319]}}
+,"5": {"2": {"backend/numpy_backend.py": [319]}}
+,"6": {"2": {"backend/numpy_backend.py": [319]}}
+,"7": {"2": {"backend/numpy_backend.py": [319]}}
+,"8": {"2": {"backend/numpy_backend.py": [319]}}
+,"9": {"2": {"backend/numpy_backend.py": [315]}}
+,"10": {"2": {"backend/numpy_backend.py": [315]}}
+,"11": {"2": {"backend/reference_operations.py": [307]}}
+,"12": {"2": {"backend/reference_operations.py": [307]}}
+,"13": {"2": {"backend/reference_operations.py": [307]}}
+,"14": {"2": {"backend/reference_operations.py": [307]}}
+,"15": {"2": {"backend/reference_operations.py": [307]}}
+,"16": {"2": {"backend/reference_operations.py": [307]}}
+,"17": {"2": {"backend/reference_operations.py": [307]}}
+,"18": {"2": {"backend/reference_operations.py": [307]}}
+,"19": {"2": {"backend/reference_operations.py": [307]}}
+,"20": {"2": {"backend/reference_operations.py": [307]}}
+,"21": {"2": {"backend/reference_operations.py": [307]}}
+,"22": {"2": {"backend/reference_operations.py": [307]}}
+,"23": {"2": {"backend/reference_operations.py": [307]}}
+,"24": {"2": {"backend/reference_operations.py": [307]}}
+,"25": {"2": {"backend/reference_operations.py": [307]}}
+,"26": {"2": {"backend/reference_operations.py": [307]}}
+,"27": {"2": {"backend/reference_operations.py": [307]}}
+,"28": {"2": {"backend/reference_operations.py": [307]}}
+,"29": {"2": {"backend/reference_operations.py": [307]}}
+,"30": {"2": {"backend/reference_operations.py": [307]}}
+,"31": {"2": {"backend/reference_operations.py": [307]}}
+,"32": {"2": {"backend/reference_operations.py": [307]}}
+,"33": {"2": {"backend/reference_operations.py": [307]}}
+,"34": {"2": {"backend/reference_operations.py": [307]}}
+,"35": {"2": {"backend/reference_operations.py": [307]}}
+,"36": {"2": {"backend/reference_operations.py": [307]}}
+,"37": {"2": {"backend/reference_operations.py": [307]}}
+,"38": {"2": {"backend/reference_operations.py": [307]}}
+,"39": {"2": {"backend/reference_operations.py": [307]}}
+,"40": {"2": {"backend/reference_operations.py": [307]}}
+,"41": {"2": {"backend/reference_operations.py": [307]}}
+,"42": {"2": {"backend/reference_operations.py": [307]}}
+,"43": {"2": {"backend/reference_operations.py": [307]}}
+,"44": {"2": {"backend/reference_operations.py": [307]}}
+,"45": {"2": {"backend/reference_operations.py": [307]}}
+}
+,
+{
+"bug": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"4": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"5": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"6": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"7": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"8": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"9": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"10": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"11": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"12": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"13": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"14": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"15": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"16": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"17": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"18": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"19": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"20": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"21": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"22": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"23": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"24": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"25": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"26": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"27": {"3": {"models.py": [140, 141, 142, 153, 154, 155]}}
+,"28": {"3": {"models.py": [1611, 1612, 1624, 1625]}}
+,"29": {"3": {"models.py": [1596, 1597, 1609, 1610]}}
+,"30": {"3": {"models.py": [1596, 1597, 1609, 1610]}}
+,"31": {"3": {"models.py": [1572, 1573, 1585, 1586]}}
+,"32": {"3": {"models.py": [1572, 1573, 1585, 1586]}}
+,"33": {"3": {"models.py": [1572, 1573, 1585, 1586]}}
+,"34": {"3": {"models.py": [1549, 1550, 1562, 1563]}}
+,"35": {"3": {"models.py": [1549, 1550, 1562, 1563]}}
+,"36": {"3": {"models.py": [1553, 1554, 1566, 1567]}}
+,"37": {"3": {"models.py": [1553, 1554, 1566, 1567]}}
+,"38": {"3": {"models.py": [1552, 1553, 1565, 1566]}}
+,"39": {"3": {"models.py": [1563, 1564, 1576, 1577]}}
+,"40": {"3": {"models.py": [1548, 1549, 1561, 1562]}}
+,"41": {"3": {"models.py": [1523, 1524, 1536, 1537]}}
+,"42": {"3": {"models.py": [1515, 1516, 1528, 1529]}}
+,"43": {"3": {"models.py": [1515, 1516, 1528, 1529]}}
+,"44": {"3": {"models.py": [1448, 1449, 1461, 1462]}}
+,"45": {"3": {"models.py": [1448, 1449, 1461, 1462]}}
+}
+,
+{
+"bug": {"4": {"optimizers.py": [706]}}
+,"5": {"4": {"optimizers.py": [706]}}
+,"6": {"4": {"optimizers.py": [706]}}
+,"7": {"4": {"optimizers.py": [706]}}
+,"8": {"4": {"optimizers.py": [706]}}
+,"9": {"4": {"optimizers.py": [706]}}
+,"10": {"4": {"optimizers.py": [706]}}
+,"11": {"4": {"optimizers.py": [706]}}
+,"12": {"4": {"optimizers.py": [706]}}
+,"13": {"4": {"optimizers.py": [706]}}
+,"14": {"4": {"optimizers.py": [706]}}
+,"15": {"4": {"optimizers.py": [698]}}
+,"16": {"4": {"optimizers.py": [698]}}
+,"17": {"4": {"optimizers.py": [698]}}
+,"18": {"4": {"optimizers.py": [698]}}
+,"19": {"4": {"optimizers.py": [698]}}
+,"20": {"4": {"optimizers.py": [698]}}
+,"21": {"4": {"optimizers.py": [698]}}
+,"22": {"4": {"optimizers.py": [698]}}
+,"23": {"4": {"optimizers.py": [698]}}
+,"24": {"4": {"optimizers.py": [673]}}
+,"25": {"4": {"optimizers.py": [673]}}
+,"26": {"4": {"optimizers.py": [673]}}
+,"27": {"4": {"optimizers.py": [673]}}
+,"28": {"4": {"optimizers.py": [673]}}
+,"29": {"4": {"optimizers.py": [673]}}
+,"30": {"4": {"optimizers.py": [673]}}
+,"31": {"4": {"optimizers.py": [673]}}
+,"32": {"4": {"optimizers.py": [673]}}
+,"33": {"4": {"optimizers.py": [673]}}
+,"34": {"4": {"optimizers.py": [673]}}
+,"35": {"4": {"optimizers.py": [673]}}
+,"36": {"4": {"optimizers.py": [668]}}
+,"37": {"4": {"optimizers.py": [668]}}
+,"38": {"4": {"optimizers.py": [660]}}
+,"39": {"4": {"optimizers.py": [660]}}
+,"40": {"4": {"optimizers.py": [655]}}
+,"41": {"4": {"optimizers.py": [627]}}
+,"42": {"4": {"optimizers.py": [627]}}
+,"43": {"4": {"optimizers.py": [627]}}
+,"44": {"4": {"optimizers.py": [627]}}
+,"45": {"4": {"optimizers.py": [627]}}
+}
+,
+{
+"bug": {"5": {"engine/network.py": [961, 967, 979, 980, 981, 985, 1020, 1027, 1028, 1029, 1031]}}
+,"6": {"5": {"engine/network.py": [961, 967, 979, 980, 981, 985, 1020, 1027, 1028, 1029, 1031]}}
+,"7": {"5": {"engine/network.py": [961, 967, 979, 980, 981, 985, 1020, 1027, 1028, 1029, 1031]}}
+,"8": {"5": {"engine/network.py": [961, 967, 979, 980, 981, 985, 1020, 1027, 1028, 1029, 1031]}}
+,"9": {"5": {"engine/network.py": [961, 967, 979, 980, 981, 985, 1020, 1027, 1028, 1029, 1031]}}
+,"10": {"5": {"engine/network.py": [961, 967, 982, 983, 984, 988, 1023, 1030, 1031, 1032, 1034]}}
+,"11": {"5": {"engine/network.py": [961, 967, 982, 983, 984, 988, 1023, 1030, 1031, 1032, 1034]}}
+,"12": {"5": {"engine/network.py": [961, 967, 982, 983, 984, 988, 1023, 1030, 1031, 1032, 1034]}}
+,"13": {"5": {"engine/network.py": [961, 967, 982, 983, 984, 988, 1023, 1030, 1031, 1032, 1034]}}
+,"14": {"5": {"engine/network.py": [952, 958, 973, 974, 975, 979, 1014, 1021, 1022, 1023, 1025]}}
+,"15": {"5": {"engine/network.py": [952, 958, 973, 974, 975, 979, 1014, 1021, 1022, 1023, 1025]}}
+,"16": {"5": {"engine/network.py": [958, 964, 979, 980, 981, 985, 1020, 1027, 1028, 1029, 1031]}}
+,"17": {"5": {"engine/network.py": [958, 964, 979, 980, 981, 985, 1020, 1027, 1028, 1029, 1031]}}
+,"18": {"5": {"engine/network.py": [958, 964, 979, 980, 981, 985, 1020, 1027, 1028, 1029, 1031]}}
+,"19": {"5": {"engine/network.py": [958, 964, 979, 980, 981, 985, 1020, 1027, 1028, 1029, 1031]}}
+,"20": {"5": {"engine/network.py": [958, 964, 979, 980, 981, 985, 1020, 1027, 1028, 1029, 1031]}}
+,"21": {"5": {"engine/network.py": [958, 964, 979, 980, 981, 985, 1020, 1027, 1028, 1029, 1031]}}
+,"22": {"5": {"engine/network.py": [956, 962, 977, 978, 979, 983, 1018, 1025, 1026, 1027, 1029]}}
+,"23": {"5": {"engine/network.py": [973, 979, 994, 995, 996, 1000, 1038, 1045, 1046, 1047, 1049]}}
+,"24": {"5": {"engine/network.py": [972, 978, 993, 994, 995, 999, 1037, 1044, 1045, 1046, 1048]}}
+,"25": {"5": {"engine/network.py": [972, 978, 993, 994, 995, 999, 1037, 1044, 1045, 1046, 1048]}}
+,"26": {"5": {"engine/network.py": [972, 978, 993, 994, 995, 999, 1037, 1044, 1045, 1046, 1048]}}
+,"27": {"5": {"engine/network.py": [1043, 1049, 1064, 1065, 1066, 1070, 1108, 1115, 1116, 1117, 1119]}}
+,"49f5b931410bc2e56378f20a15e8ac919e0efb88": "failed"
+}
+,
+{
+"bug": {"6": {}}
+,"5a8c85f1261e926a7f4bb52fb72935c574476ac3": "failed"
+}
+,
+{
+"bug": {"7": {"utils/data_utils.py": [173]}}
+,"8": {"7": {"utils/data_utils.py": [173]}}
+,"9": {"7": {"utils/data_utils.py": [173]}}
+,"10": {"7": {"utils/data_utils.py": [173]}}
+,"11": {"7": {"utils/data_utils.py": [173]}}
+,"12": {"7": {"utils/data_utils.py": [173]}}
+,"13": {"7": {"utils/data_utils.py": [173]}}
+,"14": {"7": {"utils/data_utils.py": [173]}}
+,"15": {"7": {"utils/data_utils.py": [173]}}
+,"16": {"7": {"utils/data_utils.py": [173]}}
+,"17": {"7": {"utils/data_utils.py": [173]}}
+,"18": {"7": {"utils/data_utils.py": [173]}}
+,"19": {"7": {"utils/data_utils.py": [173]}}
+,"20": {"7": {"utils/data_utils.py": [173]}}
+,"21": {"7": {"utils/data_utils.py": [173]}}
+,"22": {"7": {"utils/data_utils.py": [173]}}
+,"23": {"7": {"utils/data_utils.py": [173]}}
+,"24": {"7": {"utils/data_utils.py": [173]}}
+,"25": {"7": {"utils/data_utils.py": [173]}}
+,"26": {"7": {"utils/data_utils.py": [173]}}
+,"27": {"7": {"utils/data_utils.py": [173]}}
+,"28": {"7": {"utils/data_utils.py": [173]}}
+,"29": {"7": {"utils/data_utils.py": [173]}}
+,"30": {"7": {"utils/data_utils.py": [173]}}
+,"31": {"7": {"utils/data_utils.py": [173]}}
+,"32": {"7": {"utils/data_utils.py": [173]}}
+,"33": {"7": {"utils/data_utils.py": [173]}}
+,"34": {"7": {"utils/data_utils.py": [173]}}
+,"35": {"7": {"utils/data_utils.py": [173]}}
+,"36": {"7": {"utils/data_utils.py": [174]}}
+,"37": {"7": {"utils/data_utils.py": [174]}}
+,"38": {"7": {"utils/data_utils.py": [174]}}
+,"e1a1e880d53fbbec97e8c3dfe1c82281a5761d44": "failed"
+}
+,
+{
+"bug": {"8": {"engine/training_utils.py": [435, 481, 482, 483, 484, 498, 499, 503, 504, 505, 506, 510, 511, 513, 522, 524, 525, 526, 527]}}
+,"9": {"8": {"engine/training_utils.py": [435, 481, 482, 483, 484, 498, 499, 503, 504, 505, 506, 510, 511, 513, 522, 524, 525, 526, 527]}}
+,"10": {"8": {"engine/training_utils.py": [435, 481, 482, 483, 484, 498, 499, 503, 504, 505, 506, 510, 511, 513, 522, 524, 525, 526, 527]}}
+,"11": {"8": {"engine/training_utils.py": [434, 480, 481, 482, 483, 497, 498, 502, 503, 504, 505, 509, 510, 512, 521, 523, 524, 525, 526]}}
+,"12": {"8": {"engine/training_utils.py": [434, 480, 481, 482, 483, 497, 498, 502, 503, 504, 505, 509, 510, 512, 521, 523, 524, 525, 526]}}
+,"13": {"8": {"engine/training_utils.py": [434, 480, 481, 482, 483, 497, 498, 502, 503, 504, 505, 509, 510, 512, 521, 523, 524, 525, 526]}}
+,"14": {"8": {"engine/training_utils.py": [434, 480, 481, 482, 483, 497, 498, 502, 503, 504, 505, 509, 510, 512, 521, 523, 524, 525, 526]}}
+,"15": {"8": {"engine/training_utils.py": [434, 480, 481, 482, 483, 497, 498, 502, 503, 504, 505, 509, 510, 512, 521, 523, 524, 525, 526]}}
+,"16": {"8": {"engine/training_utils.py": [434, 480, 481, 482, 483, 497, 498, 502, 503, 504, 505, 509, 510, 512, 521, 523, 524, 525, 526]}}
+,"17": {"8": {"engine/training_utils.py": [434, 480, 481, 482, 483, 497, 498, 502, 503, 504, 505, 509, 510, 512, 521, 523, 524, 525, 526]}}
+,"18": {"8": {"engine/training_utils.py": [434, 480, 481, 482, 483, 497, 498, 502, 503, 504, 505, 509, 510, 512, 521, 523, 524, 525, 526]}}
+,"19": {"8": {"engine/training_utils.py": [434, 480, 481, 482, 483, 497, 498, 502, 503, 504, 505, 509, 510, 512, 521, 523, 524, 525, 526]}}
+,"20": {"8": {"engine/training_utils.py": [434, 480, 481, 482, 483, 497, 498, 502, 503, 504, 505, 509, 510, 512, 521, 523, 524, 525, 526]}}
+,"21": {"8": {"engine/training_utils.py": [434, 480, 481, 482, 483, 497, 498, 502, 503, 504, 505, 509, 510, 512, 521, 523, 524, 525, 526]}}
+,"22": {"8": {"engine/training_utils.py": [433, 492, 493, 497, 498, 499, 500, 504, 505, 507, 516, 518, 519, 520, 521]}}
+,"23": {"8": {"engine/training_utils.py": [433, 492, 493, 497, 498, 499, 500, 504, 505, 507, 516, 518, 519, 520, 521]}}
+,"24": {"8": {"engine/training_utils.py": [433, 492, 493, 497, 498, 499, 500, 504, 505, 507, 516, 518, 519, 520, 521]}}
+,"25": {"8": {"engine/training_utils.py": [433, 492, 493, 497, 498, 499, 500, 504, 505, 507, 516, 518, 519, 520, 521]}}
+,"26": {"8": {"engine/training_utils.py": [433, 492, 493, 497, 498, 499, 500, 504, 505, 507, 516, 518, 519, 520, 521]}}
+,"58fd1f0589d33aeb33c4129cfedfb7737495efc0": "failed"
+}
+,
+{
+"bug": {"9": {"engine/training_utils.py": [413]}}
+,"10": {"9": {"engine/training_utils.py": [413]}}
+,"11": {"9": {"engine/training_utils.py": [412]}}
+,"12": {"9": {"engine/training_utils.py": [412]}}
+,"13": {"9": {"engine/training_utils.py": [412]}}
+,"14": {"9": {"engine/training_utils.py": [412]}}
+,"15": {"9": {"engine/training_utils.py": [412]}}
+,"16": {"9": {"engine/training_utils.py": [412]}}
+,"17": {"9": {"engine/training_utils.py": [412]}}
+,"18": {"9": {"engine/training_utils.py": [412]}}
+,"19": {"9": {"engine/training_utils.py": [412]}}
+,"20": {"9": {"engine/training_utils.py": [412]}}
+,"21": {"9": {"engine/training_utils.py": [412]}}
+,"22": {"9": {"engine/training_utils.py": [411]}}
+,"23": {"9": {"engine/training_utils.py": [411]}}
+,"24": {"9": {"engine/training_utils.py": [411]}}
+,"25": {"9": {"engine/training_utils.py": [411]}}
+,"26": {"9": {"engine/training_utils.py": [411]}}
+,"58fd1f0589d33aeb33c4129cfedfb7737495efc0": "failed"
+}
+,
+{
+"bug": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"11": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"12": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"13": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"14": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"15": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"16": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"17": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"18": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"19": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"20": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"21": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"22": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"23": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"24": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"25": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"26": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"27": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"28": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"29": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"30": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"31": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"32": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"33": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"34": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"35": {"10": {"wrappers/scikit_learn.py": [323]}}
+,"36": {"10": {"wrappers/scikit_learn.py": [318]}}
+,"37": {"10": {"wrappers/scikit_learn.py": [316]}}
+,"38": {"10": {"wrappers/scikit_learn.py": [316]}}
+,"39": {"10": {"wrappers/scikit_learn.py": [316]}}
+,"40": {"10": {"wrappers/scikit_learn.py": [312]}}
+,"41": {"10": {"wrappers/scikit_learn.py": [312]}}
+,"42": {"10": {"wrappers/scikit_learn.py": [312]}}
+,"43": {"10": {"wrappers/scikit_learn.py": [312]}}
+,"44": {"10": {"wrappers/scikit_learn.py": [312]}}
+,"45": {"10": {"wrappers/scikit_learn.py": [312]}}
+}
+,
+{
+"bug": {"11": {"engine/training_generator.py": [10, 43, 44, 51, 62, 64, 65, 111, 125, 152, 164, 287, 288, 295, 306, 317, 390, 391, 398, 409, 420], "engine/training_utils.py": [13, 592], "utils/data_utils.py": [344]}}
+,"12": {"11": {"engine/training_generator.py": [10, 43, 44, 51, 62, 64, 65, 111, 125, 152, 164, 287, 288, 295, 306, 317, 390, 391, 398, 409, 420], "engine/training_utils.py": [13, 592], "utils/data_utils.py": [344]}}
+,"13": {"11": {"engine/training_generator.py": [10, 44, 45, 52, 63, 65, 66, 112, 126, 152, 165, 289, 290, 297, 308, 320, 394, 395, 402, 413, 425], "engine/training_utils.py": [13, 592], "utils/data_utils.py": [344]}}
+,"14": {"11": {"engine/training_generator.py": [10, 44, 45, 52, 63, 65, 66, 112, 124, 150, 163, 287, 288, 295, 306, 318, 392, 393, 400, 411, 423], "engine/training_utils.py": [13, 592], "utils/data_utils.py": [344]}}
+,"15": {"11": {"engine/training_generator.py": [10, 44, 45, 52, 63, 65, 66, 112, 124, 150, 163, 287, 288, 295, 306, 318, 392, 393, 400, 411, 423], "engine/training_utils.py": [13, 592], "utils/data_utils.py": [344]}}
+,"16": {"11": {"engine/training_generator.py": [10, 44, 45, 52, 63, 65, 66, 112, 124, 150, 163, 287, 288, 295, 306, 318, 392, 393, 400, 411, 423], "engine/training_utils.py": [13, 592], "utils/data_utils.py": [344]}}
+,"17": {"11": {"engine/training_generator.py": [10, 44, 45, 52, 63, 65, 66, 112, 124, 150, 163, 287, 288, 295, 306, 318, 392, 393, 400, 411, 423], "engine/training_utils.py": [13, 592], "utils/data_utils.py": [344]}}
+,"18": {"11": {"engine/training_generator.py": [10, 44, 45, 52, 63, 65, 66, 112, 124, 150, 163, 287, 288, 295, 306, 318, 392, 393, 400, 411, 423], "engine/training_utils.py": [13, 592], "utils/data_utils.py": [344]}}
+,"19": {"11": {"engine/training_generator.py": [10, 44, 45, 52, 63, 65, 66, 112, 124, 150, 163, 287, 288, 295, 306, 318, 392, 393, 400, 411, 423], "engine/training_utils.py": [13, 592], "utils/data_utils.py": [344]}}
+,"20": {"11": {"engine/training_generator.py": [10, 44, 45, 52, 63, 65, 66, 112, 124, 150, 163, 287, 288, 295, 306, 318, 392, 393, 400, 411, 423], "engine/training_utils.py": [13, 592], "utils/data_utils.py": [344]}}
+,"21": {"11": {"engine/training_generator.py": [43, 44, 51, 62, 64, 65, 111, 123, 149, 162, 286, 287, 294, 305, 317, 391, 392, 399, 410, 422], "engine/training_utils.py": [13, 578], "utils/data_utils.py": [344]}}
+,"22": {"11": {"engine/training_generator.py": [43, 44, 51, 62, 64, 65, 111, 123, 149, 162, 287, 288, 295, 306, 318, 392, 393, 400, 411, 423], "engine/training_utils.py": [12, 573], "utils/data_utils.py": [343]}}
+,"23": {"11": {"engine/training_generator.py": [41, 42, 49, 60, 62, 63, 109, 121, 147, 160, 287, 288, 295, 306, 318, 395, 396, 403, 414, 426], "engine/training_utils.py": [573], "utils/data_utils.py": [343]}}
+,"24": {"11": {"engine/training_generator.py": [41, 42, 49, 60, 62, 63, 127, 140, 269, 270, 277, 288, 300, 377, 378, 385, 396, 408], "engine/training_utils.py": [573], "utils/data_utils.py": [343]}}
+,"25": {"11": {"engine/training_generator.py": [41, 42, 49, 60, 62, 63, 127, 140, 269, 270, 277, 288, 300, 377, 378, 385, 396, 408], "engine/training_utils.py": [573], "utils/data_utils.py": [343]}}
+,"26": {"11": {"engine/training_generator.py": [41, 42, 49, 60, 62, 63, 127, 140, 269, 270, 277, 288, 300, 377, 378, 385, 396, 408], "engine/training_utils.py": [573], "utils/data_utils.py": [343]}}
+,"27": {"11": {"utils/data_utils.py": [343]}}
+,"28": {"11": {"utils/data_utils.py": [343]}}
+,"29": {"11": {"utils/data_utils.py": [343]}}
+,"30": {"11": {"utils/data_utils.py": [343]}}
+,"31": {"11": {"utils/data_utils.py": [343]}}
+,"32": {"11": {"utils/data_utils.py": [343]}}
+,"33": {"11": {"utils/data_utils.py": [343]}}
+,"34": {"11": {"utils/data_utils.py": [343]}}
+,"35": {"11": {"utils/data_utils.py": [343]}}
+,"36": {"11": {"utils/data_utils.py": [344]}}
+,"37": {"11": {"utils/data_utils.py": [344]}}
+,"38": {"11": {"utils/data_utils.py": [345]}}
+,"39": {"11": {"utils/data_utils.py": [345]}}
+,"40": {"11": {"utils/data_utils.py": [344]}}
+,"41": {"11": {"utils/data_utils.py": [342]}}
+,"42": {"11": {"utils/data_utils.py": [342]}}
+,"43": {"11": {"utils/data_utils.py": [342]}}
+,"44": {"11": {"utils/data_utils.py": [342]}}
+,"45": {"11": {"utils/data_utils.py": [342]}}
+}
+,
+{
+"bug": {"12": {"metrics.py": [37, 38, 39, 40]}}
+,"13": {"12": {"metrics.py": [37, 38, 39, 40]}}
+,"14": {"12": {"metrics.py": [37, 38, 39, 40]}}
+,"15": {"12": {"metrics.py": [37, 38, 39, 40]}}
+,"16": {"12": {"metrics.py": [37, 38, 39, 40]}}
+,"17": {"12": {"metrics.py": [38, 39]}}
+,"18": {"12": {"metrics.py": [38, 39]}}
+,"19": {"12": {"metrics.py": [38, 39]}}
+,"20": {"12": {"metrics.py": [38, 39]}}
+,"21": {"12": {"metrics.py": [38, 39]}}
+,"22": {"12": {"metrics.py": [38, 39]}}
+,"23": {"12": {"metrics.py": [38, 39]}}
+,"24": {"12": {"metrics.py": [38, 39]}}
+,"25": {"12": {"metrics.py": [38, 39]}}
+,"26": {"12": {"metrics.py": [38, 39]}}
+,"27": {"12": {"metrics.py": [38, 39]}}
+,"28": {"12": {"metrics.py": [38, 39]}}
+,"29": {"12": {"metrics.py": [38, 39]}}
+,"30": {"12": {"metrics.py": [38, 39]}}
+,"31": {"12": {"metrics.py": [38, 39]}}
+,"32": {"12": {"metrics.py": [38, 39]}}
+,"33": {"12": {"metrics.py": [38, 39]}}
+,"34": {"12": {"metrics.py": [38, 39]}}
+,"35": {"12": {"metrics.py": [38, 39]}}
+,"36": {"12": {"metrics.py": [37, 38]}}
+,"37": {"12": {"metrics.py": [37, 38]}}
+,"38": {"12": {"metrics.py": [37, 38]}}
+,"39": {"12": {"metrics.py": [37, 38]}}
+,"40": {"12": {"metrics.py": [32, 33]}}
+,"41": {"12": {"metrics.py": [32, 33]}}
+,"42": {"12": {"metrics.py": [32, 33]}}
+,"43": {"12": {"metrics.py": [32, 33]}}
+,"44": {"12": {"metrics.py": [32, 33]}}
+,"45": {"12": {"metrics.py": [32, 33]}}
+}
+,
+{
+"bug": {"13": {"engine/training_generator.py": [127]}}
+,"14": {"13": {"engine/training_generator.py": [125]}}
+,"15": {"13": {"engine/training_generator.py": [125]}}
+,"16": {"13": {"engine/training_generator.py": [125]}}
+,"17": {"13": {"engine/training_generator.py": [125]}}
+,"18": {"13": {"engine/training_generator.py": [125]}}
+,"19": {"13": {"engine/training_generator.py": [125]}}
+,"20": {"13": {"engine/training_generator.py": [125]}}
+,"5027630fa41f499a9226a8f9d952ceabf2c247aa": "failed"
+}
+,
+{
+"bug": {"14": {"metrics.py": [48]}}
+,"98465b85d020f1326bcef7632f1261a9a7a84e92": "failed"
+}
+,
+{
+"bug": {"15": {"callbacks.py": [15, 1125, 1133, 1135, 1159, 1161]}}
+,"16": {"15": {"callbacks.py": [15, 1125, 1133, 1135, 1159, 1161]}}
+,"17": {"15": {"callbacks.py": [15, 1125, 1133, 1135, 1159, 1161]}}
+,"18": {"15": {"callbacks.py": [15, 1125, 1133, 1135, 1159, 1161]}}
+,"19": {"15": {"callbacks.py": [15, 1125, 1133, 1135, 1159, 1161]}}
+,"20": {"15": {"callbacks.py": [15, 1125, 1133, 1135, 1159, 1161]}}
+,"21": {"15": {"callbacks.py": [15, 1103, 1111, 1113, 1137, 1139]}}
+,"22": {"15": {"callbacks.py": [15, 1099, 1107, 1109, 1133, 1135]}}
+,"23": {"15": {"callbacks.py": [15, 1099, 1107, 1109, 1133, 1135]}}
+,"24": {"15": {"callbacks.py": [15, 1036, 1044, 1046, 1070, 1072]}}
+,"25": {"15": {"callbacks.py": [15, 1039, 1047, 1049, 1073, 1075]}}
+,"26": {"15": {"callbacks.py": [15, 1039, 1047, 1049, 1073, 1075]}}
+,"27": {"15": {"callbacks.py": [15, 1027, 1035, 1037, 1061, 1063]}}
+,"28": {"15": {"callbacks.py": [15, 1028, 1036, 1038, 1062, 1064]}}
+,"29": {"15": {"callbacks.py": [15, 1028, 1036, 1038, 1062, 1064]}}
+,"30": {"15": {"callbacks.py": [15, 1028, 1036, 1038, 1062, 1064]}}
+,"31": {"15": {"callbacks.py": [15, 1028, 1036, 1038, 1062, 1064]}}
+,"32": {"15": {"callbacks.py": [15, 1014, 1022, 1024, 1048, 1050]}}
+,"33": {"15": {"callbacks.py": [15, 1014, 1022, 1024, 1048, 1050]}}
+,"34": {"15": {"callbacks.py": [15, 1014, 1022, 1024, 1048, 1050]}}
+,"35": {"15": {"callbacks.py": [15, 1014, 1022, 1024, 1048, 1050]}}
+,"36": {"15": {"callbacks.py": [15, 978, 986, 988, 1012, 1014]}}
+,"37": {"15": {"callbacks.py": [15, 978, 986, 988, 1012, 1014]}}
+,"38": {"15": {"callbacks.py": [15, 954, 962, 964, 988, 990]}}
+,"39": {"15": {"callbacks.py": [15, 954, 962, 964, 988, 990]}}
+,"40": {"15": {"callbacks.py": [12, 944, 952, 954, 978, 980]}}
+,"41": {"15": {"callbacks.py": [12, 944, 952, 954, 977, 979]}}
+,"42": {"15": {"callbacks.py": [12, 943, 951, 953, 976, 978]}}
+,"43": {"15": {"callbacks.py": [12, 943, 951, 953, 976, 978]}}
+,"44": {"15": {"callbacks.py": [12, 943, 951, 953, 976, 978]}}
+,"45": {"15": {"callbacks.py": [12, 943, 951, 953, 976, 978]}}
+}
+,
+{
+"bug": {"16": {"engine/sequential.py": [88, 222, 223, 274, 276, 280, 284, 285, 289]}}
+,"17": {"16": {"engine/sequential.py": [88, 222, 223, 274, 276, 280, 284, 285, 289]}}
+,"18": {"16": {"engine/sequential.py": [88, 222, 223, 274, 276, 280, 284, 285, 289]}}
+,"19": {"16": {"engine/sequential.py": [88, 222, 223, 274, 276, 280, 284, 285, 289]}}
+,"20": {"16": {"engine/sequential.py": [88, 222, 223, 274, 276, 280, 284, 285, 289]}}
+,"21": {"16": {"engine/sequential.py": [88, 222, 223, 274, 276, 280, 284, 285, 289]}}
+,"22": {"16": {"engine/sequential.py": [88, 227, 228, 279, 281, 285, 289, 290, 294]}}
+,"23": {"16": {"engine/sequential.py": [88, 229, 230, 281, 283, 287, 291, 292, 296]}}
+,"24": {"16": {"engine/sequential.py": [88, 279, 281, 285, 289, 290, 294]}}
+,"25": {"16": {"engine/sequential.py": [88, 279, 281, 285, 289, 290, 294]}}
+,"26": {"16": {"engine/sequential.py": [88, 279, 281, 285, 289, 290, 294]}}
+,"27": {"16": {"engine/sequential.py": [86, 1049, 1053, 1060, 1061, 1144]}}
+,"49f5b931410bc2e56378f20a15e8ac919e0efb88": "failed"
+}
+,
+{
+"bug": {"17": {"metrics.py": [37]}}
+,"18": {"17": {"metrics.py": [37]}}
+,"19": {"17": {"metrics.py": [37]}}
+,"20": {"17": {"metrics.py": [37]}}
+,"21": {"17": {"metrics.py": [37]}}
+,"22": {"17": {"metrics.py": [37]}}
+,"23": {"17": {"metrics.py": [37]}}
+,"24": {"17": {"metrics.py": [37]}}
+,"25": {"17": {"metrics.py": [37]}}
+,"26": {"17": {"metrics.py": [37]}}
+,"27": {"17": {"metrics.py": [37]}}
+,"28": {"17": {"metrics.py": [37]}}
+,"29": {"17": {"metrics.py": [37]}}
+,"30": {"17": {"metrics.py": [37]}}
+,"31": {"17": {"metrics.py": [37]}}
+,"32": {"17": {"metrics.py": [37]}}
+,"33": {"17": {"metrics.py": [37]}}
+,"34": {"17": {"metrics.py": [37]}}
+,"35": {"17": {"metrics.py": [37]}}
+,"36": {"17": {"metrics.py": [36]}}
+,"37": {"17": {"metrics.py": [36]}}
+,"38": {"17": {"metrics.py": [36]}}
+,"39": {"17": {"metrics.py": [36]}}
+,"40": {"17": {"metrics.py": [31]}}
+,"41": {"17": {"metrics.py": [31]}}
+,"42": {"17": {"metrics.py": [31]}}
+,"43": {"17": {"metrics.py": [31]}}
+,"44": {"17": {"metrics.py": [31]}}
+,"45": {"17": {"metrics.py": [31]}}
+}
+,
+{
+"bug": {"18": {"backend/tensorflow_backend.py": [2548, 2596, 2646, 2676]}}
+,"19": {"18": {"backend/tensorflow_backend.py": [2548, 2596, 2646, 2676]}}
+,"20": {"18": {"backend/tensorflow_backend.py": [2548, 2596, 2646, 2676]}}
+,"21": {"18": {"backend/tensorflow_backend.py": [2528, 2576, 2626, 2656]}}
+,"22": {"18": {"backend/tensorflow_backend.py": [2538, 2586, 2636, 2666]}}
+,"23": {"18": {"backend/tensorflow_backend.py": [2533, 2581, 2631, 2661]}}
+,"24": {"18": {"backend/tensorflow_backend.py": [2484, 2532, 2582, 2612]}}
+,"25": {"18": {"backend/tensorflow_backend.py": [2484, 2532, 2582, 2612]}}
+,"26": {"18": {"backend/tensorflow_backend.py": [2484, 2532, 2582, 2612]}}
+,"27": {"18": {"backend/tensorflow_backend.py": [2466]}}
+,"28": {"18": {"backend/tensorflow_backend.py": [2466]}}
+,"29": {"18": {"backend/tensorflow_backend.py": [2466]}}
+,"30": {"18": {"backend/tensorflow_backend.py": [2463]}}
+,"31": {"18": {"backend/tensorflow_backend.py": [2463]}}
+,"32": {"18": {"backend/tensorflow_backend.py": [2463]}}
+,"33": {"18": {"backend/tensorflow_backend.py": [2462]}}
+,"34": {"18": {"backend/tensorflow_backend.py": [2462]}}
+,"35": {"18": {"backend/tensorflow_backend.py": [2462]}}
+,"36": {"18": {"backend/tensorflow_backend.py": [2459]}}
+,"37": {"18": {"backend/tensorflow_backend.py": [2459]}}
+,"38": {"18": {"backend/tensorflow_backend.py": [2459]}}
+,"39": {"18": {"backend/tensorflow_backend.py": [2459]}}
+,"40": {"18": {"backend/tensorflow_backend.py": [2444]}}
+,"41": {"18": {"backend/tensorflow_backend.py": [2341]}}
+,"42": {"18": {"backend/tensorflow_backend.py": [2336]}}
+,"43": {"18": {"backend/tensorflow_backend.py": [2336]}}
+,"44": {"18": {"backend/tensorflow_backend.py": [2332]}}
+,"45": {"18": {"backend/tensorflow_backend.py": [2316]}}
+}
+,
+{
+"bug": {"19": {"backend/cntk_backend.py": [1442], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 76, 79, 86, 101, 102, 103, 104, 116, 226, 227, 228, 417, 830, 1223, 1798]}}
+,"20": {"19": {"backend/cntk_backend.py": [1442], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 76, 79, 86, 101, 102, 103, 104, 116, 226, 227, 228, 417, 830, 1223, 1798]}}
+,"21": {"19": {"backend/cntk_backend.py": [1439], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 76, 79, 86, 101, 102, 103, 104, 116, 226, 227, 228, 417, 830, 1223, 1798]}}
+,"22": {"19": {"backend/cntk_backend.py": [1438], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 76, 79, 86, 101, 102, 103, 104, 116, 226, 227, 228, 417, 822, 1215, 1790]}}
+,"23": {"19": {"backend/cntk_backend.py": [1438], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 76, 79, 86, 101, 102, 103, 104, 116, 226, 227, 228, 417, 822, 1215, 1790]}}
+,"24": {"19": {"backend/cntk_backend.py": [1434], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 76, 79, 86, 101, 102, 103, 104, 116, 226, 227, 228, 417, 822, 1215, 1790]}}
+,"25": {"19": {"backend/cntk_backend.py": [1434], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 76, 79, 86, 101, 102, 103, 104, 116, 226, 227, 228, 417, 822, 1215, 1790]}}
+,"26": {"19": {"backend/cntk_backend.py": [1434], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 76, 79, 86, 101, 102, 103, 104, 116, 226, 227, 228, 417, 822, 1215, 1790]}}
+,"27": {"19": {"backend/cntk_backend.py": [1425], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 76, 79, 86, 101, 102, 103, 104, 116, 226, 227, 228, 417, 822, 1215, 1790]}}
+,"28": {"19": {"backend/cntk_backend.py": [1410], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 76, 79, 86, 101, 102, 103, 104, 116, 226, 227, 228, 417, 822, 1215, 1790]}}
+,"29": {"19": {"backend/cntk_backend.py": [1404], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 76, 79, 86, 101, 102, 103, 104, 116, 226, 227, 228, 417, 862, 1255, 1830]}}
+,"30": {"19": {"backend/cntk_backend.py": [1402], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 76, 79, 86, 101, 102, 103, 104, 116, 226, 227, 228, 417, 862, 1255, 1830]}}
+,"31": {"19": {"backend/cntk_backend.py": [1399], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 76, 79, 86, 101, 102, 103, 104, 116, 226, 227, 228, 417, 862, 1255, 1830]}}
+,"32": {"19": {"backend/cntk_backend.py": [1399], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 76, 79, 86, 101, 102, 103, 104, 116, 226, 227, 228, 417, 862, 1255, 1830]}}
+,"33": {"19": {"backend/cntk_backend.py": [1399], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 76, 79, 86, 101, 102, 103, 104, 116, 226, 227, 228, 417, 861, 1254, 1829]}}
+,"34": {"19": {"backend/cntk_backend.py": [1399], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 76, 79, 86, 101, 102, 103, 104, 116, 226, 227, 228, 417, 861, 1254, 1829]}}
+,"35": {"19": {"backend/cntk_backend.py": [1399], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 76, 79, 86, 101, 102, 103, 104, 116, 226, 227, 228, 417, 860, 1253, 1828]}}
+,"36": {"19": {"backend/cntk_backend.py": [1399], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 76, 79, 86, 101, 102, 103, 104, 116, 226, 227, 228, 417, 860, 1248, 1741]}}
+,"37": {"19": {"backend/cntk_backend.py": [1399], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 76, 79, 86, 101, 102, 103, 104, 116, 226, 227, 228, 417, 858, 1246, 1739]}}
+,"38": {"19": {"backend/cntk_backend.py": [1399], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 79, 86, 96, 97, 98, 99, 105, 215, 216, 217, 406, 846, 1229, 1714]}}
+,"39": {"19": {"backend/cntk_backend.py": [1399], "layers/recurrent.py": [57, 61, 62, 63, 64, 65, 66, 68, 69, 79, 86, 96, 97, 98, 99, 105, 215, 216, 217, 406, 846, 1229, 1714]}}
+,"40": {"19": {"backend/cntk_backend.py": [1396], "layers/recurrent.py": [52, 56, 57, 58, 59, 60, 61, 63, 64, 74, 81, 91, 92, 93, 94, 100, 210, 211, 212, 839, 1202, 1665]}}
+,"41": {"19": {"backend/cntk_backend.py": [1396], "layers/recurrent.py": [52, 56, 57, 58, 59, 60, 61, 63, 64, 74, 81, 91, 92, 93, 94, 100, 210, 211, 212, 839, 1223, 1707]}}
+,"42": {"19": {"backend/cntk_backend.py": [1396], "layers/recurrent.py": [52, 56, 57, 58, 59, 60, 61, 63, 64, 74, 81, 91, 92, 93, 94, 100, 210, 211, 212, 839, 1223, 1707]}}
+,"43": {"19": {"backend/cntk_backend.py": [1396], "layers/recurrent.py": [52, 56, 57, 58, 59, 60, 61, 63, 64, 74, 81, 91, 92, 93, 94, 100, 210, 211, 212, 839, 1223, 1707]}}
+,"44": {"19": {"backend/cntk_backend.py": [1396], "layers/recurrent.py": [52, 56, 57, 58, 59, 60, 61, 63, 64, 74, 81, 91, 92, 93, 94, 100, 210, 211, 212, 835, 1214, 1688]}}
+,"45": {"19": {"backend/cntk_backend.py": [1396], "layers/recurrent.py": [52, 56, 57, 58, 59, 60, 61, 63, 64, 74, 81, 91, 92, 93, 94, 100, 210, 211, 212, 839, 1221, 1698]}}
+}
+,
+{
+"bug": {"20": {"backend/cntk_backend.py": [2189, 2211], "backend/tensorflow_backend.py": [3436, 3442, 3452, 3589, 3601, 3613, 3630, 3631, 3632], "backend/theano_backend.py": [2137, 2147, 2180], "layers/convolutional.py": [734, 750, 823, 827, 839, 870, 875, 880], "utils/conv_utils.py": [138, 149, 157]}}
+,"21": {"20": {"backend/cntk_backend.py": [2190, 2212], "backend/tensorflow_backend.py": [3414, 3420, 3428, 3563, 3575, 3587, 3604, 3605, 3606], "backend/theano_backend.py": [2069, 2079, 2112], "layers/convolutional.py": [731, 747, 820, 824, 836, 867, 872, 877], "utils/conv_utils.py": [138, 149, 157]}}
+,"22": {"20": {"backend/cntk_backend.py": [2193, 2218], "backend/tensorflow_backend.py": [3424, 3430, 3438, 3573, 3585, 3597, 3614, 3615, 3616], "backend/theano_backend.py": [2010, 2020, 2053], "layers/convolutional.py": [730, 746, 819, 823, 835, 866, 871, 876], "utils/conv_utils.py": [138, 149, 157]}}
+,"23": {"20": {"backend/cntk_backend.py": [2226, 2254], "backend/tensorflow_backend.py": [3419, 3425, 3433, 3574, 3586, 3601, 3618, 3619, 3620], "backend/theano_backend.py": [2020, 2030, 2066], "layers/convolutional.py": [730, 746, 819, 823, 835, 866, 871, 876], "utils/conv_utils.py": [149, 160, 168]}}
+,"24": {"20": {"backend/cntk_backend.py": [2254, 2282], "backend/tensorflow_backend.py": [3337, 3343, 3351, 3492, 3504, 3519, 3536, 3537, 3538], "backend/theano_backend.py": [1966, 1976, 2012], "layers/convolutional.py": [718, 734, 808, 839]}}
+,"25": {"20": {"backend/cntk_backend.py": [2254, 2282], "backend/tensorflow_backend.py": [3338, 3344, 3352, 3487, 3499, 3513, 3530, 3531, 3532], "backend/theano_backend.py": [1937, 1947, 1983], "layers/convolutional.py": [691, 707, 781, 812]}}
+,"26": {"20": {"backend/cntk_backend.py": [2206, 2234], "backend/tensorflow_backend.py": [3335, 3341, 3349, 3484, 3496, 3510, 3527, 3528, 3529], "backend/theano_backend.py": [1937, 1947, 1983], "layers/convolutional.py": [691, 707, 781, 812]}}
+,"27": {"20": {"backend/cntk_backend.py": [2197, 2225], "backend/tensorflow_backend.py": [3200, 3206, 3214, 3349, 3361, 3375, 3392, 3393, 3394], "backend/theano_backend.py": [1938, 1948, 1986], "layers/convolutional.py": [691, 707, 781, 812]}}
+,"28": {"20": {"backend/cntk_backend.py": [2180, 2208], "backend/tensorflow_backend.py": [3200, 3206, 3214, 3349, 3361, 3375, 3392, 3393, 3394], "backend/theano_backend.py": [1938, 1948, 1986], "layers/convolutional.py": [691, 707, 781, 812]}}
+,"29": {"20": {"backend/cntk_backend.py": [2174, 2202], "backend/tensorflow_backend.py": [3200, 3206, 3214, 3349, 3361, 3375, 3392, 3393, 3394], "backend/theano_backend.py": [1938, 1948, 1986], "layers/convolutional.py": [691, 707, 781, 812]}}
+,"30": {"20": {"backend/cntk_backend.py": [2172, 2200], "backend/tensorflow_backend.py": [3197, 3203, 3211, 3346, 3358, 3372, 3389, 3390, 3391], "backend/theano_backend.py": [1926, 1936, 1974], "layers/convolutional.py": [691, 707, 781, 812]}}
+,"31": {"20": {"backend/cntk_backend.py": [2169, 2197], "backend/tensorflow_backend.py": [3197, 3203, 3211, 3346, 3358, 3372, 3389, 3390, 3391], "backend/theano_backend.py": [1926, 1936, 1974], "layers/convolutional.py": [688, 704, 778, 809]}}
+,"32": {"20": {"backend/cntk_backend.py": [2169, 2197], "backend/tensorflow_backend.py": [3197, 3203, 3211, 3346, 3358, 3372, 3389, 3390, 3391], "backend/theano_backend.py": [1926, 1936, 1974], "layers/convolutional.py": [688, 704, 778, 809]}}
+,"33": {"20": {"backend/cntk_backend.py": [2169, 2197], "backend/tensorflow_backend.py": [3194, 3200, 3208, 3343, 3355, 3369, 3386, 3387, 3388], "backend/theano_backend.py": [1923, 1933, 1971], "layers/convolutional.py": [688, 704, 778, 809]}}
+,"34": {"20": {"backend/cntk_backend.py": [2169, 2197], "backend/tensorflow_backend.py": [3194, 3200, 3208, 3343, 3355, 3369, 3386, 3387, 3388], "backend/theano_backend.py": [1923, 1933, 1971], "layers/convolutional.py": [688, 704, 778, 809]}}
+,"35": {"20": {"backend/cntk_backend.py": [2143, 2171], "backend/tensorflow_backend.py": [3194, 3200, 3208, 3343, 3355, 3369, 3386, 3387, 3388], "backend/theano_backend.py": [1923, 1933, 1971], "layers/convolutional.py": [688, 704, 778, 809]}}
+,"36": {"20": {"backend/cntk_backend.py": [2110, 2138], "backend/tensorflow_backend.py": [3191, 3197, 3205, 3340, 3352, 3366, 3383, 3384, 3385], "backend/theano_backend.py": [1923, 1933, 1971], "layers/convolutional.py": [688, 704, 778, 809]}}
+,"37": {"20": {"backend/cntk_backend.py": [2110, 2138], "backend/tensorflow_backend.py": [3191, 3197, 3205, 3340, 3352, 3366, 3383, 3384, 3385], "backend/theano_backend.py": [1923, 1933, 1971], "layers/convolutional.py": [688, 704, 778, 809]}}
+,"38": {"20": {"backend/cntk_backend.py": [2110, 2138], "backend/tensorflow_backend.py": [3191, 3197, 3205, 3340, 3352, 3366, 3383, 3384, 3385], "backend/theano_backend.py": [1923, 1933, 1971], "layers/convolutional.py": [688, 704, 778, 809]}}
+,"39": {"20": {"backend/cntk_backend.py": [2110, 2138], "backend/tensorflow_backend.py": [3191, 3197, 3205, 3340, 3352, 3366, 3383, 3384, 3385], "backend/theano_backend.py": [1923, 1933, 1971], "layers/convolutional.py": [688, 704, 778, 809]}}
+,"40": {"20": {"backend/cntk_backend.py": [2102, 2130], "backend/tensorflow_backend.py": [3157, 3163, 3171, 3306, 3318, 3332, 3349, 3350, 3351], "backend/theano_backend.py": [1920, 1930, 1968], "layers/convolutional.py": [684, 700, 774, 805]}}
+,"41": {"20": {"backend/cntk_backend.py": [2102, 2130], "backend/tensorflow_backend.py": [3054, 3060, 3068, 3203, 3215, 3229, 3246, 3247, 3248], "backend/theano_backend.py": [1920, 1930, 1968], "layers/convolutional.py": [684, 700, 774, 805]}}
+,"42": {"20": {"backend/cntk_backend.py": [2102, 2130], "backend/tensorflow_backend.py": [3048, 3054, 3062, 3197, 3209, 3223, 3240, 3241, 3242], "backend/theano_backend.py": [1919, 1929, 1967], "layers/convolutional.py": [684, 700, 774, 805]}}
+,"43": {"20": {"backend/cntk_backend.py": [2102, 2130], "backend/tensorflow_backend.py": [3048, 3054, 3062, 3197, 3209, 3223, 3240, 3241, 3242], "backend/theano_backend.py": [1919, 1929, 1967], "layers/convolutional.py": [684, 700, 774, 805]}}
+,"44": {"20": {"backend/cntk_backend.py": [2102, 2130], "backend/tensorflow_backend.py": [3041, 3047, 3055, 3190, 3202, 3216, 3233, 3234, 3235], "backend/theano_backend.py": [1919, 1929, 1967], "layers/convolutional.py": [684, 700, 774, 805]}}
+,"45": {"20": {"backend/cntk_backend.py": [2102, 2130], "backend/tensorflow_backend.py": [3044, 3050, 3058, 3193, 3205, 3219, 3236, 3237, 3238], "backend/theano_backend.py": [1919, 1929, 1967], "layers/convolutional.py": [684, 700, 774, 805]}}
+}
+,
+{
+"bug": {"21": {"callbacks.py": [480, 488, 498, 541, 546]}}
+,"22": {"21": {"callbacks.py": [480, 488, 498, 541, 546]}}
+,"23": {"21": {"callbacks.py": [480, 488, 498, 541, 546]}}
+,"24": {"21": {"callbacks.py": [479, 487, 497, 540, 545]}}
+,"25": {"21": {"callbacks.py": [482, 490, 500, 543, 548]}}
+,"26": {"21": {"callbacks.py": [482, 490, 500, 543, 548]}}
+,"27": {"21": {"callbacks.py": [479, 491, 531, 536]}}
+,"28": {"21": {"callbacks.py": [480, 492, 532, 537]}}
+,"29": {"21": {"callbacks.py": [480, 492, 532, 537]}}
+,"30": {"21": {"callbacks.py": [480, 492, 532, 537]}}
+,"31": {"21": {"callbacks.py": [480, 492, 532, 537]}}
+,"32": {"21": {"callbacks.py": [480, 492, 532, 537]}}
+,"33": {"21": {"callbacks.py": [480, 492, 532, 537]}}
+,"34": {"21": {"callbacks.py": [480, 492, 532, 537]}}
+,"35": {"21": {"callbacks.py": [480, 492, 532, 537]}}
+,"36": {"21": {"callbacks.py": [451, 463, 503, 508]}}
+,"37": {"21": {"callbacks.py": [451, 463, 503, 508]}}
+,"38": {"21": {"callbacks.py": [451, 463, 503, 508]}}
+,"39": {"21": {"callbacks.py": [451, 463, 503, 508]}}
+,"40": {"21": {"callbacks.py": [448, 460, 500, 505]}}
+,"41": {"21": {"callbacks.py": [448, 460, 500, 505]}}
+,"42": {"21": {"callbacks.py": [447, 459, 499, 504]}}
+,"43": {"21": {"callbacks.py": [447, 459, 499, 504]}}
+,"44": {"21": {"callbacks.py": [447, 459, 499, 504]}}
+,"45": {"21": {"callbacks.py": [447, 459, 499, 504]}}
+}
+,
+{
+"bug": {"22": {"engine/input_layer.py": [45]}}
+,"23": {"22": {"engine/input_layer.py": [44]}}
+,"24": {"22": {"engine/input_layer.py": [44]}}
+,"25": {"22": {"engine/input_layer.py": [44]}}
+,"26": {"22": {"engine/input_layer.py": [44]}}
+,"27": {"22": {"engine/input_layer.py": [44]}}
+,"49f5b931410bc2e56378f20a15e8ac919e0efb88": "failed"
+}
+,
+{
+"bug": {"23": {"engine/sequential.py": [152, 153]}}
+,"24": {"23": {"engine/sequential.py": [152, 153]}}
+,"25": {"23": {"engine/sequential.py": [152, 153]}}
+,"26": {"23": {"engine/sequential.py": [152, 153]}}
+,"27": {"23": {"engine/sequential.py": [127, 128]}}
+,"49f5b931410bc2e56378f20a15e8ac919e0efb88": "failed"
+}
+,
+{
+"bug": {"24": {"callbacks.py": [789, 790]}}
+,"25": {"24": {"callbacks.py": [792, 793]}}
+,"26": {"24": {"callbacks.py": [792, 793]}}
+,"27": {"24": {"callbacks.py": [780, 781]}}
+,"28": {"24": {"callbacks.py": [781, 782]}}
+,"29": {"24": {"callbacks.py": [781, 782]}}
+,"30": {"24": {"callbacks.py": [781, 782]}}
+,"31": {"24": {"callbacks.py": [781, 782]}}
+,"32": {"24": {"callbacks.py": [772, 773]}}
+,"33": {"24": {"callbacks.py": [772, 773]}}
+,"34": {"24": {"callbacks.py": [772, 773]}}
+,"35": {"24": {"callbacks.py": [772, 773]}}
+,"36": {"24": {"callbacks.py": [736, 737]}}
+,"37": {"24": {"callbacks.py": [736, 737]}}
+,"38": {"24": {"callbacks.py": [712, 713]}}
+,"39": {"24": {"callbacks.py": [712, 713]}}
+,"40": {"24": {"callbacks.py": [704, 705]}}
+,"41": {"24": {"callbacks.py": [704, 705]}}
+,"42": {"24": {"callbacks.py": [703, 704]}}
+,"43": {"24": {"callbacks.py": [703, 704]}}
+,"44": {"24": {"callbacks.py": [703, 704]}}
+,"45": {"24": {"callbacks.py": [703, 704]}}
+}
+,
+{
+"bug": {"25": {"applications/imagenet_utils.py": [41]}}
+,"26": {"25": {"applications/imagenet_utils.py": [41]}}
+,"27": {"25": {"applications/imagenet_utils.py": [41]}}
+,"28": {"25": {"applications/imagenet_utils.py": [41]}}
+,"29": {"25": {"applications/imagenet_utils.py": [41]}}
+,"30": {"25": {"applications/imagenet_utils.py": [41]}}
+,"31": {"25": {"applications/imagenet_utils.py": [41]}}
+,"32": {"25": {"applications/imagenet_utils.py": [41]}}
+,"33": {"25": {"applications/imagenet_utils.py": [41]}}
+,"34": {"25": {"applications/imagenet_utils.py": [41]}}
+,"35": {"25": {"applications/imagenet_utils.py": [41]}}
+,"36": {"25": {"applications/imagenet_utils.py": [41]}}
+,"37": {"25": {"applications/imagenet_utils.py": [41]}}
+,"38": {"25": {"applications/imagenet_utils.py": [41]}}
+,"39": {"25": {"applications/imagenet_utils.py": [38]}}
+,"40": {"25": {"applications/imagenet_utils.py": [16]}}
+,"41": {"25": {"applications/imagenet_utils.py": [16]}}
+,"42": {"25": {"applications/imagenet_utils.py": [32]}}
+,"43": {"25": {"applications/imagenet_utils.py": [32]}}
+,"44": {"25": {"applications/imagenet_utils.py": [32]}}
+,"45": {"25": {"applications/imagenet_utils.py": [32]}}
+}
+,
+{
+"bug": {"26": {"backend/tensorflow_backend.py": [2874]}}
+,"27": {"26": {"backend/tensorflow_backend.py": [2739]}}
+,"28": {"26": {"backend/tensorflow_backend.py": [2739]}}
+,"29": {"26": {"backend/tensorflow_backend.py": [2739]}}
+,"30": {"26": {"backend/tensorflow_backend.py": [2736]}}
+,"31": {"26": {"backend/tensorflow_backend.py": [2736]}}
+,"32": {"26": {"backend/tensorflow_backend.py": [2736]}}
+,"33": {"26": {"backend/tensorflow_backend.py": [2735]}}
+,"34": {"26": {"backend/tensorflow_backend.py": [2735]}}
+,"35": {"26": {"backend/tensorflow_backend.py": [2735]}}
+,"36": {"26": {"backend/tensorflow_backend.py": [2732]}}
+,"37": {"26": {"backend/tensorflow_backend.py": [2732]}}
+,"38": {"26": {"backend/tensorflow_backend.py": [2732]}}
+,"39": {"26": {"backend/tensorflow_backend.py": [2732]}}
+,"40": {"26": {"backend/tensorflow_backend.py": [2717]}}
+,"41": {"26": {"backend/tensorflow_backend.py": [2614]}}
+,"42": {"26": {"backend/tensorflow_backend.py": [2609]}}
+,"43": {"26": {"backend/tensorflow_backend.py": [2609]}}
+,"44": {"26": {"backend/tensorflow_backend.py": [2602]}}
+,"45": {"26": {"backend/tensorflow_backend.py": [2586]}}
+}
+,
+{
+"bug": {"27": {"layers/wrappers.py": [490, 496]}}
+,"28": {"27": {"layers/wrappers.py": [490, 496]}}
+,"29": {"27": {"layers/wrappers.py": [460, 466]}}
+,"30": {"27": {"layers/wrappers.py": [460, 466]}}
+,"31": {"27": {"layers/wrappers.py": [460, 466]}}
+,"32": {"27": {"layers/wrappers.py": [460, 466]}}
+,"33": {"27": {"layers/wrappers.py": [460, 466]}}
+,"34": {"27": {"layers/wrappers.py": [460, 466]}}
+,"35": {"27": {"layers/wrappers.py": [460, 466]}}
+,"36": {"27": {"layers/wrappers.py": [460, 466]}}
+,"37": {"27": {"layers/wrappers.py": [410, 416]}}
+,"38": {"27": {"layers/wrappers.py": [391, 397]}}
+,"39": {"27": {"layers/wrappers.py": [359, 365]}}
+,"40": {"27": {"layers/wrappers.py": [355, 361]}}
+,"41": {"27": {"layers/wrappers.py": [355, 361]}}
+,"42": {"27": {"layers/wrappers.py": [355, 361]}}
+,"43": {"27": {"layers/wrappers.py": [351, 357]}}
+,"44": {"27": {"layers/wrappers.py": [354, 360]}}
+,"45": {"27": {"layers/wrappers.py": [354, 360]}}
+}
+,
+{
+"bug": {"28": {"preprocessing/sequence.py": [329, 331, 344, 348]}}
+,"29": {"28": {"preprocessing/sequence.py": [329, 331, 344, 348]}}
+,"30": {"28": {"preprocessing/sequence.py": [329, 331, 344, 348]}}
+,"31": {"28": {"preprocessing/sequence.py": [329, 331, 344, 348]}}
+,"32": {"28": {"preprocessing/sequence.py": [329, 331, 344, 348]}}
+,"33": {"28": {"preprocessing/sequence.py": [329, 331, 344, 348]}}
+,"7a1b9005c220afb9271d20a73e168cf18d0cd631": "failed"
+}
+,
+{
+"bug": {"29": {"engine/training.py": [856, 932, 1177, 1178, 1179, 1366, 1367, 1368, 2188, 2189, 2190, 2334, 2335, 2336]}}
+,"30": {"29": {"engine/training.py": [856, 932, 1177, 1178, 1179, 1366, 1367, 1368, 2188, 2189, 2190, 2330, 2331, 2332]}}
+,"31": {"29": {"engine/training.py": [856, 932, 1177, 1178, 1179, 1366, 1367, 1368, 2188, 2189, 2190, 2328, 2329, 2330]}}
+,"32": {"29": {"engine/training.py": [856, 932, 1177, 1178, 1179, 1366, 1367, 1368, 2188, 2189, 2190, 2328, 2329, 2330]}}
+,"33": {"29": {"engine/training.py": [856, 932, 1177, 1179, 1366, 1368]}}
+,"34": {"29": {"engine/training.py": [856, 932, 1177, 1179, 1366, 1368]}}
+,"35": {"29": {"engine/training.py": [856, 932, 1177, 1179, 1366, 1368]}}
+,"36": {"29": {"engine/training.py": [861]}}
+,"37": {"29": {"engine/training.py": [861]}}
+,"38": {"29": {"engine/training.py": [859]}}
+,"39": {"29": {"engine/training.py": [859]}}
+,"40": {"29": {"engine/training.py": [892]}}
+,"41": {"29": {"engine/training.py": [892]}}
+,"42": {"29": {"engine/training.py": [892]}}
+,"43": {"29": {"engine/training.py": [892]}}
+,"44": {"29": {"engine/training.py": [892]}}
+,"45": {"29": {"engine/training.py": [892]}}
+}
+,
+{
+"bug": {"30": {"engine/training.py": [2215, 2402]}}
+,"31": {"30": {"engine/training.py": [2215, 2397]}}
+,"32": {"30": {"engine/training.py": [2215, 2397]}}
+,"33": {"30": {"engine/training.py": [2212, 2380]}}
+,"34": {"30": {"engine/training.py": [2227, 2390]}}
+,"35": {"30": {"engine/training.py": [2227, 2390]}}
+,"36": {"30": {"engine/training.py": [2189, 2352]}}
+,"37": {"30": {"engine/training.py": [2189, 2352]}}
+,"38": {"30": {"engine/training.py": [2165, 2328]}}
+,"39": {"30": {"engine/training.py": [2152, 2315]}}
+,"40": {"30": {"engine/training.py": [2136, 2297]}}
+,"41": {"30": {"engine/training.py": [2135, 2298]}}
+,"42": {"30": {"engine/training.py": [2111, 2262]}}
+,"43": {"30": {"engine/training.py": [2084, 2235]}}
+,"44": {"30": {"engine/training.py": [2067, 2218]}}
+,"45": {"30": {"engine/training.py": [2065, 2213]}}
+}
+,
+{
+"bug": {"31": {"backend/tensorflow_backend.py": [3945, 3946]}}
+,"32": {"31": {"backend/tensorflow_backend.py": [3945, 3946]}}
+,"33": {"31": {"backend/tensorflow_backend.py": [3942, 3943]}}
+,"34": {"31": {"backend/tensorflow_backend.py": [3942, 3943]}}
+,"35": {"31": {"backend/tensorflow_backend.py": [3942, 3943]}}
+,"36": {"31": {"backend/tensorflow_backend.py": [3939, 3940]}}
+,"37": {"31": {"backend/tensorflow_backend.py": [3939, 3940]}}
+,"38": {"31": {"backend/tensorflow_backend.py": [3939, 3940]}}
+,"39": {"31": {"backend/tensorflow_backend.py": [3939, 3940]}}
+,"40": {"31": {"backend/tensorflow_backend.py": [3854, 3855]}}
+,"41": {"31": {"backend/tensorflow_backend.py": [3747, 3748]}}
+,"42": {"31": {"backend/tensorflow_backend.py": [3741, 3742]}}
+,"43": {"31": {"backend/tensorflow_backend.py": [3741, 3742]}}
+,"44": {"31": {"backend/tensorflow_backend.py": [3734, 3735]}}
+,"45": {"31": {"backend/tensorflow_backend.py": [3737, 3738]}}
+}
+,
+{
+"bug": {"32": {"callbacks.py": [901, 909, 916, 918, 939, 942, 970, 981]}}
+,"33": {"32": {"callbacks.py": [901, 909, 916, 918, 939, 942, 970, 981]}}
+,"34": {"32": {"callbacks.py": [901, 909, 916, 918, 939, 942, 970, 981]}}
+,"35": {"32": {"callbacks.py": [901, 909, 916, 918, 939, 942, 970, 981]}}
+,"36": {"32": {"callbacks.py": [865, 873, 880, 882, 903, 906, 934, 945]}}
+,"37": {"32": {"callbacks.py": [865, 873, 880, 882, 903, 906, 934, 945]}}
+,"38": {"32": {"callbacks.py": [841, 849, 856, 858, 879, 882, 910, 921]}}
+,"39": {"32": {"callbacks.py": [841, 849, 856, 858, 879, 882, 910, 921]}}
+,"40": {"32": {"callbacks.py": [832, 840, 847, 849, 870, 873, 902, 912]}}
+,"41": {"32": {"callbacks.py": [832, 840, 847, 849, 870, 873, 902, 912]}}
+,"42": {"32": {"callbacks.py": [831, 839, 846, 848, 869, 872, 901, 911]}}
+,"43": {"32": {"callbacks.py": [831, 839, 846, 848, 869, 872, 901, 911]}}
+,"44": {"32": {"callbacks.py": [831, 839, 846, 848, 869, 872, 901, 911]}}
+,"45": {"32": {"callbacks.py": [831, 839, 846, 848, 869, 872, 901, 911]}}
+}
+,
+{
+"bug": {"33": {"preprocessing/text.py": [41, 42, 44, 46]}}
+,"34": {"33": {"preprocessing/text.py": [41, 42, 44, 46]}}
+,"35": {"33": {"preprocessing/text.py": [41, 42, 44, 46]}}
+,"36": {"33": {"preprocessing/text.py": [41, 42, 44, 46]}}
+,"37": {"33": {"preprocessing/text.py": [41, 42, 44, 46]}}
+,"38": {"33": {"preprocessing/text.py": [41, 42, 44, 46]}}
+,"39": {"33": {"preprocessing/text.py": [41, 42, 44, 46]}}
+,"40": {"33": {"preprocessing/text.py": [42, 43, 45, 47]}}
+,"41": {"33": {"preprocessing/text.py": [42, 43, 45, 47]}}
+,"42": {"33": {"preprocessing/text.py": [42, 43, 45, 47]}}
+,"43": {"33": {"preprocessing/text.py": [42, 43, 45, 47]}}
+,"44": {"33": {"preprocessing/text.py": [42, 43, 45, 47]}}
+,"45": {"33": {"preprocessing/text.py": [42, 43, 45, 47]}}
+}
+,
+{
+"bug": {"34": {"engine/training.py": [2165, 2197, 2369, 2493], "utils/data_utils.py": [369]}}
+,"35": {"34": {"engine/training.py": [2165, 2197, 2369, 2493], "utils/data_utils.py": [369]}}
+,"36": {"34": {"engine/training.py": [2127, 2159, 2331, 2455], "utils/data_utils.py": [370]}}
+,"37": {"34": {"engine/training.py": [2127, 2159, 2331, 2455], "utils/data_utils.py": [370]}}
+,"38": {"34": {"engine/training.py": [2103, 2135, 2307, 2431], "utils/data_utils.py": [371]}}
+,"39": {"34": {"engine/training.py": [2090, 2122, 2294, 2418], "utils/data_utils.py": [371]}}
+,"40": {"34": {"engine/training.py": [2106, 2276, 2400], "utils/data_utils.py": [370]}}
+,"41": {"34": {"engine/training.py": [2107, 2277, 2401], "utils/data_utils.py": [368]}}
+,"42": {"34": {"utils/data_utils.py": [368]}}
+,"43": {"34": {"utils/data_utils.py": [368]}}
+,"44": {"34": {"utils/data_utils.py": [368]}}
+,"45": {"34": {"utils/data_utils.py": [368]}}
+}
+,
+{
+"bug": {"35": {"preprocessing/image.py": [583, 584, 954, 1230, 1232]}}
+,"36": {"35": {"preprocessing/image.py": [558, 559, 912, 1149, 1151]}}
+,"37": {"35": {"preprocessing/image.py": [558, 559, 912, 1149, 1151]}}
+,"38": {"35": {"preprocessing/image.py": [558, 559, 913, 1147, 1149]}}
+,"39": {"35": {"preprocessing/image.py": [558, 559, 912, 1146, 1148]}}
+,"40": {"35": {"preprocessing/image.py": [551, 552, 900, 1131, 1133]}}
+,"41": {"35": {"preprocessing/image.py": [525, 526, 874, 1105, 1107]}}
+,"42": {"35": {"preprocessing/image.py": [523, 524, 872, 1097]}}
+,"43": {"35": {"preprocessing/image.py": [523, 524, 872, 1097]}}
+,"44": {"35": {"preprocessing/image.py": [523, 524, 872, 1097]}}
+,"45": {"35": {"preprocessing/image.py": [523, 524, 872, 1097]}}
+}
+,
+{
+"bug": {"36": {"backend/tensorflow_backend.py": [3419, 3422]}}
+,"37": {"36": {"backend/tensorflow_backend.py": [3419, 3422]}}
+,"38": {"36": {"backend/tensorflow_backend.py": [3419, 3422]}}
+,"39": {"36": {"backend/tensorflow_backend.py": [3419, 3422]}}
+,"c57bba20b0eb7bc1e70af6c71cc23a45de104b02": "failed"
+}
+,
+{
+"bug": {"37": {"layers/recurrent.py": [521, 523, 526], "layers/wrappers.py": [278, 316, 324, 325, 326, 327, 328]}}
+,"38": {"37": {"layers/recurrent.py": [510, 512, 515], "layers/wrappers.py": [297, 305, 306, 307, 308, 309]}}
+,"39": {"37": {"layers/recurrent.py": [510, 512, 515]}}
+,"40": {"37": {"layers/recurrent.py": [504, 506, 509]}}
+,"41": {"37": {"layers/recurrent.py": [504, 506, 509]}}
+,"42": {"37": {"layers/recurrent.py": [504, 506, 509]}}
+,"43": {"37": {"layers/recurrent.py": [504, 506, 509]}}
+,"44": {"37": {"layers/recurrent.py": [504, 506, 509]}}
+,"45": {"37": {"layers/recurrent.py": [505, 507, 510]}}
+}
+,
+{
+"bug": {"38": {"layers/recurrent.py": [109]}}
+,"39": {"38": {"layers/recurrent.py": [109]}}
+,"40": {"38": {"layers/recurrent.py": [104]}}
+,"41": {"38": {"layers/recurrent.py": [104]}}
+,"42": {"38": {"layers/recurrent.py": [104]}}
+,"43": {"38": {"layers/recurrent.py": [104]}}
+,"44": {"38": {"layers/recurrent.py": [104]}}
+,"45": {"38": {"layers/recurrent.py": [104]}}
+}
+,
+{
+"bug": {"39": {"utils/generic_utils.py": [330]}}
+,"40": {"39": {"utils/generic_utils.py": [328]}}
+,"41": {"39": {"utils/generic_utils.py": [323]}}
+,"42": {"39": {"utils/generic_utils.py": [298]}}
+,"43": {"39": {"utils/generic_utils.py": [298]}}
+,"44": {"39": {"utils/generic_utils.py": [297]}}
+,"45": {"39": {"utils/generic_utils.py": [295]}}
+}
+,
+{
+"bug": {"40": {"layers/recurrent.py": [398, 400, 408]}}
+,"41": {"40": {"layers/recurrent.py": [398, 400, 408]}}
+,"42": {"40": {"layers/recurrent.py": [398, 400, 408]}}
+,"43": {"40": {"layers/recurrent.py": [398, 400, 408]}}
+,"44": {"40": {"layers/recurrent.py": [398, 400, 408]}}
+,"45": {"40": {"layers/recurrent.py": [399, 401, 409]}}
+}
+,
+{
+"bug": {"41": {"utils/data_utils.py": [14, 556, 617, 634, 639, 641, 645, 689, 690, 691, 707, 708, 709, 716]}}
+,"42": {"41": {"utils/data_utils.py": [14, 556, 617, 634, 639, 641, 645, 689, 690, 691, 707, 708, 709, 716]}}
+,"43": {"41": {"utils/data_utils.py": [14, 553, 614, 631, 636, 638, 642, 686, 687, 688, 704, 705, 706, 713]}}
+,"44": {"41": {"utils/data_utils.py": [14, 553, 614, 631, 636, 638, 642, 686, 687, 688, 704, 705, 706, 713]}}
+,"45": {"41": {"utils/data_utils.py": [14, 518, 563, 580, 585, 587, 591, 635, 636, 637, 653, 654, 655, 662]}}
+}
+,
+{
+"bug": {"42": {"engine/training.py": [1903, 1944, 1955, 2008, 2013, 2014, 2015, 2016, 2062, 2063, 2064, 2065, 2066, 2067, 2068, 2069, 2070, 2176, 2193, 2228, 2229, 2291, 2308, 2340, 2341], "models.py": [1119, 1151, 1168, 1226, 1239, 1266, 1278]}}
+,"43": {"42": {"engine/training.py": [1884, 1921, 1932, 1982, 1987, 1988, 1989, 1990, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2149, 2166, 2201, 2202, 2264, 2281, 2313, 2314], "models.py": [1119, 1151, 1168, 1226, 1239, 1266, 1278]}}
+,"44": {"42": {"engine/training.py": [1867, 1904, 1915, 1965, 1970, 1971, 1972, 1973, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2132, 2149, 2184, 2185, 2247, 2264, 2296, 2297], "models.py": [1052, 1084, 1101, 1159, 1172, 1199, 1211]}}
+,"45": {"42": {"engine/training.py": [1867, 1915, 1965, 1970, 1971, 1972, 1973, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2130, 2242], "models.py": [1052, 1084, 1101, 1159, 1172, 1199, 1211]}}
+}
+,
+{
+"bug": {"43": {"utils/np_utils.py": [22]}}
+,"23446009c3ae97aebc0cd7d2e597ae6ca5c0db20": "failed"
+}
+,
+{
+"bug": {"44": {"layers/recurrent.py": [734, 741]}}
+,"45": {"44": {"layers/recurrent.py": [735, 742]}}
+}
+,
+{
+"bug": {"45": {"layers/recurrent.py": [1806, 1807, 1808, 1809]}}
+}
+]
