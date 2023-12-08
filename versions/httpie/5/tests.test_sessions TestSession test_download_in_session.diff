@@ -1,0 +1,19 @@
+# CLASS: class TestSessionFlow(SessionTestBase):
+import os
+# BLOCK
+import pytest
+# BLOCK
+from tempfile import gettempdir
+# BLOCK
+from utils import http
+# BLOCK
+    def test_download_in_session(self, httpbin):
+        # https://github.com/jkbrzt/httpie/issues/412
+        self.start_session(httpbin)
+        cwd = os.getcwd()
+        try:
+            os.chdir(gettempdir())
+            http('--session=test', '--download',
+                 httpbin.url + '/get', env=self.env())
+        finally:
+            os.chdir(cwd)

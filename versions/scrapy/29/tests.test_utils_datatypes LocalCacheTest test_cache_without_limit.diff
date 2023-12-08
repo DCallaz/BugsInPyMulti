@@ -1,0 +1,12 @@
+# CLASS: class LocalCacheTest(unittest.TestCase):
+from scrapy.utils.datatypes import LocalCache
+# BLOCK
+    def test_cache_without_limit(self):
+        max = 10**4
+        cache = LocalCache()
+        for x in range(max):
+            cache[str(x)] = x
+        self.assertEqual(len(cache), max)
+        for x in range(max):
+            self.assertIn(str(x), cache)
+            self.assertEqual(cache[str(x)], x)

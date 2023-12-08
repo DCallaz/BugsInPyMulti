@@ -1,0 +1,39 @@
+import os
+# BLOCK
+import pytest
+# BLOCK
+from cookiecutter import utils, exceptions, hooks
+# BLOCK
+    def test_run_failing_hook(self):
+        hook_path = os.path.join(self.hooks_path, 'pre_gen_project.py')
+        tests_dir = os.path.join(self.repo_path, 'input{{hooks}}')
+
+        with open(hook_path, 'w') as f:
+            f.write("#!/usr/bin/env python\n")
+            f.write("import sys; sys.exit(1)\n")
+
+        with utils.work_in(self.repo_path):
+            with pytest.raises(exceptions.FailedHookException) as excinfo:
+                hooks.run_hook('pre_gen_project', tests_dir, {})
+            assert 'Hook script failed' in str(excinfo)
+# FILE: tests/test-pyhooks/hooks/pre_gen_project.py
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import print_function
+
+print('pre generation hook')
+f = open('python_pre.txt', 'w')
+f.close()
+# FILE: tests/test-pyshellhooks/hooks/pre_gen_project.py
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import print_function
+
+print('pre generation hook')
+f = open('python_pre.txt', 'w')
+f.close()
+# FILE: tests/test-pyshellhooks/hooks/pre_gen_project.sh
+#!/bin/bash
+
+echo 'post generation hook';
+touch 'shell_pre.txt'

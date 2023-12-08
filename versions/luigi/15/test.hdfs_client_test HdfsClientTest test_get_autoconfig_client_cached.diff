@@ -1,0 +1,9 @@
+# CLASS: class HdfsClientTest(unittest.TestCase):
+from luigi.contrib.hdfs import get_autoconfig_client
+# BLOCK
+import unittest
+# BLOCK
+    def test_get_autoconfig_client_cached(self):
+        original_client = get_autoconfig_client()
+        for _ in range(100):
+            self.assertIs(original_client, get_autoconfig_client())

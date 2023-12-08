@@ -1,0 +1,5 @@
+from inspect import isclass
+# BLOCK
+def test_add_codes():
+    assert Errors.E001 == "[E001] error description"
+    assert isclass(Errors.__class__)

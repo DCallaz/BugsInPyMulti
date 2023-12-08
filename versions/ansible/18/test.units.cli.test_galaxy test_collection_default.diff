@@ -1,0 +1,221 @@
+import os
+# BLOCK
+import yaml
+# BLOCK
+import pytest
+# BLOCK
+from ansible.module_utils._text import to_text
+# BLOCK
+from ansible.cli.galaxy import GalaxyCLI
+# BLOCK
+@pytest.fixture()
+def collection_skeleton(request, tmp_path_factory):
+    name, skeleton_path = request.param
+
+    galaxy_args = ['ansible-galaxy', 'collection', 'init', '-c']
+
+    if skeleton_path is not None:
+        galaxy_args += ['--collection-skeleton', skeleton_path]
+
+    test_dir = to_text(tmp_path_factory.mktemp('test-ÅÑŚÌβŁÈ Collections'))
+    galaxy_args += ['--init-path', test_dir, name]
+
+    GalaxyCLI(args=galaxy_args).run()
+    namespace_name, collection_name = name.split('.', 1)
+    collection_dir = os.path.join(test_dir, namespace_name, collection_name)
+
+    return collection_dir
+# BLOCK
+@pytest.mark.parametrize('collection_skeleton', [
+    ('ansible_test.my_collection', None),
+], indirect=True)
+def test_collection_default(collection_skeleton):
+    meta_path = os.path.join(collection_skeleton, 'galaxy.yml')
+
+    with open(meta_path, 'r') as galaxy_meta:
+        metadata = yaml.safe_load(galaxy_meta)
+
+    assert metadata['namespace'] == 'ansible_test'
+    assert metadata['name'] == 'my_collection'
+    assert metadata['authors'] == ['your name <example@domain.com>']
+    assert metadata['readme'] == 'README.md'
+    assert metadata['version'] == '1.0.0'
+    assert metadata['description'] == 'your collection description'
+    assert metadata['license'] == ['GPL-2.0-or-later']
+    assert metadata['tags'] == []
+    assert metadata['dependencies'] == {}
+    assert metadata['documentation'] == 'http://docs.example.com'
+    assert metadata['repository'] == 'http://example.com/repository'
+    assert metadata['homepage'] == 'http://example.com'
+    assert metadata['issues'] == 'http://example.com/issue/tracker'
+
+    for d in ['docs', 'plugins', 'roles']:
+        assert os.path.isdir(os.path.join(collection_skeleton, d)), \
+            "Expected collection subdirectory {0} doesn't exist".format(d)
+# FILE: test/units/cli/test_data/collection_skeleton/galaxy.yml.j2
+namespace: '{{ namespace }}'
+name: '{{ collection_name }}'
+version: 0.1.0
+readme: README.md
+authors:
+- Ansible Cow <acow@bovineuniversity.edu>
+- Tu Cow <tucow@bovineuniversity.edu>
+# FILE: test/integration/targets/win_copy/files-different/vault/readme.txt
+This directory contains some files that have been encrypted with ansible-vault.
+
+This is to test out the decrypt parameter in win_copy.
+
+The password is: password
+# FILE: test/integration/targets/cs_instance/tasks/tags.yml
+---
+- name: test add tags to instance in check mode
+  cs_instance:
+    name: "{{ cs_resource_prefix }}-vm-{{ instance_number }}"
+    template: "{{ test_cs_instance_template }}"
+    service_offering: "{{ test_cs_instance_offering_1 }}"
+    tags:
+     - { key: "{{ cs_resource_prefix }}-tag1", value: "{{ cs_resource_prefix }}-value1" }
+     - { key: "{{ cs_resource_prefix }}-tag2", value: "{{ cs_resource_prefix }}-value2" }
+  register: instance
+  check_mode: true
+- name: verify add tags to instance in check mode
+  assert:
+    that:
+    - instance is successful
+    - instance is changed
+    - not instance.tags
+
+- name: test add tags to instance
+  cs_instance:
+    name: "{{ cs_resource_prefix }}-vm-{{ instance_number }}"
+    template: "{{ test_cs_instance_template }}"
+    service_offering: "{{ test_cs_instance_offering_1 }}"
+    tags:
+     - { key: "{{ cs_resource_prefix }}-tag1", value: "{{ cs_resource_prefix }}-value1" }
+     - { key: "{{ cs_resource_prefix }}-tag2", value: "{{ cs_resource_prefix }}-value2" }
+  register: instance
+- name: verify add tags to instance
+  assert:
+    that:
+    - instance is successful
+    - instance is changed
+    - instance.tags|length == 2
+    - "instance.tags[0]['key'] in [ '{{ cs_resource_prefix }}-tag2', '{{ cs_resource_prefix }}-tag1' ]"
+    - "instance.tags[1]['key'] in [ '{{ cs_resource_prefix }}-tag2', '{{ cs_resource_prefix }}-tag1' ]"
+    - "instance.tags[0]['value'] in [ '{{ cs_resource_prefix }}-value2', '{{ cs_resource_prefix }}-value1' ]"
+    - "instance.tags[1]['value'] in [ '{{ cs_resource_prefix }}-value2', '{{ cs_resource_prefix }}-value1' ]"
+
+- name: test tags to instance idempotence
+  cs_instance:
+    name: "{{ cs_resource_prefix }}-vm-{{ instance_number }}"
+    tags:
+     - { key: "{{ cs_resource_prefix }}-tag1", value: "{{ cs_resource_prefix }}-value1" }
+     - { key: "{{ cs_resource_prefix }}-tag2", value: "{{ cs_resource_prefix }}-value2" }
+  register: instance
+- name: verify tags to instance idempotence
+  assert:
+    that:
+    - instance is successful
+    - instance is not changed
+    - instance.tags|length == 2
+    - "instance.tags[0]['key'] in [ '{{ cs_resource_prefix }}-tag2', '{{ cs_resource_prefix }}-tag1' ]"
+    - "instance.tags[1]['key'] in [ '{{ cs_resource_prefix }}-tag2', '{{ cs_resource_prefix }}-tag1' ]"
+    - "instance.tags[0]['value'] in [ '{{ cs_resource_prefix }}-value2', '{{ cs_resource_prefix }}-value1' ]"
+    - "instance.tags[1]['value'] in [ '{{ cs_resource_prefix }}-value2', '{{ cs_resource_prefix }}-value1' ]"
+
+- name: test change tags of instance in check mode
+  cs_instance:
+    name: "{{ cs_resource_prefix }}-vm-{{ instance_number }}"
+    tags:
+     - { key: "{{ cs_resource_prefix }}-tag2", value: "{{ cs_resource_prefix }}-value2" }
+     - { key: "{{ cs_resource_prefix }}-tag3", value: "{{ cs_resource_prefix }}-value3" }
+  register: instance
+  check_mode: true
+- name: verify tags to instance idempotence in check mode
+  assert:
+    that:
+    - instance is successful
+    - instance is changed
+    - instance.tags|length == 2
+    - "instance.tags[0]['key'] in [ '{{ cs_resource_prefix }}-tag2', '{{ cs_resource_prefix }}-tag1' ]"
+    - "instance.tags[1]['key'] in [ '{{ cs_resource_prefix }}-tag2', '{{ cs_resource_prefix }}-tag1' ]"
+    - "instance.tags[0]['value'] in [ '{{ cs_resource_prefix }}-value2', '{{ cs_resource_prefix }}-value1' ]"
+    - "instance.tags[1]['value'] in [ '{{ cs_resource_prefix }}-value2', '{{ cs_resource_prefix }}-value1' ]"
+
+- name: test change tags of instance
+  cs_instance:
+    name: "{{ cs_resource_prefix }}-vm-{{ instance_number }}"
+    tags:
+     - { key: "{{ cs_resource_prefix }}-tag2", value: "{{ cs_resource_prefix }}-value2" }
+     - { key: "{{ cs_resource_prefix }}-tag3", value: "{{ cs_resource_prefix }}-value3" }
+  register: instance
+- name: verify tags to instance idempotence
+  assert:
+    that:
+    - instance is successful
+    - instance is changed
+    - instance.tags|length == 2
+    - "instance.tags[0]['key'] in [ '{{ cs_resource_prefix }}-tag2', '{{ cs_resource_prefix }}-tag3' ]"
+    - "instance.tags[1]['key'] in [ '{{ cs_resource_prefix }}-tag2', '{{ cs_resource_prefix }}-tag3' ]"
+    - "instance.tags[0]['value'] in [ '{{ cs_resource_prefix }}-value2', '{{ cs_resource_prefix }}-value3' ]"
+    - "instance.tags[1]['value'] in [ '{{ cs_resource_prefix }}-value2', '{{ cs_resource_prefix }}-value3' ]"
+
+- name: test not touch tags of instance if no param tags
+  cs_instance:
+    name: "{{ cs_resource_prefix }}-vm-{{ instance_number }}"
+  register: instance
+- name: verify not touch tags of instance if no param tags
+  assert:
+    that:
+    - instance is successful
+    - instance is not changed
+    - instance.tags|length == 2
+    - "instance.tags[0]['key'] in [ '{{ cs_resource_prefix }}-tag2', '{{ cs_resource_prefix }}-tag3' ]"
+    - "instance.tags[1]['key'] in [ '{{ cs_resource_prefix }}-tag2', '{{ cs_resource_prefix }}-tag3' ]"
+    - "instance.tags[0]['value'] in [ '{{ cs_resource_prefix }}-value2', '{{ cs_resource_prefix }}-value3' ]"
+    - "instance.tags[1]['value'] in [ '{{ cs_resource_prefix }}-value2', '{{ cs_resource_prefix }}-value3' ]"
+
+- name: test remove tags in check mode
+  cs_instance:
+    name: "{{ cs_resource_prefix }}-vm-{{ instance_number }}"
+    tags: []
+  register: instance
+  check_mode: true
+- name: verify remove tags in check mode
+  assert:
+    that:
+    - instance is successful
+    - instance is changed
+    - instance.tags|length != 0
+
+- name: test remove tags
+  cs_instance:
+    name: "{{ cs_resource_prefix }}-vm-{{ instance_number }}"
+    tags: []
+  register: instance
+- name: verify remove tags
+  assert:
+    that:
+    - instance is successful
+    - instance is changed
+    - instance.tags|length == 0
+# FILE: test/sanity/yamllint/config/plugins.yml
+extends: default
+
+rules:
+  braces: disable
+  brackets: disable
+  colons: disable
+  commas: disable
+  comments: disable
+  comments-indentation: disable
+  document-start: disable
+  empty-lines: disable
+  hyphens: disable
+  indentation: disable
+  key-duplicates: disable
+  line-length: disable
+  new-line-at-end-of-file: disable
+  new-lines: {type: unix}
+  trailing-spaces: disable
+  truthy: disable

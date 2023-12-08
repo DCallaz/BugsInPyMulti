@@ -1,0 +1,3 @@
+4,spacy.tests.regression.test_issue4665 test_issue4665
+7,spacy.tests.doc.test_span test_filter_spans
+8,spacy.tests.matcher.test_matcher_logic test_matcher_remove

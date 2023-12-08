@@ -1,0 +1,39 @@
+from pandas import PeriodIndex
+# BLOCK
+import pandas as pd
+# BLOCK
+import pandas._testing as tm
+# BLOCK
+import numpy as np
+# BLOCK
+import pytest
+# BLOCK
+    def test_pi_sub_period(self):
+        # GH#13071
+        idx = PeriodIndex(
+            ["2011-01", "2011-02", "2011-03", "2011-04"], freq="M", name="idx"
+        )
+
+        result = idx - pd.Period("2012-01", freq="M")
+        off = idx.freq
+        exp = pd.Index([-12 * off, -11 * off, -10 * off, -9 * off], name="idx")
+        tm.assert_index_equal(result, exp)
+
+        result = np.subtract(idx, pd.Period("2012-01", freq="M"))
+        tm.assert_index_equal(result, exp)
+
+        result = pd.Period("2012-01", freq="M") - idx
+        exp = pd.Index([12 * off, 11 * off, 10 * off, 9 * off], name="idx")
+        tm.assert_index_equal(result, exp)
+
+        result = np.subtract(pd.Period("2012-01", freq="M"), idx)
+        tm.assert_index_equal(result, exp)
+
+        exp = pd.TimedeltaIndex([np.nan, np.nan, np.nan, np.nan], name="idx")
+        result = idx - pd.Period("NaT", freq="M")
+        tm.assert_index_equal(result, exp)
+        assert result.freq == exp.freq
+
+        result = pd.Period("NaT", freq="M") - idx
+        tm.assert_index_equal(result, exp)
+        assert result.freq == exp.freq

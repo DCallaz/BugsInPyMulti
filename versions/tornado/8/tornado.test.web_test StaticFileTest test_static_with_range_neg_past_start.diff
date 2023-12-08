@@ -1,0 +1,34 @@
+# CLASS: class StaticFileTest(WebTestCase):
+import os
+# BLOCK
+from tornado.escape import utf8
+# BLOCK
+from tornado.testing import AsyncHTTPTestCase
+# BLOCK
+class WebTestCase(AsyncHTTPTestCase):
+    """Base class for web tests that also supports WSGI mode.
+
+    Override get_handlers and get_app_kwargs instead of get_app.
+    This class is deprecated since WSGI mode is no longer supported.
+    """
+
+    def get_app(self):
+        self.app = Application(self.get_handlers(), **self.get_app_kwargs())
+        return self.app
+
+    def get_handlers(self):
+        raise NotImplementedError()
+
+    def get_app_kwargs(self):
+        return {}
+# BLOCK
+    def test_static_with_range_neg_past_start(self):
+        response = self.get_and_head(
+            "/static/robots.txt", headers={"Range": "bytes=-1000000"}
+        )
+        self.assertEqual(response.code, 200)
+        robots_file_path = os.path.join(self.static_dir, "robots.txt")
+        with open(robots_file_path) as f:
+            self.assertEqual(response.body, utf8(f.read()))
+        self.assertEqual(response.headers.get("Content-Length"), "26")
+        self.assertEqual(response.headers.get("Content-Range"), None)

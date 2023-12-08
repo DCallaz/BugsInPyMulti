@@ -1,0 +1,113 @@
+# CLASS: class TestFormatSelection(unittest.TestCase):
+from youtube_dl.extractor import YoutubeIE
+# BLOCK
+from test.helper import FakeYDL
+# BLOCK
+class YDL(FakeYDL):
+    def __init__(self, *args, **kwargs):
+        super(YDL, self).__init__(*args, **kwargs)
+        self.downloaded_info_dicts = []
+        self.msgs = []
+
+    def process_info(self, info_dict):
+        self.downloaded_info_dicts.append(info_dict)
+
+    def to_screen(self, msg):
+        self.msgs.append(msg)
+# BLOCK
+def _make_result(formats, **kwargs):
+    res = {
+        'formats': formats,
+        'id': 'testid',
+        'title': 'testttitle',
+        'extractor': 'testex',
+    }
+    res.update(**kwargs)
+    return res
+# BLOCK
+    def test_youtube_format_selection(self):
+        order = [
+            '38', '37', '46', '22', '45', '35', '44', '18', '34', '43', '6', '5', '36', '17', '13',
+            # Apple HTTP Live Streaming
+            '96', '95', '94', '93', '92', '132', '151',
+            # 3D
+            '85', '84', '102', '83', '101', '82', '100',
+            # Dash video
+            '137', '248', '136', '247', '135', '246',
+            '245', '244', '134', '243', '133', '242', '160',
+            # Dash audio
+            '141', '172', '140', '171', '139',
+        ]
+
+        def format_info(f_id):
+            info = YoutubeIE._formats[f_id].copy()
+            info['format_id'] = f_id
+            info['url'] = 'url:' + f_id
+            return info
+        formats_order = [format_info(f_id) for f_id in order]
+
+        info_dict = _make_result(list(formats_order), extractor='youtube')
+        ydl = YDL({'format': 'bestvideo+bestaudio'})
+        yie = YoutubeIE(ydl)
+        yie._sort_formats(info_dict['formats'])
+        ydl.process_ie_result(info_dict)
+        downloaded = ydl.downloaded_info_dicts[0]
+        self.assertEqual(downloaded['format_id'], '137+141')
+        self.assertEqual(downloaded['ext'], 'mp4')
+
+        info_dict = _make_result(list(formats_order), extractor='youtube')
+        ydl = YDL({'format': 'bestvideo[height>=999999]+bestaudio/best'})
+        yie = YoutubeIE(ydl)
+        yie._sort_formats(info_dict['formats'])
+        ydl.process_ie_result(info_dict)
+        downloaded = ydl.downloaded_info_dicts[0]
+        self.assertEqual(downloaded['format_id'], '38')
+
+        info_dict = _make_result(list(formats_order), extractor='youtube')
+        ydl = YDL({'format': 'bestvideo/best,bestaudio'})
+        yie = YoutubeIE(ydl)
+        yie._sort_formats(info_dict['formats'])
+        ydl.process_ie_result(info_dict)
+        downloaded_ids = [info['format_id'] for info in ydl.downloaded_info_dicts]
+        self.assertEqual(downloaded_ids, ['137', '141'])
+
+        info_dict = _make_result(list(formats_order), extractor='youtube')
+        ydl = YDL({'format': '(bestvideo[ext=mp4],bestvideo[ext=webm])+bestaudio'})
+        yie = YoutubeIE(ydl)
+        yie._sort_formats(info_dict['formats'])
+        ydl.process_ie_result(info_dict)
+        downloaded_ids = [info['format_id'] for info in ydl.downloaded_info_dicts]
+        self.assertEqual(downloaded_ids, ['137+141', '248+141'])
+
+        info_dict = _make_result(list(formats_order), extractor='youtube')
+        ydl = YDL({'format': '(bestvideo[ext=mp4],bestvideo[ext=webm])[height<=720]+bestaudio'})
+        yie = YoutubeIE(ydl)
+        yie._sort_formats(info_dict['formats'])
+        ydl.process_ie_result(info_dict)
+        downloaded_ids = [info['format_id'] for info in ydl.downloaded_info_dicts]
+        self.assertEqual(downloaded_ids, ['136+141', '247+141'])
+
+        info_dict = _make_result(list(formats_order), extractor='youtube')
+        ydl = YDL({'format': '(bestvideo[ext=none]/bestvideo[ext=webm])+bestaudio'})
+        yie = YoutubeIE(ydl)
+        yie._sort_formats(info_dict['formats'])
+        ydl.process_ie_result(info_dict)
+        downloaded_ids = [info['format_id'] for info in ydl.downloaded_info_dicts]
+        self.assertEqual(downloaded_ids, ['248+141'])
+
+        for f1, f2 in zip(formats_order, formats_order[1:]):
+            info_dict = _make_result([f1, f2], extractor='youtube')
+            ydl = YDL({'format': 'best/bestvideo'})
+            yie = YoutubeIE(ydl)
+            yie._sort_formats(info_dict['formats'])
+            ydl.process_ie_result(info_dict)
+            downloaded = ydl.downloaded_info_dicts[0]
+            self.assertEqual(downloaded['format_id'], f1['format_id'])
+
+            info_dict = _make_result([f2, f1], extractor='youtube')
+            ydl = YDL({'format': 'best/bestvideo'})
+            yie = YoutubeIE(ydl)
+            yie._sort_formats(info_dict['formats'])
+            ydl.process_ie_result(info_dict)
+            downloaded = ydl.downloaded_info_dicts[0]
+            self.assertEqual(downloaded['format_id'], f1['format_id'])

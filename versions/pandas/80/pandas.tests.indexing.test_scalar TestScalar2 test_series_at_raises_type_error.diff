@@ -1,0 +1,22 @@
+from pandas import Series
+# BLOCK
+import pytest
+# BLOCK
+    def test_series_at_raises_type_error(self):
+        # at should not fallback
+        # GH 7814
+        # GH#31724 .at should match .loc
+        ser = Series([1, 2, 3], index=list("abc"))
+        result = ser.at["a"]
+        assert result == 1
+        result = ser.loc["a"]
+        assert result == 1
+
+        msg = (
+            "cannot do label indexing on <class 'pandas.core.indexes.base.Index'> "
+            r"with these indexers \[0\] of <class 'int'>"
+        )
+        with pytest.raises(TypeError, match=msg):
+            ser.at[0]
+        with pytest.raises(TypeError, match=msg):
+            ser.loc[0]

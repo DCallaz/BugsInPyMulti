@@ -1,0 +1,32 @@
+# CLASS: class ItemTest(unittest.TestCase):
+from scrapy.item import Field, Item
+# BLOCK
+    def test_metaclass_multiple_inheritance_diamond(self):
+        class A(Item):
+            fields = {'update': Field(default='A')}
+            save = Field(default='A')
+            load = Field(default='A')
+
+        class B(A): pass
+
+        class C(A):
+            fields = {'update': Field(default='C')}
+            save = Field(default='C')
+
+        class D(B, C):
+            fields = {'update': Field(default='D')}
+            load = Field(default='D')
+
+        self.assertEqual(D(save='X')['save'], 'X')
+        self.assertEqual(D(load='X')['load'], 'X')
+        self.assertEqual(D.fields, {'save': {'default': 'C'},
+            'load': {'default': 'D'}, 'update': {'default': 'D'}})
+
+        # D class inverted
+        class E(C, B):
+            load = Field(default='E')
+
+        self.assertEqual(E(save='X')['save'], 'X')
+        self.assertEqual(E(load='X')['load'], 'X')
+        self.assertEqual(E.fields, {'save': {'default': 'C'},
+            'load': {'default': 'E'}, 'update': {'default': 'C'}})

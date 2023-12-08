@@ -1,0 +1,22 @@
+from keras import backend as K
+# BLOCK
+import pytest
+# BLOCK
+from keras.utils.test_utils import keras_test
+# BLOCK
+@keras_test
+def test_Bidirectional_losses():
+    x = Input(shape=(3, 2))
+    layer = wrappers.Bidirectional(
+        layers.SimpleRNN(3, kernel_regularizer='l1', bias_regularizer='l1'))
+    _ = layer(x)
+    assert len(layer.losses) == 4
+    assert len(layer.get_losses_for(None)) == 4
+    assert len(layer.get_losses_for(x)) == 0
+    layer.forward_layer.add_loss(0, inputs=x)
+    layer.forward_layer.add_loss(1, inputs=None)
+    layer.backward_layer.add_loss(0, inputs=x)
+    layer.backward_layer.add_loss(1, inputs=None)
+    assert len(layer.losses) == 8
+    assert len(layer.get_losses_for(None)) == 6
+    assert len(layer.get_losses_for(x)) == 2

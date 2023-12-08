@@ -1,0 +1,27 @@
+# CLASS: class TestParamWithDefaultFromConfig(unittest.TestCase):
+import luigi
+# BLOCK
+from helpers import unittest
+# BLOCK
+    @with_config({"MyClass": {"p_not_global": "123"}})
+    def testCommandLineWithDefault(self):
+        """
+        Verify that we also read from the config when we build tasks from the
+        command line parsers.
+        """
+        class MyClass(luigi.Task):
+            p_not_global = luigi.Parameter(default='banana')
+
+            def complete(self):
+                import sys
+                luigi.configuration.get_config().write(sys.stdout)
+                if self.p_not_global != "123":
+                    raise ValueError("The parameter didn't get set!!")
+                return True
+
+            def run(self):
+                pass
+
+        self.assertTrue(self.run_and_check(['MyClass']))
+        self.assertFalse(self.run_and_check(['MyClass', '--p-not-global', '124']))
+        self.assertFalse(self.run_and_check(['MyClass', '--MyClass-p-not-global', '124']))

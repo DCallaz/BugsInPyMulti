@@ -1,0 +1,31 @@
+from keras import backend as K
+# BLOCK
+import pytest
+# BLOCK
+from keras.utils.test_utils import keras_test
+# BLOCK
+@keras_test
+def test_Bidirectional_state_reuse():
+    rnn = layers.LSTM
+    samples = 2
+    dim = 5
+    timesteps = 3
+    units = 3
+
+    input1 = Input((timesteps, dim))
+    layer = wrappers.Bidirectional(rnn(units, return_state=True, return_sequences=True))
+    state = layer(input1)[1:]
+
+    # test passing invalid initial_state: passing a tensor
+    input2 = Input((timesteps, dim))
+    with pytest.raises(ValueError):
+        output = wrappers.Bidirectional(rnn(units))(input2, initial_state=state[0])
+
+    # test valid usage: passing a list
+    output = wrappers.Bidirectional(rnn(units))(input2, initial_state=state)
+    model = Model([input1, input2], output)
+    assert len(model.layers) == 4
+    assert isinstance(model.layers[-1].input, list)
+    inputs = [np.random.rand(samples, timesteps, dim),
+              np.random.rand(samples, timesteps, dim)]
+    outputs = model.predict(inputs)

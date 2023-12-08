@@ -1,0 +1,2 @@
+4,spacy.tests.regression.test_issue4665 test_issue4665
+9,spacy.tests.pipeline.test_tagger test_tagger_warns_no_lemma_lookups

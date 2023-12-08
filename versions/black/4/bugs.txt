@@ -1,0 +1,4 @@
+1,tests.test_black BlackTestCase test_works_in_mono_process_only_environment
+2,tests.test_black BlackTestCase test_fmtonoff4
+3,tests.test_black BlackTestCase test_invalid_config_return_code
+4,tests.test_black BlackTestCase test_beginning_backslash

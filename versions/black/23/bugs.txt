@@ -1,0 +1,3 @@
+19,tests.test_black BlackTestCase test_comment_in_decorator
+22,tests.test_black BlackTestCase test_comments3
+23,tests.test_black BlackTestCase test_python2

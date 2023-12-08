@@ -1,0 +1,37 @@
+from thefuck.rules.dirty_unzip import get_new_command
+# BLOCK
+from tests.utils import Command
+# BLOCK
+import pytest
+# BLOCK
+import zipfile
+# BLOCK
+import os
+# BLOCK
+@pytest.fixture
+def zip_error(tmpdir):
+    path = os.path.join(str(tmpdir), 'foo.zip')
+
+    def reset(path):
+        with zipfile.ZipFile(path, 'w') as archive:
+            archive.writestr('a', '1')
+            archive.writestr('b', '2')
+            archive.writestr('c', '3')
+
+            archive.writestr('d/e', '4')
+
+            archive.extractall()
+
+    os.chdir(str(tmpdir))
+    reset(path)
+
+    assert set(os.listdir('.')) == {'foo.zip', 'a', 'b', 'c', 'd'}
+    assert set(os.listdir('./d')) == {'e'}
+# BLOCK
+@pytest.mark.parametrize('script,fixed', [
+    ('unzip foo', 'unzip foo -d foo'),
+    (R"unzip foo\ bar.zip", R"unzip foo\ bar.zip -d 'foo bar'"),
+    (R"unzip 'foo bar.zip'", R"unzip 'foo bar.zip' -d 'foo bar'"),
+    ('unzip foo.zip', 'unzip foo.zip -d foo')])
+def test_get_new_command(zip_error, script, fixed):
+    assert get_new_command(Command(script=script)) == fixed

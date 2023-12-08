@@ -1,0 +1,13 @@
+from starlette.testclient import TestClient
+# BLOCK
+from fastapi import APIRouter, FastAPI
+# BLOCK
+router = APIRouter()
+prefix_router = APIRouter()
+app = FastAPI()
+# BLOCK
+def test_router():
+    client = TestClient(app)
+    with client.websocket_connect("/router") as websocket:
+        data = websocket.receive_text()
+        assert data == "Hello, router!"

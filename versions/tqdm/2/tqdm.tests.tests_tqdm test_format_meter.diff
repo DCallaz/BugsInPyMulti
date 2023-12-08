@@ -1,0 +1,95 @@
+from tqdm import tqdm
+# BLOCK
+from nose.tools import eq_
+# BLOCK
+import sys
+# BLOCK
+def test_format_meter():
+    """Test statistics and progress bar formatting"""
+    try:
+        unich = unichr
+    except NameError:
+        unich = chr
+
+    format_meter = tqdm.format_meter
+
+    assert format_meter(0, 1000, 13) == \
+        "  0%|          | 0/1000 [00:13<?, ?it/s]"
+    # If not implementing any changes to _tqdm.py, set prefix='desc'
+    # or else ": : " will be in output, so assertion should change
+    assert format_meter(0, 1000, 13, ncols=68, prefix='desc: ') == \
+        "desc:   0%|                                | 0/1000 [00:13<?, ?it/s]"
+    assert format_meter(231, 1000, 392) == \
+        " 23%|" + unich(0x2588) * 2 + unich(0x258e) + \
+        "       | 231/1000 [06:32<21:44,  1.70s/it]"
+    assert format_meter(10000, 1000, 13) == \
+        "10000it [00:13, 769.23it/s]"
+    assert format_meter(231, 1000, 392, ncols=56, ascii=True) == \
+        " 23%|" + '#' * 3 + '6' + \
+        "            | 231/1000 [06:32<21:44,  1.70s/it]"
+    assert format_meter(100000, 1000, 13, unit_scale=True, unit='iB') == \
+        "100kiB [00:13, 7.69kiB/s]"
+    assert format_meter(100, 1000, 12, ncols=0, rate=7.33) == \
+        " 10% 100/1000 [00:12<02:02,  7.33it/s]"
+    eq_(
+        # ncols is small, l_bar is too large
+        # l_bar gets chopped
+        # no bar
+        # no r_bar
+        format_meter(0, 1000, 13, ncols=10, bar_format="************{bar:10}$$$$$$$$$$"),
+        "**********"  # 10/12 stars since ncols is 10
+    )
+    eq_(
+        # n_cols allows for l_bar and some of bar
+        # l_bar displays
+        # bar gets chopped
+        # no r_bar
+        format_meter(0, 1000, 13, ncols=20, bar_format="************{bar:10}$$$$$$$$$$"),
+        "************        "  # all 12 stars and 8/10 bar parts
+    )
+    eq_(
+        # n_cols allows for l_bar, bar, and some of r_bar
+        # l_bar displays
+        # bar displays
+        # r_bar gets chopped
+        format_meter(0, 1000, 13, ncols=30, bar_format="************{bar:10}$$$$$$$$$$"),
+        "************          $$$$$$$$"  # all 12 stars and 10 bar parts, but only 8/10 dollar signs
+    )
+    eq_(
+        # left bar contains sone ANSI, make sure we trim it properly when escape is before trim zone
+        format_meter(0, 1000, 13, ncols=10, bar_format="*****\033[22m****\033[0m***{bar:10}$$$$$$$$$$"),
+        "*****\033[22m****\033[0m*\033[0m"  # we only know it has ANSI codes, so we append an END code anyway
+    )
+    eq_(
+        # left bar contains sone ANSI, make sure we trim it properly when escape is at trim zone
+        format_meter(0, 1000, 13, ncols=10, bar_format="*****\033[22m*****\033[0m**{bar:10}$$$$$$$$$$"),
+        "*****\033[22m*****\033[0m"
+    )
+    eq_(
+        # left bar contains sone ANSI, make sure we trim it properly when escape is after trim zone
+        format_meter(0, 1000, 13, ncols=10, bar_format="*****\033[22m******\033[0m*{bar:10}$$$$$$$$$$"),
+        "*****\033[22m*****\033[0m"
+    )
+    # Check that bar_format correctly adapts {bar} size to the rest
+    assert format_meter(20, 100, 12, ncols=13, rate=8.1,
+                        bar_format=r'{l_bar}{bar}|{n_fmt}/{total_fmt}') == \
+        " 20%|" + unich(0x258f) + "|20/100"
+    assert format_meter(20, 100, 12, ncols=14, rate=8.1,
+                        bar_format=r'{l_bar}{bar}|{n_fmt}/{total_fmt}') == \
+        " 20%|" + unich(0x258d) + " |20/100"
+    # Check wide characters
+    if sys.version_info >= (3,):
+        assert format_meter(0, 1000, 13, ncols=68, prefix='ｆｕｌｌｗｉｄｔｈ: ') == \
+            "ｆｕｌｌｗｉｄｔｈ:   0%|                  | 0/1000 [00:13<?, ?it/s]"
+        assert format_meter(0, 1000, 13, ncols=68, prefix='ニッポン [ﾆｯﾎﾟﾝ]: ') == \
+            "ニッポン [ﾆｯﾎﾟﾝ]:   0%|                    | 0/1000 [00:13<?, ?it/s]"
+    # Check that bar_format can print only {bar} or just one side
+    assert format_meter(20, 100, 12, ncols=2, rate=8.1,
+                        bar_format=r'{bar}') == \
+        unich(0x258d) + " "
+    assert format_meter(20, 100, 12, ncols=7, rate=8.1,
+                        bar_format=r'{l_bar}{bar}') == \
+        " 20%|" + unich(0x258d) + " "
+    assert format_meter(20, 100, 12, ncols=6, rate=8.1,
+                        bar_format=r'{bar}|test') == \
+        unich(0x258f) + "|test"

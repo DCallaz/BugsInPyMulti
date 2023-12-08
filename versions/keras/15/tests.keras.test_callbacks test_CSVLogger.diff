@@ -1,0 +1,64 @@
+from keras import backend as K
+# BLOCK
+import pytest
+# BLOCK
+from keras.utils.test_utils import keras_test
+# BLOCK
+@keras_test
+def test_CSVLogger(tmpdir):
+    np.random.seed(1337)
+    filepath = str(tmpdir / 'log.tsv')
+    sep = '\t'
+    (X_train, y_train), (X_test, y_test) = get_test_data(num_train=train_samples,
+                                                         num_test=test_samples,
+                                                         input_shape=(input_dim,),
+                                                         classification=True,
+                                                         num_classes=num_classes)
+    y_test = np_utils.to_categorical(y_test)
+    y_train = np_utils.to_categorical(y_train)
+
+    def make_model():
+        np.random.seed(1337)
+        model = Sequential()
+        model.add(Dense(num_hidden, input_dim=input_dim, activation='relu'))
+        model.add(Dense(num_classes, activation='softmax'))
+
+        model.compile(loss='categorical_crossentropy',
+                      optimizer=optimizers.SGD(lr=0.1),
+                      metrics=['accuracy'])
+        return model
+
+    # case 1, create new file with defined separator
+    model = make_model()
+    cbks = [callbacks.CSVLogger(filepath, separator=sep)]
+    model.fit(X_train, y_train, batch_size=batch_size,
+              validation_data=(X_test, y_test), callbacks=cbks, epochs=1)
+
+    assert os.path.isfile(filepath)
+    with open(filepath) as csvfile:
+        dialect = Sniffer().sniff(csvfile.read())
+    assert dialect.delimiter == sep
+    del model
+    del cbks
+
+    # case 2, append data to existing file, skip header
+    model = make_model()
+    cbks = [callbacks.CSVLogger(filepath, separator=sep, append=True)]
+    model.fit(X_train, y_train, batch_size=batch_size,
+              validation_data=(X_test, y_test), callbacks=cbks, epochs=1)
+
+    # case 3, reuse of CSVLogger object
+    model.fit(X_train, y_train, batch_size=batch_size,
+              validation_data=(X_test, y_test), callbacks=cbks, epochs=2)
+
+    import re
+    with open(filepath) as csvfile:
+        list_lines = csvfile.readlines()
+        for line in list_lines:
+            assert line.count(sep) == 4
+        assert len(list_lines) == 5
+        output = " ".join(list_lines)
+        assert len(re.findall('epoch', output)) == 1
+
+    os.remove(filepath)
+    assert not tmpdir.listdir()

@@ -1,0 +1,10 @@
+# CLASS: class TestItemParsing(BaseTest):
+from httpie import cli
+# BLOCK
+    def test_escape_longsep(self):
+        headers, data, files = cli.parse_items([
+            self.kv('bob\\:==foo'),
+        ])
+        self.assertDictEqual(data, {
+            'bob:=': 'foo',
+        })

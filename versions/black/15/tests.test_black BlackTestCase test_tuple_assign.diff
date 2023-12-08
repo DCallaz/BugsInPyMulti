@@ -1,0 +1,18 @@
+    @patch("black.dump_to_file", dump_to_stderr)
+    def test_tuple_assign(self) -> None:
+        source, expected = read_data("tupleassign")
+        actual = fs(source)
+        self.assertFormatEqual(expected, actual)
+        black.assert_equivalent(source, actual)
+        black.assert_stable(source, actual, black.FileMode())
+# FILE: tests/data/tupleassign.py
+sdfjklsdfsjldkflkjsf, sdfjsdfjlksdljkfsdlkf, sdfsdjfklsdfjlksdljkf, sdsfsdfjskdflsfsdf = 1, 2, 3
+
+
+# output
+(
+    sdfjklsdfsjldkflkjsf,
+    sdfjsdfjlksdljkfsdlkf,
+    sdfsdjfklsdfjlksdljkf,
+    sdsfsdfjskdflsfsdf,
+) = (1, 2, 3)

@@ -1,0 +1,51 @@
+# CLASS: class TestDatetimeTZDtype(Base):
+import pytest
+# BLOCK
+from pandas.core.dtypes.dtypes import DatetimeTZDtype
+# BLOCK
+class Base:
+    def setup_method(self, method):
+        self.dtype = self.create()
+
+    def test_hash(self):
+        hash(self.dtype)
+
+    def test_equality_invalid(self):
+        assert not self.dtype == "foo"
+        assert not is_dtype_equal(self.dtype, np.int64)
+
+    def test_numpy_informed(self):
+        with pytest.raises(TypeError, match="data type not understood"):
+            np.dtype(self.dtype)
+
+        assert not self.dtype == np.str_
+        assert not np.str_ == self.dtype
+
+    def test_pickle(self):
+        # make sure our cache is NOT pickled
+
+        # clear the cache
+        type(self.dtype).reset_cache()
+        assert not len(self.dtype._cache)
+
+        # force back to the cache
+        result = tm.round_trip_pickle(self.dtype)
+        assert not len(self.dtype._cache)
+        assert result == self.dtype
+# BLOCK
+    def test_construct_from_string_raises(self):
+        with pytest.raises(TypeError, match="notatz"):
+            DatetimeTZDtype.construct_from_string("datetime64[ns, notatz]")
+
+        msg = "^Could not construct DatetimeTZDtype"
+        with pytest.raises(TypeError, match=msg):
+            # list instead of string
+            DatetimeTZDtype.construct_from_string(["datetime64[ns, notatz]"])
+
+        with pytest.raises(TypeError, match=msg):
+            # non-nano unit
+            DatetimeTZDtype.construct_from_string("datetime64[ps, UTC]")
+
+        with pytest.raises(TypeError, match=msg):
+            # dateutil str that returns None from gettz
+            DatetimeTZDtype.construct_from_string("datetime64[ns, dateutil/invalid]")

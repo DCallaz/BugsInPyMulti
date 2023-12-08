@@ -1,0 +1,6 @@
+# CLASS: class TestUtil(unittest.TestCase):
+from youtube_dl.utils import uppercase_escape
+# BLOCK
+    def test_uppercase_escpae(self):
+        self.assertEqual(uppercase_escape(u'aä'), u'aä')
+        self.assertEqual(uppercase_escape(u'\\U0001d550'), u'𝕐')

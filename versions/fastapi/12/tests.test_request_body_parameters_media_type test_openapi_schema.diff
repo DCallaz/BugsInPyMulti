@@ -1,0 +1,38 @@
+from starlette.testclient import TestClient
+# BLOCK
+from fastapi import FastAPI
+# BLOCK
+app = FastAPI()
+# BLOCK
+create_shop_request_body = {
+    "content": {
+        "application/vnd.api+json": {
+            "schema": {"$ref": "#/components/schemas/Body_create_shop_shops_post"}
+        }
+    },
+    "required": True,
+}
+# BLOCK
+create_product_request_body = {
+    "content": {
+        "application/vnd.api+json": {
+            "schema": {"$ref": "#/components/schemas/Body_create_product_products_post"}
+        }
+    },
+    "required": True,
+}
+# BLOCK
+client = TestClient(app)
+# BLOCK
+def test_openapi_schema():
+    response = client.get("/openapi.json")
+    assert response.status_code == 200
+    openapi_schema = response.json()
+    assert (
+        openapi_schema["paths"]["/products"]["post"]["requestBody"]
+        == create_product_request_body
+    )
+    assert (
+        openapi_schema["paths"]["/shops"]["post"]["requestBody"]
+        == create_shop_request_body
+    )

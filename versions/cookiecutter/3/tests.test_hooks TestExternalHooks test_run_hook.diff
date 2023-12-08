@@ -1,0 +1,120 @@
+import os
+# BLOCK
+import pytest
+# BLOCK
+from cookiecutter import utils, hooks
+# BLOCK
+    def test_run_hook(self):
+        """Execute hook from specified template in specified output \
+        directory."""
+        tests_dir = os.path.join(self.repo_path, 'input{{hooks}}')
+        with utils.work_in(self.repo_path):
+            hooks.run_hook('pre_gen_project', tests_dir, {})
+            assert os.path.isfile(os.path.join(tests_dir, 'python_pre.txt'))
+            assert os.path.isfile(os.path.join(tests_dir, 'shell_pre.txt'))
+
+            hooks.run_hook('post_gen_project', tests_dir, {})
+            assert os.path.isfile(os.path.join(tests_dir, 'shell_post.txt'))
+# FILE: tests/hooks-abort-render/hooks/pre_gen_project.py
+#!/usr/bin/env python
+# flake8: noqa
+
+"""Simple pre-gen hook for testing the handling of different exit codes."""
+
+import sys
+
+{% if cookiecutter.abort_pre_gen == "yes" %}
+sys.exit(5)
+{% else %}
+sys.exit(0)
+{% endif %}
+# FILE: tests/test-pyhooks/hooks/pre_gen_project.py
+#!/usr/bin/env python
+"""Simple pre-gen hook for testing project folder and custom file creation."""
+
+print('pre generation hook')
+f = open('python_pre.txt', 'w')
+f.close()
+# FILE: tests/test-shellhooks-empty/hooks/pre_gen_project.sh
+
+# FILE: tests/test-extensions/custom-extension-pre/hooks/pre_gen_project.py
+"""Test pre-gen hook in extensions are available and exposed methods are callable."""
+import sys
+
+if '{% hello cookiecutter.name %}' == 'Hello Cookiemonster!':
+    sys.exit(0)
+else:
+    sys.exit(1)
+# FILE: tests/test-shellhooks-win/hooks/pre_gen_project.bat
+@echo off
+
+echo pre generation hook
+echo. >shell_pre.txt
+# FILE: tests/test-shellhooks/hooks/pre_gen_project.sh
+#!/bin/bash
+
+echo 'pre generation hook';
+touch 'shell_pre.txt'
+# FILE: tests/test-pyshellhooks/hooks/pre_gen_project.py
+#!/usr/bin/env python
+"""Simple pre-gen hook for testing project folder and custom file creation."""
+
+
+print('pre generation hook')
+f = open('python_pre.txt', 'w')
+f.close()
+# FILE: tests/test-pyshellhooks/hooks/pre_gen_project.sh
+#!/bin/bash
+
+echo 'post generation hook';
+touch 'shell_pre.txt'
+# FILE: tests/hooks-abort-render/hooks/post_gen_project.py
+#!/usr/bin/env python
+# flake8: noqa
+
+"""Simple post-gen hook for testing the handling of different exit codes."""
+
+import sys
+
+{% if cookiecutter.abort_post_gen == "yes" %}
+sys.exit(5)
+{% else %}
+sys.exit(0)
+{% endif %}
+# FILE: tests/test-pyhooks/hooks/post_gen_project.py
+#!/usr/bin/env python
+"""Simple post-gen hook for testing project folder and custom file creation."""
+
+print('pre generation hook')
+f = open('python_post.txt', 'w')
+f.close()
+# FILE: tests/test-extensions/custom-extension-post/hooks/post_gen_project.py
+"""Test post-gen hook in extensions are available and exposed methods are callable."""
+import sys
+
+if '{% hello cookiecutter.name %}' == 'Hello Cookiemonster!':
+    sys.exit(0)
+else:
+    sys.exit(1)
+# FILE: tests/test-shellhooks-win/hooks/post_gen_project.bat
+@echo off
+
+echo post generation hook
+echo. >shell_post.txt
+# FILE: tests/test-shellhooks/hooks/post_gen_project.sh
+#!/bin/bash
+
+echo 'post generation hook';
+touch 'shell_post.txt'
+# FILE: tests/test-pyshellhooks/hooks/post_gen_project.py
+#!/usr/bin/env python
+"""Simple post-gen hook for testing project folder and custom file creation."""
+
+print('pre generation hook')
+f = open('python_post.txt', 'w')
+f.close()
+# FILE: tests/test-pyshellhooks/hooks/post_gen_project.sh
+#!/bin/bash
+
+echo 'post generation hook';
+touch 'shell_post.txt'

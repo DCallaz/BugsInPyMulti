@@ -1,0 +1,9 @@
+import numpy as np
+# BLOCK
+import pytest
+# BLOCK
+import pandas._testing as tm
+# BLOCK
+    @pytest.mark.parametrize(
+        "index", tm.all_index_generator(5), ids=lambda x: type(x).__name__
+    )

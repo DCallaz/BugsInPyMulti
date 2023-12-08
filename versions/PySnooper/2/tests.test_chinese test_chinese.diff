@@ -1,0 +1,35 @@
+from python_toolbox import temp_file_tools
+# BLOCK
+import pysnooper
+# BLOCK
+import pytest
+# BLOCK
+from .utils import CallEntry, LineEntry, VariableEntry, ReturnEntry, ReturnValueEntry
+# BLOCK
+from pysnooper import pycompat
+# BLOCK
+def test_chinese():
+    with temp_file_tools.create_temp_folder(prefix='pysnooper') as folder:
+        path = folder / 'foo.log'
+        @pysnooper.snoop(path)
+        def foo():
+            a = 1
+            x = '失败'
+            return 7
+
+        foo()
+        with path.open(encoding='utf-8') as file:
+            output = file.read()
+        assert_output(
+            output,
+            (
+                CallEntry(),
+                LineEntry(),
+                VariableEntry('a'),
+                LineEntry(u"x = '失败'"),
+                VariableEntry(u'x', (u"'失败'" if pycompat.PY3 else None)),
+                LineEntry(),
+                ReturnEntry(),
+                ReturnValueEntry('7')
+            ),
+        )

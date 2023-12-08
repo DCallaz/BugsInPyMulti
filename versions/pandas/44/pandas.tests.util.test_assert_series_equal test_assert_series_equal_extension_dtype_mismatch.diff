@@ -1,0 +1,23 @@
+from pandas import Series
+# BLOCK
+import pandas as pd
+# BLOCK
+import pandas._testing as tm
+# BLOCK
+import pytest
+# BLOCK
+def test_assert_series_equal_extension_dtype_mismatch():
+    # https://github.com/pandas-dev/pandas/issues/32747
+    left = Series(pd.array([1, 2, 3], dtype="Int64"))
+    right = left.astype(int)
+
+    msg = """Attributes of Series are different
+
+Attribute "dtype" are different
+\\[left\\]:  Int64
+\\[right\\]: int[32|64]"""
+
+    tm.assert_series_equal(left, right, check_dtype=False)
+
+    with pytest.raises(AssertionError, match=msg):
+        tm.assert_series_equal(left, right, check_dtype=True)

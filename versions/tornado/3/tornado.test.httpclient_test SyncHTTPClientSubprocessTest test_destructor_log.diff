@@ -1,0 +1,35 @@
+# CLASS: class SyncHTTPClientSubprocessTest(unittest.TestCase):
+import subprocess
+# BLOCK
+import sys
+# BLOCK
+import unittest
+# BLOCK
+from tornado.escape import to_unicode
+# BLOCK
+    def test_destructor_log(self):
+        # Regression test for
+        # https://github.com/tornadoweb/tornado/issues/2539
+        #
+        # In the past, the following program would log an
+        # "inconsistent AsyncHTTPClient cache" error from a destructor
+        # when the process is shutting down. The shutdown process is
+        # subtle and I don't fully understand it; the failure does not
+        # manifest if that lambda isn't there or is a simpler object
+        # like an int (nor does it manifest in the tornado test suite
+        # as a whole, which is why we use this subprocess).
+        proc = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                "from tornado.httpclient import HTTPClient; f = lambda: None; c = HTTPClient()",
+            ],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            check=True,
+        )
+        if proc.stdout:
+            print("STDOUT:")
+            print(to_unicode(proc.stdout))
+        if proc.stdout:
+            self.fail("subprocess produced unexpected output")

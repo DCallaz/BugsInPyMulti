@@ -1,0 +1,20 @@
+# CLASS: class RobotsTxtMiddlewareTest(unittest.TestCase):
+from twisted.internet.defer import Deferred
+# BLOCK
+from twisted.python import failure
+# BLOCK
+from twisted.internet import error
+# BLOCK
+from scrapy.http import Request
+# BLOCK
+    def test_robotstxt_immediate_error(self):
+        self.crawler.settings.set('ROBOTSTXT_OBEY', True)
+        err = error.DNSLookupError('Robotstxt address not found')
+        def immediate_failure(request, spider):
+            deferred = Deferred()
+            deferred.errback(failure.Failure(err))
+            return deferred
+        self.crawler.engine.download.side_effect = immediate_failure
+
+        middleware = RobotsTxtMiddleware(self.crawler)
+        return self.assertNotIgnored(Request('http://site.local'), middleware)

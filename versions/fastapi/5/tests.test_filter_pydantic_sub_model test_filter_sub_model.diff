@@ -1,0 +1,16 @@
+from starlette.testclient import TestClient
+# BLOCK
+from fastapi import FastAPI
+# BLOCK
+app = FastAPI()
+# BLOCK
+client = TestClient(app)
+# BLOCK
+def test_filter_sub_model():
+    response = client.get("/model")
+    assert response.status_code == 200
+    assert response.json() == {
+        "name": "model-a-name",
+        "description": "model-a-desc",
+        "model_b": {"username": "test-user"},
+    }

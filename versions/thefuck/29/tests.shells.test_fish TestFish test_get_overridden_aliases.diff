@@ -1,0 +1,20 @@
+import pytest
+# BLOCK
+from thefuck.shells import Fish
+# BLOCK
+    @pytest.fixture
+    def tf_overridden(self, monkeypatch, aliases):
+        monkeypatch.setattr('os.environ', {'TF_OVERRIDDEN_ALIASES': aliases})
+# BLOCK
+    @pytest.fixture
+    def shell(self):
+        return Fish()
+# BLOCK
+    @pytest.mark.parametrize('aliases', [
+        'cut,git,sed',
+        'cut, git, sed',
+        ' cut,\tgit,sed\n',
+        '\ncut,\n\ngit,\tsed\r'])
+    def test_get_overridden_aliases(self, shell, tf_overridden):
+        assert shell._get_overridden_aliases() == {'cd', 'cut', 'git', 'grep',
+                                                   'ls', 'man', 'open', 'sed'}

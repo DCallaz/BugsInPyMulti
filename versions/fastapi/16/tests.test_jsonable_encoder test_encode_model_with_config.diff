@@ -1,0 +1,21 @@
+from fastapi.encoders import jsonable_encoder
+# BLOCK
+import pytest
+# BLOCK
+from pydantic import BaseModel
+# BLOCK
+from enum import Enum
+# BLOCK
+class RoleEnum(Enum):
+    admin = "admin"
+    normal = "normal"
+# BLOCK
+class ModelWithConfig(BaseModel):
+    role: RoleEnum = None
+
+    class Config:
+        use_enum_values = True
+# BLOCK
+def test_encode_model_with_config():
+    model = ModelWithConfig(role=RoleEnum.admin)
+    assert jsonable_encoder(model) == {"role": "admin"}

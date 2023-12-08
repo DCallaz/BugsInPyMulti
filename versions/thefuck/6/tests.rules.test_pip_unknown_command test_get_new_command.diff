@@ -1,0 +1,24 @@
+from thefuck.rules.pip_unknown_command import get_new_command
+# BLOCK
+from thefuck.types import Command
+# BLOCK
+import pytest
+# BLOCK
+@pytest.fixture
+def suggested():
+    return 'install'
+# BLOCK
+@pytest.fixture
+def broken():
+    return 'instatl'
+# BLOCK
+@pytest.fixture
+def pip_unknown_cmd(broken, suggested):
+    return 'ERROR: unknown command "{}" - maybe you meant "{}"'.format(broken, suggested)
+# BLOCK
+@pytest.mark.parametrize('script, broken, suggested, new_cmd', [
+    ('pip un+install thefuck', 'un+install', 'uninstall', 'pip uninstall thefuck'),
+    ('pip instatl', 'instatl', 'install', 'pip install')])
+def test_get_new_command(script, new_cmd, pip_unknown_cmd):
+    assert get_new_command(Command(script,
+                                   pip_unknown_cmd)) == new_cmd

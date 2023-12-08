@@ -1,0 +1,3 @@
+3,tornado.test.httpclient_test SyncHTTPClientSubprocessTest test_destructor_log
+8,tornado.test.websocket_test WebSocketTest test_missing_websocket_key
+11,tornado.test.httpserver_test HTTPServerRawTest test_chunked_request_uppercase

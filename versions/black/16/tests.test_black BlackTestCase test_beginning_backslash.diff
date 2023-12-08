@@ -1,0 +1,20 @@
+    @patch("black.dump_to_file", dump_to_stderr)
+    def test_beginning_backslash(self) -> None:
+        source, expected = read_data("beginning_backslash")
+        actual = fs(source)
+        self.assertFormatEqual(expected, actual)
+        black.assert_equivalent(source, actual)
+        black.assert_stable(source, actual, black.FileMode())
+# FILE: tests/data/beginning_backslash.py
+\
+
+
+
+
+
+print("hello, world")
+
+# output
+
+
+print("hello, world")

@@ -1,0 +1,34 @@
+# CLASS: class LeakTest(unittest.TestCase):
+from tornado.ioloop import IOLoop
+# BLOCK
+from tornado.test.util import unittest
+# BLOCK
+from tornado.platform.asyncio import to_asyncio_future
+# BLOCK
+try:
+    from tornado.platform.asyncio import asyncio
+except ImportError:
+    asyncio = None
+# BLOCK
+try:
+    from tornado.platform.asyncio import asyncio
+except ImportError:
+    asyncio = None
+else:
+    from tornado.platform.asyncio import AsyncIOLoop, to_asyncio_future, AnyThreadEventLoopPolicy
+    # This is used in dynamically-evaluated code, so silence pyflakes.
+    to_asyncio_future
+# BLOCK
+    def test_asyncio_close_leak(self):
+        orig_count = len(IOLoop._ioloop_for_asyncio)
+        for i in range(10):
+            # Create and close an AsyncIOMainLoop using asyncio interfaces.
+            loop = asyncio.new_event_loop()
+            loop.call_soon(IOLoop.current)
+            loop.call_soon(loop.stop)
+            loop.run_forever()
+            loop.close()
+        new_count = len(IOLoop._ioloop_for_asyncio) - orig_count
+        # Because the cleanup is run on new loop creation, we have one
+        # dangling entry in the map (but only one).
+        self.assertEqual(new_count, 1)

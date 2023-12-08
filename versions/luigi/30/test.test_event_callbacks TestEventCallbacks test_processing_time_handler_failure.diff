@@ -1,0 +1,6 @@
+# CLASS: class TestEventCallbacks(unittest.TestCase):
+from helpers import unittest
+# BLOCK
+    def test_processing_time_handler_failure(self):
+        t, result = self._run_processing_time_handler(True)
+        self.assertEqual(result, [])

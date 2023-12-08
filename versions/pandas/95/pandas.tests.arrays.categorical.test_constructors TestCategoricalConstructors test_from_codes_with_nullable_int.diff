@@ -1,0 +1,16 @@
+import pandas as pd
+# BLOCK
+import pandas._testing as tm
+# BLOCK
+import pytest
+# BLOCK
+from pandas import Categorical
+# BLOCK
+    def test_from_codes_with_nullable_int(self):
+        codes = pd.array([0, 1], dtype="Int64")
+        categories = ["a", "b"]
+
+        result = Categorical.from_codes(codes, categories=categories)
+        expected = Categorical.from_codes(codes.to_numpy(int), categories=categories)
+
+        tm.assert_categorical_equal(result, expected)

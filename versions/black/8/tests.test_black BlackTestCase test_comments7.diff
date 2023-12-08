@@ -1,0 +1,59 @@
+    @patch("black.dump_to_file", dump_to_stderr)
+    def test_comments7(self) -> None:
+        source, expected = read_data("comments7")
+        actual = fs(source)
+        self.assertFormatEqual(expected, actual)
+        black.assert_equivalent(source, actual)
+        black.assert_stable(source, actual, black.FileMode())
+# FILE: tests/data/comments7.py
+from .config import (
+    Any,
+    Bool,
+    ConfigType,
+    ConfigTypeAttributes,
+    Int,
+    Path,
+    #  String,
+    #  resolve_to_config_type,
+    #  DEFAULT_TYPE_ATTRIBUTES,
+)
+
+
+from .config import (
+    Any,
+    Bool,
+    ConfigType,
+    ConfigTypeAttributes,
+    Int,
+    no_comma_here_yet
+    #  and some comments,
+    #  resolve_to_config_type,
+    #  DEFAULT_TYPE_ATTRIBUTES,
+)
+
+# output
+
+from .config import (
+    Any,
+    Bool,
+    ConfigType,
+    ConfigTypeAttributes,
+    Int,
+    Path,
+    #  String,
+    #  resolve_to_config_type,
+    #  DEFAULT_TYPE_ATTRIBUTES,
+)
+
+
+from .config import (
+    Any,
+    Bool,
+    ConfigType,
+    ConfigTypeAttributes,
+    Int,
+    no_comma_here_yet,
+    #  and some comments,
+    #  resolve_to_config_type,
+    #  DEFAULT_TYPE_ATTRIBUTES,
+)

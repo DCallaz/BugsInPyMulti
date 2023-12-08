@@ -1,0 +1,18 @@
+# CLASS: class TestDefaultHeadersMiddleware(TestCase):
+import os
+# BLOCK
+from scrapy.downloadermiddlewares.httpproxy import HttpProxyMiddleware
+# BLOCK
+from scrapy.http import Request
+# BLOCK
+from scrapy.spiders import Spider
+# BLOCK
+spider = Spider('foo')
+# BLOCK
+    def test_proxy_auth(self):
+        os.environ['http_proxy'] = 'https://user:pass@proxy:3128'
+        mw = HttpProxyMiddleware()
+        req = Request('http://scrapytest.org')
+        assert mw.process_request(req, spider) is None
+        self.assertEquals(req.meta, {'proxy': 'https://proxy:3128'})
+        self.assertEquals(req.headers.get('Proxy-Authorization'), b'Basic dXNlcjpwYXNz')

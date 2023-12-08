@@ -1,0 +1,5 @@
+# CLASS: class ResponseUtilsTest(unittest.TestCase):
+    def test_response_status_message(self):
+        self.assertEqual(response_status_message(200), '200 OK')
+        self.assertEqual(response_status_message(404), '404 Not Found')
+        self.assertEqual(response_status_message(573), "573 Unknown Status")

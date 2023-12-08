@@ -1,0 +1,5 @@
+10,tests.test_black BlackTestCase test_comment_indentation
+14,tests.test_black BlackTestCase test_get_future_imports
+16,tests.test_black BlackTestCase test_symlink_out_of_root_directory
+17,tests.test_black BlackTestCase test_empty
+18,tests.test_black BlackTestCase test_preserves_line_endings

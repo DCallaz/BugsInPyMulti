@@ -1,0 +1,11 @@
+from starlette.testclient import TestClient
+# BLOCK
+from fastapi import FastAPI
+# BLOCK
+app = FastAPI()
+# BLOCK
+client = TestClient(app)
+# BLOCK
+def test_return_defaults():
+    response = client.get("/")
+    assert response.json() == {"sub": {}}

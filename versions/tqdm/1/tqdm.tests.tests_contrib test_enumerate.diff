@@ -1,0 +1,16 @@
+from tests_tqdm import (
+    StringIO,
+    with_setup,
+    pretest,
+    posttest,
+)
+# BLOCK
+from tqdm.contrib import tenumerate
+# BLOCK
+@with_setup(pretest, posttest)
+def test_enumerate():
+    """Test contrib.tenumerate"""
+    with closing(StringIO()) as our_file:
+        a = range(9)
+        assert list(tenumerate(a, file=our_file)) == list(enumerate(a))
+        assert list(tenumerate(a, 42, file=our_file)) == list(enumerate(a, 42))

@@ -1,0 +1,65 @@
+# CLASS: class WorkerExternalTaskTest(unittest.TestCase):
+import luigi
+# BLOCK
+import tempfile
+# BLOCK
+import os
+# BLOCK
+from mock import patch
+# BLOCK
+from helpers import unittest
+# BLOCK
+class TestTask(luigi.Task):
+    """
+    Requires a single file dependency
+    """
+    tempdir = luigi.Parameter()
+    complete_after = luigi.Parameter()
+
+    def __init__(self, *args, **kwargs):
+        super(TestTask, self).__init__(*args, **kwargs)
+        self.output_path = os.path.join(self.tempdir, "test.output")
+        self.dep_path = os.path.join(self.tempdir, "test.dep")
+        self.dependency = TestExternalFileTask(path=self.dep_path,
+                                               times_to_call=self.complete_after)
+
+    def requires(self):
+        yield self.dependency
+
+    def output(self):
+        return LocalTarget(
+            path=self.output_path)
+
+    def run(self):
+        open(self.output_path, 'a').close()
+# BLOCK
+    @with_config({'core': {'retry-external-tasks': 'true',
+                           'disable-num-failures': '4',
+                           'max-reschedules': '4',
+                           'worker-keep-alive': 'true',
+                           'retry-delay': '0.01'}})
+    def test_external_dependency_completes_later(self):
+        """
+        Test that an external dependency that is not `complete` when luigi is invoked, but \
+        becomes `complete` while the workflow is executing is re-evaluated and
+        allows dependencies to run.
+        """
+        assert luigi.configuration.get_config().getboolean('core',
+                                                           'retry-external-tasks',
+                                                           False) is True
+
+        tempdir = tempfile.mkdtemp(prefix='luigi-test-')
+
+        with patch('random.randint', return_value=0.1):
+            test_task = TestTask(tempdir=tempdir, complete_after=3)
+            self._build([test_task])
+
+        assert os.path.exists(test_task.dep_path)
+        assert os.path.exists(test_task.output_path)
+
+        os.unlink(test_task.dep_path)
+        os.unlink(test_task.output_path)
+        os.rmdir(tempdir)
+
+        # complete() is called once per failure, twice per success
+        assert test_task.dependency.times_called == 4

@@ -1,0 +1,10 @@
+# CLASS: class TestJSInterpreter(unittest.TestCase):
+from youtube_dl.jsinterp import JSInterpreter
+# BLOCK
+    def test_call(self):
+        jsi = JSInterpreter('''
+        function x() { return 2; }
+        function y(a) { return x() + a; }
+        function z() { return y(3); }
+        ''')
+        self.assertEqual(jsi.call_function('z'), 5)

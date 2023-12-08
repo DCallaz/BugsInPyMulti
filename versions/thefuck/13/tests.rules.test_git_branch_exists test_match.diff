@@ -1,0 +1,14 @@
+from thefuck.rules.git_branch_exists import match
+# BLOCK
+from tests.utils import Command
+# BLOCK
+import pytest
+# BLOCK
+@pytest.fixture
+def stderr(branch_name):
+    return "fatal: A branch named '{}' already exists.".format(branch_name)
+# BLOCK
+@pytest.mark.parametrize('script, branch_name', [
+    ('git branch foo', 'foo'), ('git checkout bar', 'bar')])
+def test_match(stderr, script, branch_name):
+    assert match(Command(script=script, stderr=stderr))

@@ -1,0 +1,8 @@
+# CLASS: class SelectorTestCase(unittest.TestCase):
+from scrapy.selector import Selector
+# BLOCK
+from scrapy.http import TextResponse
+# BLOCK
+    def test_selector_bad_args(self):
+        with self.assertRaisesRegexp(ValueError, 'received both response and text'):
+            Selector(TextResponse(url='http://example.com', body=b''), text=u'')

@@ -1,0 +1,30 @@
+import pytest
+# BLOCK
+from ansible.module_utils.common.validation import check_required_arguments
+# BLOCK
+from ansible.module_utils._text import to_native
+# BLOCK
+@pytest.fixture
+def arguments_terms_multiple():
+    return {
+        'foo': {
+            'required': True,
+        },
+        'bar': {
+            'required': True,
+        },
+        'tomato': {
+            'irrelevant': 72,
+        },
+    }
+# BLOCK
+def test_check_required_arguments_missing_multiple(arguments_terms_multiple):
+    params = {
+        'apples': 'woohoo',
+    }
+    expected = "missing required arguments: bar, foo"
+
+    with pytest.raises(TypeError) as e:
+        check_required_arguments(arguments_terms_multiple, params)
+
+    assert to_native(e.value) == expected

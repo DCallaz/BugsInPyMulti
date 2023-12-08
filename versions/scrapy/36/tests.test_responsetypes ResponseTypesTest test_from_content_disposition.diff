@@ -1,0 +1,19 @@
+# CLASS: class ResponseTypesTest(unittest.TestCase):
+from scrapy.http import XmlResponse, Response, HtmlResponse
+# BLOCK
+from scrapy.responsetypes import responsetypes
+# BLOCK
+    def test_from_content_disposition(self):
+        mappings = [
+            (b'attachment; filename="data.xml"', XmlResponse),
+            (b'attachment; filename=data.xml', XmlResponse),
+            (u'attachment;filename=data£.tar.gz'.encode('utf-8'), Response),
+            (u'attachment;filename=dataµ.tar.gz'.encode('latin-1'), Response),
+            (u'attachment;filename=data高.doc'.encode('gbk'), Response),
+            (u'attachment;filename=دورهdata.html'.encode('cp720'), HtmlResponse),
+            (u'attachment;filename=日本語版Wikipedia.xml'.encode('iso2022_jp'), XmlResponse),
+
+        ]
+        for source, cls in mappings:
+            retcls = responsetypes.from_content_disposition(source)
+            assert retcls is cls, "%s ==> %s != %s" % (source, retcls, cls)

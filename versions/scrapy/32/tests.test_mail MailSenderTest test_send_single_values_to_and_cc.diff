@@ -1,0 +1,7 @@
+# CLASS: class MailSenderTest(unittest.TestCase):
+from scrapy.mail import MailSender
+# BLOCK
+    def test_send_single_values_to_and_cc(self):
+        mailsender = MailSender(debug=True)
+        mailsender.send(to='test@scrapy.org', subject='subject', body='body',
+                        cc='test@scrapy.org', _callback=self._catch_mail_sent)

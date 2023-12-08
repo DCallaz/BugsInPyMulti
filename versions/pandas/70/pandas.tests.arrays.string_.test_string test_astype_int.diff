@@ -1,0 +1,12 @@
+import pandas as pd
+# BLOCK
+import pandas._testing as tm
+# BLOCK
+import pytest
+# BLOCK
+def test_astype_int():
+    arr = pd.array(["1", pd.NA, "3"], dtype="string")
+
+    result = arr.astype("Int64")
+    expected = pd.array([1, pd.NA, 3], dtype="Int64")
+    tm.assert_extension_array_equal(result, expected)

@@ -1,0 +1,13 @@
+import pandas as pd
+# BLOCK
+import pytest
+# BLOCK
+from pandas import Categorical
+# BLOCK
+    def test_from_codes_with_nullable_int_na_raises(self):
+        codes = pd.array([0, None], dtype="Int64")
+        categories = ["a", "b"]
+
+        msg = "codes cannot contain NA values"
+        with pytest.raises(ValueError, match=msg):
+            Categorical.from_codes(codes, categories=categories)

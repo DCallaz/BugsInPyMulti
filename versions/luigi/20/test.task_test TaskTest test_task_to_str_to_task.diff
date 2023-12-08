@@ -1,0 +1,34 @@
+# CLASS: class TaskTest(unittest.TestCase):
+from datetime import datetime, timedelta
+# BLOCK
+from helpers import unittest
+# BLOCK
+import luigi
+# BLOCK
+class DummyTask(luigi.Task):
+
+    param = luigi.Parameter()
+    bool_param = luigi.BoolParameter()
+    int_param = luigi.IntParameter()
+    float_param = luigi.FloatParameter()
+    date_param = luigi.DateParameter()
+    datehour_param = luigi.DateHourParameter()
+    timedelta_param = luigi.TimeDeltaParameter()
+    list_param = luigi.Parameter(is_list=True)
+    insignificant_param = luigi.Parameter(significant=False)
+# BLOCK
+    def test_task_to_str_to_task(self):
+        params = dict(
+            param='test',
+            bool_param=True,
+            int_param=666,
+            float_param=123.456,
+            date_param=datetime(2014, 9, 13).date(),
+            datehour_param=datetime(2014, 9, 13, 9),
+            timedelta_param=timedelta(44),  # doesn't support seconds
+            list_param=['in', 'flames'],
+            insignificant_param='test')
+
+        original = DummyTask(**params)
+        other = DummyTask.from_str_params(original.to_str_params())
+        self.assertEqual(original, other)

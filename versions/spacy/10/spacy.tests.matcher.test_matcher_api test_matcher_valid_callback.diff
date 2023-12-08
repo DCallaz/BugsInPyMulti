@@ -1,0 +1,12 @@
+from spacy.matcher import Matcher
+# BLOCK
+import pytest
+# BLOCK
+from spacy.tokens import Doc
+# BLOCK
+def test_matcher_valid_callback(en_vocab):
+    """Test that on_match can only be None or callable."""
+    matcher = Matcher(en_vocab)
+    with pytest.raises(ValueError):
+        matcher.add("TEST", [], [{"TEXT": "test"}])
+    matcher(Doc(en_vocab, words=["test"]))

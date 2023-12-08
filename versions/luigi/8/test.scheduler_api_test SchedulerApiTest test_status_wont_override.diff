@@ -1,0 +1,10 @@
+# CLASS: class SchedulerApiTest(unittest.TestCase):
+from helpers import unittest
+# BLOCK
+    def test_status_wont_override(self):
+        # Worker X is running A
+        # Worker Y wants to override the status to UNKNOWN (e.g. complete is throwing an exception)
+        self.sch.add_task(worker='X', task_id='A')
+        self.assertEqual(self.sch.get_work(worker='X')['task_id'], 'A')
+        self.sch.add_task(worker='Y', task_id='A', status=UNKNOWN)
+        self.assertEqual({'A'}, set(self.sch.task_list(RUNNING, '').keys()))

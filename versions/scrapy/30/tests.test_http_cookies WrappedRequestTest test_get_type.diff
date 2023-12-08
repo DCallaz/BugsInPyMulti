@@ -1,0 +1,6 @@
+# CLASS: class WrappedRequestTest(TestCase):
+from six.moves.urllib.parse import urlparse
+# BLOCK
+    def test_get_type(self):
+        self.assertEqual(self.wrapped.get_type(), urlparse(self.request.url).scheme)
+        self.assertEqual(self.wrapped.type, urlparse(self.request.url).scheme)

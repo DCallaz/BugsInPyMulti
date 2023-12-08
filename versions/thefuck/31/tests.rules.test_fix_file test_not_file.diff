@@ -1,0 +1,12 @@
+from thefuck.rules.fix_file import match
+# BLOCK
+from tests.utils import Command
+# BLOCK
+import pytest
+# BLOCK
+@pytest.mark.parametrize('test', tests)
+def test_not_file(mocker, monkeypatch, test):
+    mocker.patch('os.path.isfile', return_value=False)
+    monkeypatch.setenv('EDITOR', 'dummy_editor')
+
+    assert not match(Command(stderr=test[4]), None)

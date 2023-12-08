@@ -1,0 +1,16 @@
+from thefuck.rules.git_add import match
+# BLOCK
+from tests.utils import Command
+# BLOCK
+import pytest
+# BLOCK
+@pytest.fixture
+def stderr(target):
+    return ("error: pathspec '{}' did not match any "
+            'file(s) known to git.'.format(target))
+# BLOCK
+@pytest.mark.parametrize('script, target', [
+    ('git submodule update unknown', 'unknown'),
+    ('git commit unknown', 'unknown')])
+def test_match(stderr, script, target):
+    assert match(Command(script=script, stderr=stderr))

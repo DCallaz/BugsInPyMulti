@@ -1,0 +1,19 @@
+from pandas import DataFrame, Series
+# BLOCK
+from pandas.util.testing import assert_series_equal
+# BLOCK
+import pandas as pd
+# BLOCK
+import pytest
+# BLOCK
+    def test_nunique_empty(self):
+        # GH 28213
+        df = DataFrame(columns=["a", "b", "c"])
+
+        result = df.nunique()
+        expected = Series(0, index=df.columns)
+        assert_series_equal(result, expected)
+
+        result = df.T.nunique()
+        expected = Series([], index=pd.Index([]))
+        assert_series_equal(result, expected)

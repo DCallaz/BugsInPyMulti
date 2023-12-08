@@ -1,0 +1,6 @@
+# CLASS: class WrappedRequestTest(TestCase):
+from six.moves.urllib.parse import urlparse
+# BLOCK
+    def test_get_host(self):
+        self.assertEqual(self.wrapped.get_host(), urlparse(self.request.url).netloc)
+        self.assertEqual(self.wrapped.host, urlparse(self.request.url).netloc)

@@ -1,0 +1,26 @@
+from tempfile import TemporaryDirectory
+# BLOCK
+from pathlib import Path
+# BLOCK
+import black
+# BLOCK
+from functools import partial
+# BLOCK
+ll = 88
+ff = partial(black.format_file_in_place, line_length=ll, fast=True)
+fs = partial(black.format_str, line_length=ll)
+THIS_FILE = Path(__file__)
+THIS_DIR = THIS_FILE.parent
+EMPTY_LINE = "# EMPTY LINE WITH WHITESPACE" + " (this comment will be removed)"
+# BLOCK
+    def test_preserves_line_endings(self) -> None:
+        with TemporaryDirectory() as workspace:
+            test_file = Path(workspace) / "test.py"
+            for nl in ["\n", "\r\n"]:
+                contents = nl.join(["def f(  ):", "    pass"])
+                test_file.write_bytes(contents.encode())
+                ff(test_file, write_back=black.WriteBack.YES)
+                updated_contents: bytes = test_file.read_bytes()
+                self.assertIn(nl.encode(), updated_contents)  # type: ignore
+                if nl == "\n":
+                    self.assertNotIn(b"\r\n", updated_contents)  # type: ignore

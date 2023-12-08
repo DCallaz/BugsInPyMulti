@@ -1,0 +1,10 @@
+from thefuck.rules.php_s import match
+# BLOCK
+import pytest
+# BLOCK
+@pytest.mark.parametrize('command', [
+    Command('php -s localhost:8000', ''),
+    Command('php -t pub -s 0.0.0.0:8080', '')
+])
+def test_match(command):
+    assert match(command)

@@ -1,0 +1,14 @@
+from starlette.testclient import TestClient
+# BLOCK
+from fastapi import FastAPI
+# BLOCK
+app = FastAPI()
+# BLOCK
+client = TestClient(app)
+# BLOCK
+def test_python_set_param_as_form():
+    response = client.post(
+        "/form/python-set", data={"items": ["first", "second", "third"]}
+    )
+    assert response.status_code == 200
+    assert set(response.json()) == {"first", "second", "third"}

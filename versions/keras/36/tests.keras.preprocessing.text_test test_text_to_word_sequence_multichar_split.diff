@@ -1,0 +1,7 @@
+from keras.preprocessing.text import text_to_word_sequence
+# BLOCK
+import pytest
+# BLOCK
+def test_text_to_word_sequence_multichar_split():
+    text = 'hello!stop?world!'
+    assert text_to_word_sequence(text, split='stop') == ['hello', 'world']

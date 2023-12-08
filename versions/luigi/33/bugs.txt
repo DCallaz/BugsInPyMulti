@@ -1,0 +1,4 @@
+33,test.parameter_test ParameterTest test_local_insignificant_param
+33,test.parameter_test TestRemoveGlobalParameters test_global_significant_param
+33,test.parameter_test TestRemoveGlobalParameters test_mixed_params
+33,test.parameter_test TestRemoveGlobalParameters test_mixed_params_inheritence

@@ -1,0 +1,90 @@
+from keras import backend as K
+# BLOCK
+import pytest
+# BLOCK
+from keras.utils.test_utils import keras_test
+# BLOCK
+@pytest.fixture
+def in_tmpdir(tmpdir):
+    """Runs a function in a temporary directory.
+
+    Checks that the directory is empty afterwards.
+    """
+    with tmpdir.as_cwd():
+        yield None
+    assert not tmpdir.listdir()
+# BLOCK
+@keras_test
+def test_sequential(in_tmpdir):
+    (x_train, y_train), (x_test, y_test) = _get_test_data()
+
+    # TODO: factor out
+    def data_generator(x, y, batch_size=50):
+        index_array = np.arange(len(x))
+        while 1:
+            batches = make_batches(len(x_test), batch_size)
+            for batch_index, (batch_start, batch_end) in enumerate(batches):
+                batch_ids = index_array[batch_start:batch_end]
+                x_batch = x[batch_ids]
+                y_batch = y[batch_ids]
+                yield (x_batch, y_batch)
+
+    model = Sequential()
+    model.add(Dense(num_hidden, input_shape=(input_dim,)))
+    model.add(Activation('relu'))
+    model.add(Dense(num_classes))
+    model.add(Activation('softmax'))
+    model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
+
+    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1,
+              validation_data=(x_test, y_test))
+    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=2,
+              validation_split=0.1)
+    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=0)
+    model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1,
+              shuffle=False)
+
+    model.train_on_batch(x_train[:32], y_train[:32])
+
+    loss = model.evaluate(x_test, y_test)
+
+    prediction = model.predict_generator(data_generator(x_test, y_test), 1,
+                                         max_queue_size=2, verbose=1)
+    gen_loss = model.evaluate_generator(data_generator(x_test, y_test, 50), 1,
+                                        max_queue_size=2)
+    pred_loss = K.eval(K.mean(losses.get(model.loss)(K.variable(y_test),
+                                                     K.variable(prediction))))
+
+    assert(np.isclose(pred_loss, loss))
+    assert(np.isclose(gen_loss, loss))
+
+    model.predict(x_test, verbose=0)
+    model.predict_classes(x_test, verbose=0)
+    model.predict_proba(x_test, verbose=0)
+
+    fname = 'test_sequential_temp.h5'
+    model.save_weights(fname, overwrite=True)
+    model = Sequential()
+    model.add(Dense(num_hidden, input_shape=(input_dim,)))
+    model.add(Activation('relu'))
+    model.add(Dense(num_classes))
+    model.add(Activation('softmax'))
+    model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
+    model.load_weights(fname)
+    os.remove(fname)
+
+    nloss = model.evaluate(x_test, y_test, verbose=0)
+    assert(loss == nloss)
+
+    # Test serialization
+    config = model.get_config()
+    assert 'name' in config
+    new_model = Sequential.from_config(config)
+    assert new_model.weights  # Model should be built.
+
+    model.summary()
+    json_str = model.to_json()
+    model_from_json(json_str)
+
+    yaml_str = model.to_yaml()
+    model_from_yaml(yaml_str)

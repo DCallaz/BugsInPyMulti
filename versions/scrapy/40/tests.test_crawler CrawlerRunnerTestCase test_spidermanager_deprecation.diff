@@ -1,0 +1,18 @@
+# CLASS: class CrawlerRunnerTestCase(unittest.TestCase):
+import warnings
+# BLOCK
+from scrapy.crawler import CrawlerRunner
+# BLOCK
+from scrapy.spiderloader import SpiderLoader
+# BLOCK
+class CustomSpiderLoader(SpiderLoader):
+    pass
+# BLOCK
+    def test_spidermanager_deprecation(self):
+        with warnings.catch_warnings(record=True) as w:
+            runner = CrawlerRunner({
+                'SPIDER_MANAGER_CLASS': 'tests.test_crawler.CustomSpiderLoader'
+            })
+            self.assertIsInstance(runner.spider_loader, CustomSpiderLoader)
+            self.assertEqual(len(w), 1)
+            self.assertIn('Please use SPIDER_LOADER_CLASS', str(w[0].message))

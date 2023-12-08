@@ -1,0 +1,50 @@
+# CLASS: class BeamDataflowTest(unittest.TestCase):
+from luigi.contrib import bigquery, gcs, beam_dataflow
+# BLOCK
+import unittest
+# BLOCK
+class TestDataflowParamKeys(beam_dataflow.DataflowParamKeys):
+    runner = "runner"
+    project = "project"
+    zone = "zone"
+    region = "region"
+    staging_location = "stagingLocation"
+    temp_location = "tempLocation"
+    gcp_temp_location = "gcpTempLocation"
+    num_workers = "numWorkers"
+    autoscaling_algorithm = "autoscalingAlgorithm"
+    max_num_workers = "maxNumWorkers"
+    disk_size_gb = "diskSizeGb"
+    worker_machine_type = "workerMachineType"
+    worker_disk_type = "workerDiskType"
+    job_name = "jobName"
+    service_account = "serviceAccount"
+    network = "network"
+    subnetwork = "subnetwork"
+    labels = "labels"
+# BLOCK
+class SimpleTestTask(beam_dataflow.BeamDataflowJobTask):
+    dataflow_params = TestDataflowParamKeys()
+
+    def requires(self):
+        return TestRequires()
+
+    def output(self):
+        return local_target.LocalTarget(path='some-output.txt')
+
+    def dataflow_executable(self):
+        return ['java', 'com.spotify.luigi.SomeJobClass']
+# BLOCK
+    def test_get_target_path(self):
+        bq_target = bigquery.BigQueryTarget("p", "d", "t", client="fake_client")
+        self.assertEqual(
+            SimpleTestTask.get_target_path(bq_target),
+            "p:d.t")
+
+        gcs_target = gcs.GCSTarget("gs://foo/bar.txt", client="fake_client")
+        self.assertEqual(
+            SimpleTestTask.get_target_path(gcs_target),
+            "gs://foo/bar.txt")
+
+        with self.assertRaises(ValueError):
+            SimpleTestTask.get_target_path("not_a_target")

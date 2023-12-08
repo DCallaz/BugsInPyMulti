@@ -1,0 +1,4 @@
+10,tests.test_black BlackTestCase test_comment_indentation
+17,tests.test_black BlackTestCase test_empty
+18,tests.test_black BlackTestCase test_preserves_line_endings
+19,tests.test_black BlackTestCase test_comment_in_decorator

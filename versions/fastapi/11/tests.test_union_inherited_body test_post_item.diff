@@ -1,0 +1,21 @@
+import pytest
+# BLOCK
+import sys
+# BLOCK
+from starlette.testclient import TestClient
+# BLOCK
+from fastapi import FastAPI
+# BLOCK
+app = FastAPI()
+# BLOCK
+# But in Python 3.7:
+# u = Union[ExtendedItem, Item] == typing.Union[__main__.ExtendedItem, __main__.Item]
+skip_py36 = pytest.mark.skipif(sys.version_info < (3, 7), reason="skip python3.6")
+# BLOCK
+client = TestClient(app)
+# BLOCK
+@skip_py36
+def test_post_item():
+    response = client.post("/items/", json={"name": "Foo"})
+    assert response.status_code == 200
+    assert response.json() == {"item": {"name": "Foo"}}

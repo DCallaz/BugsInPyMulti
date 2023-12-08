@@ -1,0 +1,13 @@
+# CLASS: class ItemMetaClassCellRegression(unittest.TestCase):
+import six
+# BLOCK
+from scrapy.item import ItemMeta, Item
+# BLOCK
+    def test_item_meta_classcell_regression(self):
+        class MyItem(six.with_metaclass(ItemMeta, Item)):
+            def __init__(self, *args, **kwargs):
+                # This call to super() trigger the __classcell__ propagation
+                # requirement. When not done properly raises an error:
+                # TypeError: __class__ set to <class '__main__.MyItem'>
+                # defining 'MyItem' as <class '__main__.MyItem'>
+                super(MyItem, self).__init__(*args, **kwargs)

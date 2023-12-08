@@ -1,0 +1,24 @@
+from keras import backend as K
+# BLOCK
+import numpy as np
+# BLOCK
+import pytest
+# BLOCK
+@pytest.mark.parametrize('initializer',
+                         [initializers.orthogonal,
+                          initializers.uniform,
+                          initializers.normal,
+                          initializers.truncated_normal,
+                          initializers.VarianceScaling],
+                         ids=['orthogonal',
+                              'uniform',
+                              'normal',
+                              'truncated_normal',
+                              'variance_scaling'])
+def test_statefulness(initializer):
+    # Test that calling a same seeded random initializer
+    # in succession results in different values.
+    init = initializer(seed=1337)
+    samples = [init((2, 2)) for _ in range(2)]
+    samples = [K.get_value(K.variable(x)) for x in samples]
+    assert np.mean(np.abs(samples[0] - samples[1])) > 0.

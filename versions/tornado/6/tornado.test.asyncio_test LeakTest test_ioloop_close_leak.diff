@@ -1,0 +1,15 @@
+# CLASS: class LeakTest(unittest.TestCase):
+from tornado.ioloop import IOLoop
+# BLOCK
+from tornado.platform.asyncio import AsyncIOLoop
+# BLOCK
+from tornado.test.util import unittest
+# BLOCK
+    def test_ioloop_close_leak(self):
+        orig_count = len(IOLoop._ioloop_for_asyncio)
+        for i in range(10):
+            # Create and close an AsyncIOLoop using Tornado interfaces.
+            loop = AsyncIOLoop()
+            loop.close()
+        new_count = len(IOLoop._ioloop_for_asyncio) - orig_count
+        self.assertEqual(new_count, 0)

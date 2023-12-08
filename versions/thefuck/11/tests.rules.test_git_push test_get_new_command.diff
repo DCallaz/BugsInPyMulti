@@ -1,0 +1,24 @@
+from thefuck.rules.git_push import get_new_command
+# BLOCK
+from tests.utils import Command
+# BLOCK
+import pytest
+# BLOCK
+@pytest.fixture
+def stderr():
+    return '''fatal: The current branch master has no upstream branch.
+To push the current branch and set the remote as upstream, use
+
+    git push --set-upstream origin master
+
+'''
+# BLOCK
+def test_get_new_command(stderr):
+    assert get_new_command(Command('git push', stderr=stderr))\
+        == "git push --set-upstream origin master"
+    assert get_new_command(Command('git push -u origin', stderr=stderr))\
+        == "git push --set-upstream origin master"
+    assert get_new_command(Command('git push --set-upstream origin', stderr=stderr))\
+        == "git push --set-upstream origin master"
+    assert get_new_command(Command('git push --quiet', stderr=stderr))\
+        == "git push --set-upstream origin master --quiet"

@@ -1,0 +1,26 @@
+# CLASS: class TestUtil(unittest.TestCase):
+from youtube_dl.utils import parse_duration
+# BLOCK
+    def test_parse_duration(self):
+        self.assertEqual(parse_duration(None), None)
+        self.assertEqual(parse_duration('1'), 1)
+        self.assertEqual(parse_duration('1337:12'), 80232)
+        self.assertEqual(parse_duration('9:12:43'), 33163)
+        self.assertEqual(parse_duration('12:00'), 720)
+        self.assertEqual(parse_duration('00:01:01'), 61)
+        self.assertEqual(parse_duration('x:y'), None)
+        self.assertEqual(parse_duration('3h11m53s'), 11513)
+        self.assertEqual(parse_duration('3h 11m 53s'), 11513)
+        self.assertEqual(parse_duration('3 hours 11 minutes 53 seconds'), 11513)
+        self.assertEqual(parse_duration('3 hours 11 mins 53 secs'), 11513)
+        self.assertEqual(parse_duration('62m45s'), 3765)
+        self.assertEqual(parse_duration('6m59s'), 419)
+        self.assertEqual(parse_duration('49s'), 49)
+        self.assertEqual(parse_duration('0h0m0s'), 0)
+        self.assertEqual(parse_duration('0m0s'), 0)
+        self.assertEqual(parse_duration('0s'), 0)
+        self.assertEqual(parse_duration('01:02:03.05'), 3723.05)
+        self.assertEqual(parse_duration('T30M38S'), 1838)
+        self.assertEqual(parse_duration('5 s'), 5)
+        self.assertEqual(parse_duration('3 min'), 180)
+        self.assertEqual(parse_duration('2.5 hours'), 9000)

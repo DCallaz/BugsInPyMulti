@@ -1,0 +1,11 @@
+from pandas.arrays import PandasArray
+# BLOCK
+import numpy as np
+# BLOCK
+import pytest
+# BLOCK
+def test_setitem_no_coercion():
+    # https://github.com/pandas-dev/pandas/issues/28150
+    arr = PandasArray(np.array([1, 2, 3]))
+    with pytest.raises(ValueError, match="int"):
+        arr[0] = "a"

@@ -1,0 +1,12 @@
+# CLASS: class TestEventCallbacks(unittest.TestCase):
+from helpers import unittest
+# BLOCK
+class DummyException(Exception):
+    pass
+# BLOCK
+    def test_failure(self):
+        t, successes, failures, exceptions = self._run_empty_task(True)
+        self.assertEqual(successes, [])
+        self.assertEqual(failures, [t])
+        self.assertEqual(len(exceptions), 1)
+        self.assertTrue(isinstance(exceptions[0], DummyException))

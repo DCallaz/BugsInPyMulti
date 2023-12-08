@@ -1,0 +1,3 @@
+1,tests.test_downloads TestDownloadUtils test_unique_filename
+2,tests.test_redirects TestRedirects test_max_redirects
+3,tests.test_sessions TestSession test_download_in_session

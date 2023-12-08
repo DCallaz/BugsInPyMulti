@@ -1,0 +1,2 @@
+4,spacy.tests.regression.test_issue4665 test_issue4665
+6,spacy.tests.pipeline.test_analysis test_analysis_validate_attrs_remove_pipe

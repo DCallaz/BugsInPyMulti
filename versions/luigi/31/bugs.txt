@@ -1,0 +1,8 @@
+13,test.file_test FileSystemTest test_move_to_new_dir
+19,test.central_planner_test CentralPlannerTest test_automatic_re_enable_with_one_failure_allowed
+22,test.scheduler_test SchedulerTest test_worker_prune_after_init
+24,test.contrib.spark_test SparkSubmitTaskTest test_run
+24,test.contrib.spark_test SparkSubmitTaskTest test_defaults
+28,test.contrib.hive_test HiveCommandClientTest test_table_exists
+28,test.contrib.hive_test HiveCommandClientTest test_apacheclient_table_exists
+31,test.central_planner_test CentralPlannerTest test_assistant_get_work_external_task

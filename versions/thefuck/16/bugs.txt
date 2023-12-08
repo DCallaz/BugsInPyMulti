@@ -1,0 +1,9 @@
+2,tests.test_utils test_get_all_executables_pathsep
+8,tests.rules.test_dnf_no_such_command test_get_new_command
+10,tests.rules.test_man test_get_new_command
+12,tests.rules.test_no_command test_not_match
+12,tests.rules.test_no_command test_match
+14,tests.shells.test_fish TestFish test_get_overridden_aliases
+15,tests.rules.test_git_add test_match
+16,tests.shells.test_bash TestBash test_app_alias_variables_correctly_set
+16,tests.shells.test_zsh TestZsh test_app_alias_variables_correctly_set

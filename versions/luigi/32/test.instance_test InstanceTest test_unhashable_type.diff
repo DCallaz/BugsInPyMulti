@@ -1,0 +1,11 @@
+# CLASS: class InstanceTest(unittest.TestCase):
+import luigi
+# BLOCK
+from helpers import unittest
+# BLOCK
+    def test_unhashable_type(self):
+        # See #857
+        class DummyTask(luigi.Task):
+            x = luigi.Parameter()
+
+        dummy = DummyTask(x={})

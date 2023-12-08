@@ -1,0 +1,17 @@
+from pandas import DataFrame
+# BLOCK
+import numpy as np
+# BLOCK
+import pytest
+# BLOCK
+    @pytest.mark.parametrize("key, pos", [([2, 4], [0, 1]), ([2], []), ([2, 3], [])])
+    def test_loc_multiindex_list_missing_label(self, key, pos):
+        # GH 27148 - lists with missing labels _do_ raise
+        df = DataFrame(
+            np.random.randn(3, 3),
+            columns=[[2, 2, 4], [6, 8, 10]],
+            index=[[4, 4, 8], [8, 10, 12]],
+        )
+
+        with pytest.raises(KeyError, match="not in index"):
+            df.loc[key]

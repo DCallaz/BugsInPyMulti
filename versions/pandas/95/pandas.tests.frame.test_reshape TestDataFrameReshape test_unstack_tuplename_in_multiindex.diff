@@ -1,0 +1,30 @@
+import pandas as pd
+# BLOCK
+import pandas._testing as tm
+# BLOCK
+import pytest
+# BLOCK
+    def test_unstack_tuplename_in_multiindex(self):
+        # GH 19966
+        idx = pd.MultiIndex.from_product(
+            [["a", "b", "c"], [1, 2, 3]], names=[("A", "a"), ("B", "b")]
+        )
+        df = pd.DataFrame({"d": [1] * 9, "e": [2] * 9}, index=idx)
+        result = df.unstack(("A", "a"))
+
+        expected = pd.DataFrame(
+            [[1, 1, 1, 2, 2, 2], [1, 1, 1, 2, 2, 2], [1, 1, 1, 2, 2, 2]],
+            columns=pd.MultiIndex.from_tuples(
+                [
+                    ("d", "a"),
+                    ("d", "b"),
+                    ("d", "c"),
+                    ("e", "a"),
+                    ("e", "b"),
+                    ("e", "c"),
+                ],
+                names=[None, ("A", "a")],
+            ),
+            index=pd.Index([1, 2, 3], name=("B", "b")),
+        )
+        tm.assert_frame_equal(result, expected)

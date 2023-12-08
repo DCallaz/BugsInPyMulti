@@ -1,0 +1,26 @@
+from thefuck.rules.dnf_no_such_command import get_new_command
+# BLOCK
+from thefuck.types import Command
+# BLOCK
+import pytest
+# BLOCK
+from io import BytesIO
+# BLOCK
+@pytest.fixture
+def set_help(mocker):
+    mock = mocker.patch('subprocess.Popen')
+
+    def _set_text(text):
+        mock.return_value.stdout = BytesIO(text)
+
+    return _set_text
+# BLOCK
+@pytest.mark.parametrize('script, output, result', [
+    ('dnf isntall vim', invalid_command('isntall'),
+     'dnf install vim'),
+    ('dnf saerch vim', invalid_command('saerch'),
+     'dnf search vim'),
+])
+def test_get_new_command(set_help, output, script, result):
+    set_help(help_text)
+    assert result in get_new_command(Command(script, output))

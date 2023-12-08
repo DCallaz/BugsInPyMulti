@@ -1,0 +1,103 @@
+from ansible.utils.version import _Alpha, _Numeric
+# BLOCK
+import pytest
+# BLOCK
+def test_alpha():
+    assert _Alpha('a') == _Alpha('a')
+    assert _Alpha('a') == 'a'
+    assert _Alpha('a') != _Alpha('b')
+    assert _Alpha('a') != 1
+    assert _Alpha('a') < _Alpha('b')
+    assert _Alpha('a') < 'c'
+    assert _Alpha('a') > _Numeric(1)
+    with pytest.raises(ValueError):
+        _Alpha('a') < None
+    assert _Alpha('a') <= _Alpha('a')
+    assert _Alpha('a') <= _Alpha('b')
+    assert _Alpha('b') >= _Alpha('a')
+    assert _Alpha('b') >= _Alpha('b')
+
+    # The following 3*6 tests check that all comparison operators perform
+    # as expected. DO NOT remove any of them, or reformulate them (to remove
+    # the explicit `not`)!
+
+    assert _Alpha('a') == _Alpha('a')
+    assert not _Alpha('a') != _Alpha('a')  # pylint: disable=unneeded-not
+    assert not _Alpha('a') < _Alpha('a')  # pylint: disable=unneeded-not
+    assert _Alpha('a') <= _Alpha('a')
+    assert not _Alpha('a') > _Alpha('a')  # pylint: disable=unneeded-not
+    assert _Alpha('a') >= _Alpha('a')
+
+    assert not _Alpha('a') == _Alpha('b')  # pylint: disable=unneeded-not
+    assert _Alpha('a') != _Alpha('b')
+    assert _Alpha('a') < _Alpha('b')
+    assert _Alpha('a') <= _Alpha('b')
+    assert not _Alpha('a') > _Alpha('b')  # pylint: disable=unneeded-not
+    assert not _Alpha('a') >= _Alpha('b')  # pylint: disable=unneeded-not
+
+    assert not _Alpha('b') == _Alpha('a')  # pylint: disable=unneeded-not
+    assert _Alpha('b') != _Alpha('a')
+    assert not _Alpha('b') < _Alpha('a')  # pylint: disable=unneeded-not
+    assert not _Alpha('b') <= _Alpha('a')  # pylint: disable=unneeded-not
+    assert _Alpha('b') > _Alpha('a')
+    assert _Alpha('b') >= _Alpha('a')
+# FILE: test/integration/targets/module_precedence/lib_with_extension/a.py
+#!/usr/bin/python
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
+import json
+
+
+def main():
+    print(json.dumps(dict(changed=False, location='a.py')))
+
+
+if __name__ == '__main__':
+    main()
+# FILE: test/integration/targets/module_precedence/lib_with_extension/a.ini
+#!/usr/bin/python
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
+import json
+
+
+def main():
+    print(json.dumps(dict(changed=False, location='a.ini')))
+
+
+if __name__ == '__main__':
+    main()
+# FILE: test/integration/targets/module_precedence/roles_with_extension/foo/library/a.py
+#!/usr/bin/python
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
+import json
+
+
+def main():
+    print(json.dumps(dict(changed=False, location='role: foo, a.py')))
+
+
+if __name__ == '__main__':
+    main()
+# FILE: test/integration/targets/module_precedence/roles_with_extension/foo/library/a.ini
+#!/usr/bin/python
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
+import json
+
+
+def main():
+    print(json.dumps(dict(changed=False, location='role: foo, a.ini')))
+
+
+if __name__ == '__main__':
+    main()
+# FILE: test/integration/targets/collections/a.statichost.yml
+# use a plugin defined in a content-adjacent collection to ensure we added it properly
+plugin: testns.content_adj.statichost
+hostname: dynamic_host_a

@@ -1,0 +1,22 @@
+from units.compat.mock import MagicMock
+# BLOCK
+from ansible.utils.display import Display
+# BLOCK
+from ansible.galaxy import collection
+# BLOCK
+import pytest
+# BLOCK
+def test_add_collection_requirement_to_unknown_installed_version(monkeypatch):
+    mock_display = MagicMock()
+    monkeypatch.setattr(Display, 'display', mock_display)
+
+    req = collection.CollectionRequirement('namespace', 'name', None, 'https://galaxy.com', ['*'], '*', False,
+                                           skip=True)
+
+    req.add_requirement('parent.collection', '1.0.0')
+    assert req.latest_version == '*'
+
+    assert mock_display.call_count == 1
+
+    actual_warn = ' '.join(mock_display.mock_calls[0][1][0].split('\n'))
+    assert "Failed to validate the collection requirement 'namespace.name:1.0.0' for parent.collection" in actual_warn

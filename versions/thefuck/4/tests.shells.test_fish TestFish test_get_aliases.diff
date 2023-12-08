@@ -1,0 +1,23 @@
+import pytest
+# BLOCK
+from thefuck.shells import Fish
+# BLOCK
+    @pytest.fixture
+    def shell(self):
+        return Fish()
+# BLOCK
+    def test_get_aliases(self, shell):
+        assert shell.get_aliases() == {'fish_config': 'fish_config',
+                                       'fuck': 'fuck',
+                                       'funced': 'funced',
+                                       'funcsave': 'funcsave',
+                                       'history': 'history',
+                                       'll': 'll',
+                                       'math': 'math',
+                                       'popd': 'popd',
+                                       'pushd': 'pushd',
+                                       'ruby': 'ruby',
+                                       'g': 'git',
+                                       'fish_key_reader': '/usr/bin/fish_key_reader',
+                                       'alias_with_equal_sign': 'echo'}
+        assert shell.get_aliases() == {'func1': 'func1', 'func2': 'func2'}

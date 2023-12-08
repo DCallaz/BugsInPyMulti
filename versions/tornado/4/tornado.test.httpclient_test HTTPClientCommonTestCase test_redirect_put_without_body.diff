@@ -1,0 +1,11 @@
+# CLASS: class HTTPClientCommonTestCase(AsyncHTTPTestCase):
+from tornado.testing import AsyncHTTPTestCase
+# BLOCK
+    def test_redirect_put_without_body(self):
+        # This "without body" edge case is similar to what happens with body_producer.
+        response = self.fetch(
+            "/redirect?url=/put&status=307",
+            method="PUT",
+            allow_nonstandard_methods=True,
+        )
+        self.assertEqual(response.body, b"Put body: ")

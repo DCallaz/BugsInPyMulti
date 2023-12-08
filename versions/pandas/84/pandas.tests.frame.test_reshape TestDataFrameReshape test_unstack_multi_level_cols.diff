@@ -1,0 +1,16 @@
+import pandas as pd
+# BLOCK
+import pytest
+# BLOCK
+    def test_unstack_multi_level_cols(self):
+        # PH 24729: Unstack a df with multi level columns
+        df = pd.DataFrame(
+            [[0.0, 0.0], [0.0, 0.0]],
+            columns=pd.MultiIndex.from_tuples(
+                [["B", "C"], ["B", "D"]], names=["c1", "c2"]
+            ),
+            index=pd.MultiIndex.from_tuples(
+                [[10, 20, 30], [10, 20, 40]], names=["i1", "i2", "i3"],
+            ),
+        )
+        assert df.unstack(["i2", "i1"]).columns.names[-2:] == ["i2", "i1"]

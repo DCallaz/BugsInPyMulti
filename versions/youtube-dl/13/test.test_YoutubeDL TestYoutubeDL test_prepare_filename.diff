@@ -1,0 +1,37 @@
+# CLASS: class TestYoutubeDL(unittest.TestCase):
+from youtube_dl import YoutubeDL
+# BLOCK
+    def test_prepare_filename(self):
+        info = {
+            'id': '1234',
+            'ext': 'mp4',
+            'width': None,
+            'height': 1080,
+            'title1': '$PATH',
+            'title2': '%PATH%',
+        }
+
+        def fname(templ):
+            ydl = YoutubeDL({'outtmpl': templ})
+            return ydl.prepare_filename(info)
+        self.assertEqual(fname('%(id)s.%(ext)s'), '1234.mp4')
+        self.assertEqual(fname('%(id)s-%(width)s.%(ext)s'), '1234-NA.mp4')
+        # Replace missing fields with 'NA'
+        self.assertEqual(fname('%(uploader_date)s-%(id)s.%(ext)s'), 'NA-1234.mp4')
+        self.assertEqual(fname('%(height)d.%(ext)s'), '1080.mp4')
+        self.assertEqual(fname('%(height)6d.%(ext)s'), '  1080.mp4')
+        self.assertEqual(fname('%(height)-6d.%(ext)s'), '1080  .mp4')
+        self.assertEqual(fname('%(height)06d.%(ext)s'), '001080.mp4')
+        self.assertEqual(fname('%(height) 06d.%(ext)s'), ' 01080.mp4')
+        self.assertEqual(fname('%(height)   06d.%(ext)s'), ' 01080.mp4')
+        self.assertEqual(fname('%(height)0 6d.%(ext)s'), ' 01080.mp4')
+        self.assertEqual(fname('%(height)0   6d.%(ext)s'), ' 01080.mp4')
+        self.assertEqual(fname('%(height)   0   6d.%(ext)s'), ' 01080.mp4')
+        self.assertEqual(fname('%%'), '%')
+        self.assertEqual(fname('%%%%'), '%%')
+        self.assertEqual(fname('%%(height)06d.%(ext)s'), '%(height)06d.mp4')
+        self.assertEqual(fname('%(width)06d.%(ext)s'), 'NA.mp4')
+        self.assertEqual(fname('%(width)06d.%%(ext)s'), 'NA.%(ext)s')
+        self.assertEqual(fname('%%(width)06d.%(ext)s'), '%(width)06d.mp4')
+        self.assertEqual(fname('Hello %(title1)s'), 'Hello $PATH')
+        self.assertEqual(fname('Hello %(title2)s'), 'Hello %PATH%')

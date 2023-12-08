@@ -1,0 +1,23 @@
+from tests_tqdm import (
+    SkipTest,
+    with_setup,
+    pretest,
+    posttest,
+)
+# BLOCK
+from tqdm import tqdm
+# BLOCK
+def incr(x):
+    return x + 1
+# BLOCK
+@with_setup(pretest, posttest)
+def test_imap():
+    """Test multiprocessing.Pool"""
+    try:
+        from multiprocessing import Pool
+    except ImportError:
+        raise SkipTest
+
+    pool = Pool()
+    res = list(tqdm(pool.imap(incr, range(100)), disable=True))
+    assert res[-1] == 100

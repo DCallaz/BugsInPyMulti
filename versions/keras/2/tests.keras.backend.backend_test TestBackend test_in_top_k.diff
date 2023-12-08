@@ -1,0 +1,87 @@
+# CLASS: class TestBackend(object):
+import numpy as np
+# BLOCK
+import pytest
+# BLOCK
+import warnings
+# BLOCK
+from keras import backend as K
+# BLOCK
+from keras.backend import (
+    theano_backend as KTH,
+    numpy_backend as KNP,
+    cntk_backend as KC,
+    tensorflow_backend as KTF,
+)
+# BLOCK
+from numpy.testing import assert_allclose
+# BLOCK
+try:
+    from keras.backend import tensorflow_backend as KTF
+except ImportError:
+    KTF = None
+    warnings.warn('Could not import the TensorFlow backend.')
+# BLOCK
+try:
+    from keras.backend import cntk_backend as KC
+except ImportError:
+    KC = None
+    warnings.warn('Could not import the CNTK backend')
+# BLOCK
+try:
+    from keras.backend import theano_backend as KTH
+except ImportError:
+    KTH = None
+    warnings.warn('Could not import the Theano backend')
+# BLOCK
+def assert_list_pairwise(z_list,
+                         shape=True,
+                         allclose=True,
+                         itself=False,
+                         atol=1e-05):
+    for (z1, z2) in zip(z_list[1:], z_list[:-1]):
+        if shape:
+            assert z1.shape == z2.shape
+        if allclose:
+            assert_allclose(z1, z2, atol=atol)
+        if itself:
+            assert z1 == z2
+# BLOCK
+if K.backend() == 'theano':
+    WITH_NP = [KTH, KNP]
+elif K.backend() == 'cntk':
+    WITH_NP = [KC, KNP]
+else:
+    WITH_NP = [KTF, KNP]
+# BLOCK
+    @pytest.mark.skipif(K.backend() == 'cntk', reason='Bug in CNTK')
+    def test_in_top_k(self):
+        batch_size = 20
+        num_classes = 10
+
+        # Random prediction test case
+        predictions = np.random.random((batch_size, num_classes)).astype('float32')
+        targets = np.random.randint(num_classes, size=batch_size, dtype='int32')
+
+        # (k == 0 or k > num_classes) does not raise an error
+        # but just return an unmeaningful tensor.
+        for k in range(1, num_classes + 1):
+            z_list = [b.eval(b.in_top_k(b.variable(predictions, dtype='float32'),
+                                        b.variable(targets, dtype='int32'), k))
+                      for b in WITH_NP]
+            assert_list_pairwise(z_list)
+
+        # Identical prediction test case:
+        # randomly set half of the predictions to an identical value
+        num_identical = num_classes // 2
+        for i in range(batch_size):
+            idx_identical = np.random.choice(num_classes,
+                                             size=num_identical, replace=False)
+            predictions[i, idx_identical] = predictions[i, 0]
+        targets = np.zeros(batch_size, dtype='int32')
+
+        for k in range(1, num_classes + 1):
+            z_list = [b.eval(b.in_top_k(b.variable(predictions, dtype='float32'),
+                                        b.variable(targets, dtype='int32'), k))
+                      for b in WITH_NP]
+            assert_list_pairwise(z_list)

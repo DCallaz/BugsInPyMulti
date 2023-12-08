@@ -1,0 +1,13 @@
+# CLASS: class PythonItemExporterTest(BaseItemExporterTest):
+    def test_other_python_types_item(self):
+        from datetime import datetime
+        now = datetime.now()
+        item = {
+            'boolean': False,
+            'number': 22,
+            'time': now,
+            'float': 3.14,
+        }
+        ie = self._get_exporter()
+        exported = ie.export_item(item)
+        self.assertEqual(exported, item)

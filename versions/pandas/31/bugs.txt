@@ -1,0 +1,30 @@
+1,pandas.tests.indexing.test_scalar test_at_with_tuple_index_get
+1,pandas.tests.indexing.test_scalar test_at_with_tuple_index_set
+1,pandas.tests.indexing.test_scalar test_multiindex_at_get
+1,pandas.tests.indexing.test_scalar test_multiindex_at_set
+2,pandas.tests.dtypes.test_dtypes TestCategoricalDtype test_not_string
+3,pandas.tests.series.methods.test_to_period TestToPeriod test_to_period_raises
+3,pandas.tests.series.methods.test_to_timestamp TestToTimestamp test_to_timestamp_raises
+7,pandas.tests.frame.methods.test_replace TestDataFrameReplace test_replace_no_replacement_dtypes
+8,pandas.tests.indexes.categorical.test_indexing TestContains test_contains_na_dtype
+9,pandas.tests.series.methods.test_update TestUpdate test_update_extension_array_series
+10,pandas.tests.reshape.test_concat test_duplicate_keys
+11,pandas.tests.frame.methods.test_cov_corr TestDataFrameCov test_cov_nullable_integer
+12,pandas.tests.arrays.categorical.test_missing TestCategoricalMissing test_use_inf_as_na
+12,pandas.tests.arrays.categorical.test_missing TestCategoricalMissing test_use_inf_as_na_outside_context
+13,pandas.tests.arithmetic.test_datetime64 TestDatetime64DateOffsetArithmetic test_dt64arr_add_sub_offset_array
+13,pandas.tests.arithmetic.test_timedelta64 TestTimedeltaArraylikeAddSubOps test_td64arr_add_offset_index
+18,pandas.tests.indexing.multiindex.test_loc TestMultiIndexLoc test_loc_multiindex_list_missing_label
+18,pandas.tests.indexing.multiindex.test_slice TestMultiIndexSlicers test_per_axis_per_level_getitem
+22,pandas.tests.indexes.datetimes.test_setops TestDatetimeIndexSetOps test_intersection_empty
+22,pandas.tests.indexes.datetimes.test_setops TestBusinessDatetimeIndex test_intersection_bug
+22,pandas.tests.indexes.datetimes.test_setops TestCustomDatetimeIndex test_intersection_bug
+23,pandas.tests.indexes.datetimes.test_timezones test_tz_localize_invalidates_freq
+25,pandas.tests.arrays.categorical.test_analytics TestCategoricalAnalytics test_min_max_only_nan
+26,pandas.tests.indexes.datetimes.test_to_period TestToPeriod test_to_period_infer
+27,pandas.tests.test_strings test_cat_different_classes
+28,pandas.tests.arrays.interval.test_interval TestSetitem test_set_na
+28,pandas.tests.series.methods.test_convert_dtypes TestSeriesConvertDtypes test_convert_dtypes
+29,pandas.tests.io.json.test_pandas TestPandasContainer test_readjson_bool_series
+30,pandas.tests.groupby.test_function test_groupby_quantile_nullable_array
+31,pandas.tests.io.sas.test_xport TestXport test2_binary

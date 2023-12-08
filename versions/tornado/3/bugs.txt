@@ -1,0 +1,2 @@
+2,tornado.test.httpclient_test HTTPClientCommonTestCase test_redirect_put_without_body
+3,tornado.test.httpclient_test SyncHTTPClientSubprocessTest test_destructor_log

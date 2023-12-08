@@ -1,0 +1,28 @@
+import pytest
+# BLOCK
+import pandas as pd
+# BLOCK
+def test_series_groupby_on_2_categoricals_unobserved(
+    reduction_func: str, observed: bool
+):
+    # GH 17605
+
+    if reduction_func == "ngroup":
+        pytest.skip("ngroup is not truly a reduction")
+
+    df = pd.DataFrame(
+        {
+            "cat_1": pd.Categorical(list("AABB"), categories=list("ABCD")),
+            "cat_2": pd.Categorical(list("AB") * 2, categories=list("ABCD")),
+            "value": [0.1] * 4,
+        }
+    )
+    args = {"nth": [0]}.get(reduction_func, [])
+
+    expected_length = 4 if observed else 16
+
+    series_groupby = df.groupby(["cat_1", "cat_2"], observed=observed)["value"]
+    agg = getattr(series_groupby, reduction_func)
+    result = agg(*args)
+
+    assert len(result) == expected_length

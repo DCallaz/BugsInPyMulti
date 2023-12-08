@@ -1,0 +1,10 @@
+8,tests.rules.test_dnf_no_such_command test_get_new_command
+17,tests.shells.test_bash TestBash test_get_aliases
+17,tests.shells.test_bash TestBash test_from_shell
+25,tests.rules.test_mkdir_p test_get_new_command
+27,tests.rules.test_open test_get_new_command
+29,tests.test_types test_update_settings
+29,tests.test_utils test_wrap_settings
+30,tests.rules.test_fix_file test_not_file
+31,tests.rules.test_git_diff_staged test_get_new_command
+32,tests.rules.test_ls_lah test_match

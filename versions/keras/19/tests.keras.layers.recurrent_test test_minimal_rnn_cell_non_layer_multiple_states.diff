@@ -1,0 +1,44 @@
+from keras import backend as K
+# BLOCK
+import pytest
+# BLOCK
+from keras.utils.test_utils import keras_test
+# BLOCK
+@keras_test
+def test_minimal_rnn_cell_non_layer_multiple_states():
+
+    class MinimalRNNCell(object):
+
+        def __init__(self, units, input_dim):
+            self.units = units
+            self.state_size = (units, units)
+            self.kernel = keras.backend.variable(
+                np.random.random((input_dim, units)))
+
+        def call(self, inputs, states):
+            prev_output_1 = states[0]
+            prev_output_2 = states[1]
+            output = keras.backend.dot(inputs, self.kernel)
+            output += prev_output_1
+            output -= prev_output_2
+            return output, [output * 2, output * 3]
+
+    # Basic test case.
+    cell = MinimalRNNCell(32, 5)
+    x = keras.Input((None, 5))
+    layer = recurrent.RNN(cell)
+    y = layer(x)
+    model = keras.models.Model(x, y)
+    model.compile(optimizer='rmsprop', loss='mse')
+    model.train_on_batch(np.zeros((6, 5, 5)), np.zeros((6, 32)))
+
+    # Test stacking.
+    cells = [MinimalRNNCell(8, 5),
+             MinimalRNNCell(16, 8),
+             MinimalRNNCell(32, 16)]
+    layer = recurrent.RNN(cells)
+    assert layer.cell.state_size == (8, 8, 16, 16, 32, 32)
+    y = layer(x)
+    model = keras.models.Model(x, y)
+    model.compile(optimizer='rmsprop', loss='mse')
+    model.train_on_batch(np.zeros((6, 5, 5)), np.zeros((6, 32)))

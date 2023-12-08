@@ -1,0 +1,7 @@
+# CLASS: class BasicsTest(LuigiTestCase):
+from helpers import LuigiTestCase
+# BLOCK
+    def test_requires_has_effect_MRO(self):
+        ChildTask = self._setup_requires_inheritence()
+        self.assertNotEqual(str(ChildTask.__mro__[0]),
+                            str(ChildTask.__mro__[1]))

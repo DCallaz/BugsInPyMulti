@@ -1,0 +1,29 @@
+from functools import partial
+# BLOCK
+import black
+# BLOCK
+from pathlib import Path
+# BLOCK
+from typing import TypeVar
+# BLOCK
+ll = 88
+ff = partial(black.format_file_in_place, line_length=ll, fast=True)
+fs = partial(black.format_str, line_length=ll)
+THIS_FILE = Path(__file__)
+THIS_DIR = THIS_FILE.parent
+EMPTY_LINE = "# EMPTY LINE WITH WHITESPACE" + " (this comment will be removed)"
+T = TypeVar("T")
+R = TypeVar("R")
+# BLOCK
+    def test_comment_indentation(self) -> None:
+        contents_tab = "if 1:\n\tif 2:\n\t\tpass\n\t# comment\n\tpass\n"
+        contents_spc = "if 1:\n    if 2:\n        pass\n    # comment\n    pass\n"
+
+        self.assertFormatEqual(fs(contents_spc), contents_spc)
+        self.assertFormatEqual(fs(contents_tab), contents_spc)
+
+        contents_tab = "if 1:\n\tif 2:\n\t\tpass\n\t\t# comment\n\tpass\n"
+        contents_spc = "if 1:\n    if 2:\n        pass\n        # comment\n    pass\n"
+
+        self.assertFormatEqual(fs(contents_tab), contents_spc)
+        self.assertFormatEqual(fs(contents_spc), contents_spc)

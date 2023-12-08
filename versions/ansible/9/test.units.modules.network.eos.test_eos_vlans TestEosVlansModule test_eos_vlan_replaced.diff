@@ -1,0 +1,3319 @@
+from units.modules.utils import set_module_args
+# BLOCK
+    def test_eos_vlan_replaced(self):
+        self.execute_show_command.return_value = []
+        set_module_args(dict(
+            config=[dict(
+                vlan_id=10,
+                name="tenreplaced",
+                state="suspend"
+            )], state="replaced"
+        ))
+        commands = ['vlan 10', 'name tenreplaced', 'state suspend']
+        self.execute_module(changed=True, commands=commands)
+# FILE: test/integration/targets/iosxr_lacp_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+      msg: "START iosxr_lacp_interfaces replaced integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Replace device configurations of listed interfaces with provided configurations
+      iosxr_lacp_interfaces: &replaced
+        config:
+          - name: Bundle-Ether10
+            churn_logging: partner
+
+          - name: GigabitEthernet0/0/0/1
+            period: 300
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ populate | symmetric_difference(result['before']) |length == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['after']) |length == 0 }}"
+
+    - name: Replace device configurations of listed interfaces with provided configurarions (IDEMPOTENT)
+      iosxr_lacp_interfaces: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+       that:
+         - "result['changed'] == false"
+         - "result.commands|length == 0"
+
+    - name: Assert that before dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['before']) |length == 0 }}"
+  
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/nxos_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+    msg: "Start nxos_interfaces replaced integration tests connection={{ ansible_connection }}"
+
+- block:
+  - set_fact: test_int1="{{ nxos_int1 }}"
+  - name: setup1
+    cli_config: &cleanup
+      config: |
+        default interface {{ test_int1 }}
+
+  - block:
+    - name: setup2
+      cli_config:
+        config: |
+          interface {{ test_int1 }}
+            description Ansible setup
+
+    - name: Gather interfaces facts
+      nxos_facts: &facts
+        gather_subset:
+          - '!all'
+          - '!min'
+        gather_network_resources: interfaces
+
+    - name: Replaced
+      nxos_interfaces: &replaced
+        config:
+          - name: "{{ test_int1 }}"
+            description: 'Configured by Ansible'
+            enabled: True
+        state: replaced
+      register: result
+
+    - assert:
+        that:
+          - "ansible_facts.network_resources.interfaces|symmetric_difference(result.before)|length == 0"
+          - "result.changed == true"
+          - "'interface {{ test_int1 }}' in result.commands"
+          - "'description Configured by Ansible' in result.commands"
+          - "'no shutdown' in result.commands"
+
+    - name: Gather interfaces post facts
+      nxos_facts: *facts
+
+    - assert:
+        that:
+          - "ansible_facts.network_resources.interfaces|symmetric_difference(result.after)|length == 0"
+
+    - name: Idempotence - Replaced
+      nxos_interfaces: *replaced
+      register: result
+
+    - assert:
+        that:
+          - "result.changed == false"
+          - "result.commands|length == 0"
+
+    always:
+    - name: teardown
+      cli_config: *cleanup
+
+  when: platform is not search('N3[5KL]|N[56]K|titanium')
+# FILE: test/integration/targets/exos_lldp_global/tests/httpapi/replaced.yaml
+---
+- debug:
+      msg: "START exos_lldp_global replaced integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _reset_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+  - name: Replace device configurations of LLDP service with provided configurations
+    exos_lldp_global: &replaced
+      config:
+        interval: 20
+        tlv_select:
+          system_name: false
+          system_description: true
+          system_capabilities: false
+      state: replaced
+    register: result
+
+  - name: Assert that correct set of results were generated
+    assert:
+      that:
+        - "{{ replaced['requests'][0]['method'] == result['requests'][0]['method'] }}"
+        - "{{ replaced['requests'][0]['path'] == result['requests'][0]['path'] }}"
+        - "{{ replaced['requests'][0]['data'] == result['requests'][0]['data'] }}"
+
+  - name: Assert that before dicts are correctly generated
+    assert:
+      that:
+          - "{{ populate == result['before'] }}"
+
+  - name: Assert that after dict is correctly generated
+    assert:
+      that:
+          - "{{ replaced['after'] == result['after'] }}"
+
+  - name: Replace device configurations of LLDP service with provided configurations (IDEMPOTENT)
+    exos_lldp_global: *replaced
+    register: result
+
+  - name: Assert that task was idempotent
+    assert:
+      that:
+          - "result['changed'] == false"
+
+  - name: Assert that before dict is correctly generated
+    assert:
+      that:
+          - "{{ replaced['after'] == result['before'] }}"
+
+  always:
+  - include_tasks: _reset_config.yaml
+# FILE: test/integration/targets/ios_lldp_global/tests/cli/replaced.yaml
+---
+- debug:
+      msg: "START Replaced ios_lldp_global state for integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Replaces Global LLDP configuration with provided LLDP configuration
+      ios_lldp_global: &replaced
+        config:
+          holdtime: 20
+          reinit: 5
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) | length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ replaced['before'] == result['before'] }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['before'] == result['before'] }}"
+
+    - name: Replaces Global LLDP configuration with provided LLDP configuration (IDEMPOTENT)
+      ios_lldp_global: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+       that:
+         - "result['changed'] == false"
+
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/junos_lacp_interfaces/tests/netconf/replaced.yaml
+---
+- debug:
+    msg: "START junos_lacp_interfaces replaced integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+- include_tasks: _base_config.yaml
+
+- set_fact:
+    expected_replaced_output:
+      - name: ae1
+        period: slow
+        sync_reset: disable
+        system:
+          priority: 10
+          mac:
+            address: 00:00:00:00:00:03
+      - name: ae2
+        period: fast
+        system:
+          priority: 300
+      - name: ge-0/0/1
+        force_up: true
+        port_priority: 100
+      - name: ge-0/0/2
+        port_priority: 250
+      - name: ge-0/0/3
+        port_priority: 300
+      - name: ge-0/0/4
+        port_priority: 400
+        force_up: true
+
+- block:
+    - name: Configure initial state for lacp interface
+      junos_lacp_interfaces:
+        config:
+          - name: ae1
+            period: fast
+            sync_reset: enable
+            system:
+              priority: 100
+              mac:
+                address: 00:00:00:00:00:02
+          - name: ge-0/0/1
+            port_priority: 100
+            force_up: True
+          - name: ae2
+            period: slow
+            sync_reset: disable
+            system:
+              priority: 200
+              mac:
+                address: 00:00:00:00:00:04
+          - name: ge-0/0/3
+            port_priority: 300
+            force_up: False
+        state: merged
+      register: result
+
+    - name: Replace the provided configuration with the exisiting running configuration
+      junos_lacp_interfaces: &replaced
+        config:
+          - name: ae1
+            period: slow
+            sync_reset: disable
+            system:
+              priority: 10
+              mac:
+                address: 00:00:00:00:00:03
+          - name: ge-0/0/2
+            port_priority: 250
+            force_up: False
+          - name: ae2
+            period: fast
+            system:
+              priority: 300
+          - name: ge-0/0/4
+            port_priority: 400
+            force_up: True
+        state: replaced
+      register: result
+
+    - name: Assert the configuration is reflected on host
+      assert:
+        that:
+          - "{{ expected_replaced_output | symmetric_difference(result['after']) |length == 0 }}"
+
+    - name: Replace the provided configuration with the existing running configuration (IDEMPOTENT)
+      junos_lacp_interfaces: *replaced
+      register: result
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - "result['changed'] == false"
+
+  always:
+    - include_tasks: _remove_config.yaml
+
+- debug:
+    msg: "END junos_lacp_interfaces replaced integration tests on connection={{ ansible_connection }}"
+# FILE: test/integration/targets/nxos_telemetry/tests/common/replaced.yaml
+---
+- debug: msg="START connection={{ ansible_connection }} nxos_telemetry replaced sanity test"
+
+- set_fact: source_interface="Loopback55"
+  when: imagetag and (major_version is version_compare('9.1', 'ge'))
+
+- set_fact: command_list_length=27
+- set_fact: command_list_length=28
+  when: imagetag and (major_version is version_compare('9.1', 'ge'))
+
+- set_fact: dict_facts_length=6
+- set_fact: dict_facts_length=7
+  when: imagetag and (major_version is version_compare('9.1', 'ge'))
+
+- name: Setup - disable feature telemetry
+  nxos_feature: &setup_teardown
+    feature: telemetry
+    state: disabled
+  ignore_errors: yes
+
+- name: Setup - enable feature telemetry
+  nxos_feature:
+    feature: telemetry
+    state: enabled
+
+- name: Setup - add initial telemetry config
+  cli_config:
+    config: |
+      telemetry
+        certificate test_cert host.example.com
+        destination-profile
+          use-vrf blue
+          use-compression gzip
+        destination-group 2
+          ip address 192.168.0.1 port 50001 protocol gRPC encoding GPB
+          ip address 192.168.0.2 port 60001 protocol gRPC encoding GPB
+        destination-group 10
+          ip address 192.168.0.1 port 50001 protocol gRPC encoding GPB
+          ip address 192.168.0.2 port 60001 protocol gRPC encoding GPB
+          ip address 192.168.1.1 port 55 protocol HTTP encoding JSON
+          ip address 192.168.1.2 port 100 protocol gRPC encoding GPB
+        destination-group 99
+        sensor-group 2
+          data-source NX-API
+          path "show bgp l2vpn evpn summary" depth unbounded query-condition foo filter-condition foo
+        sensor-group 8
+          data-source NX-API
+          path "show ip bgp neighbors" depth 0 query-condition foo filter-condition foo
+        sensor-group 55
+          data-source DME
+          path sys/bgp/inst/dom-default/peer-[10.10.10.11]/ent-[10.10.10.11] depth 0 query-condition foo filter-condition foo
+          path sys/ospf depth 0 query-condition foo filter-condition or(eq(ethpmPhysIf.operSt,"down"),eq(ethpmPhysIf.operSt,"up"))
+        sensor-group 77
+        subscription 44
+          dst-grp 2
+          dst-grp 10
+          snsr-grp 2 sample-interval 2000
+          snsr-grp 8 sample-interval 2000
+        subscription 55
+          dst-grp 10
+          snsr-grp 55 sample-interval 2000
+        subscription 99
+          dst-grp 2
+          dst-grp 99
+          snsr-grp 8 sample-interval 90000
+          snsr-grp 77 sample-interval 2000
+- name: Setup - add initial source-interface telemetry config
+  cli_config:
+    config: |
+      telemetry
+        destination-profile
+          source-interface loopback55
+  when: imagetag and (major_version is version_compare('9.1', 'ge'))
+
+- block:
+  - name: Gather Telemetry Facts Before Changes
+    nxos_facts: &facts
+      gather_subset:
+        - '!all'
+        - '!min'
+      gather_network_resources:
+        - telemetry
+
+  - name: Telemetry - replaced
+    nxos_telemetry: &replace
+      state: 'replaced'
+      config:
+        certificate:
+          key: /file_dir/new_server.key
+          hostname: newhost.example.com
+        vrf: management
+        compression: gzip
+        destination_groups:
+          - id: 2
+            destination:
+              ip: 192.168.0.1
+              port: 65001
+              protocol: grpc
+              encoding: gpb
+          - id: 2
+            destination:
+              ip: 192.168.0.3
+              port: 55001
+              protocol: grpc
+              encoding: gpb
+        sensor_groups:
+          - id: 100
+            data_source: NX-API
+            path:
+              name: '"show bgp l2vpn evpn summary"'
+              depth: unbounded
+              query_condition: foo
+              filter_condition: foo
+        subscriptions:
+          - id: 99
+            destination_group: 2
+            sensor_group:
+              id: 100
+              sample_interval: 2000
+    register: result
+
+  - assert:
+      that:
+        - "result.changed == true"
+        - "result.before|length == {{ dict_facts_length }}"
+        - "result.before.certificate|length == 2"
+        - "result.before.destination_groups|length == 7"
+        - "result.before.sensor_groups|length == 8"
+        - "result.before.subscriptions|length == 10"
+        - "'telemetry' in result.commands"
+        - "'no subscription 55' in result.commands"
+        - "'subscription 99' in result.commands"
+        - "'no dst-grp 99' in result.commands"
+        - "'no snsr-grp 8 sample-interval 90000' in result.commands"
+        - "'no snsr-grp 77 sample-interval 2000' in result.commands"
+        - "'no subscription 44' in result.commands"
+        - "'no sensor-group 55' in result.commands"
+        - "'no sensor-group 8' in result.commands"
+        - "'no sensor-group 2' in result.commands"
+        - "'no sensor-group 77' in result.commands"
+        - "'no destination-group 99' in result.commands"
+        - "'no destination-group 10' in result.commands"
+        - "'destination-group 2' in result.commands"
+        - "'no ip address 192.168.0.1 port 50001 protocol grpc encoding gpb' in result.commands"
+        - "'no ip address 192.168.0.2 port 60001 protocol grpc encoding gpb' in result.commands"
+        - "'destination-group 2' in result.commands"
+        - "'ip address 192.168.0.1 port 65001 protocol grpc encoding gpb' in result.commands"
+        - "'ip address 192.168.0.3 port 55001 protocol grpc encoding gpb' in result.commands"
+        - "'sensor-group 100' in result.commands"
+        - result.commands is search("path .*show bgp l2vpn evpn summary.* depth unbounded query-condition foo filter-condition foo")
+        - "'data-source NX-API' in result.commands"
+        - "'subscription 99' in result.commands"
+        - "'snsr-grp 100 sample-interval 2000' in result.commands"
+        - "'certificate /file_dir/new_server.key newhost.example.com' in result.commands"
+        - "'destination-profile' in result.commands"
+        - "'use-vrf management' in result.commands"
+        - "result.commands|length == {{ command_list_length }}"
+
+  # Source interface may or may not be included based on the image version.
+  - assert:
+      that:
+        - "'no source-interface loopback55' in result.commands"
+    when: imagetag and (major_version is version_compare('9.1', 'ge'))
+
+  - assert:
+      that:
+        - "(ansible_facts.network_resources.telemetry|dict2items)|symmetric_difference(result.before|dict2items)|length == 0"
+
+  - name: Gather Telemetry Facts After Changes
+    nxos_facts: *facts
+
+  - assert:
+      that:
+        - "(ansible_facts.network_resources.telemetry|dict2items)|symmetric_difference(result.after|dict2items)|length == 0"
+
+  - name: Telemetry - replaced - idempotence
+    nxos_telemetry: *replace
+    register: result
+
+  - assert:
+      that:
+        - "result.changed == false"
+        - "result.commands|length == 0"
+
+  always:
+  - name: Teardown
+    nxos_feature: *setup_teardown
+    ignore_errors: yes
+
+  - debug: msg="END connection={{ ansible_connection }} nxos_telemetry replaced sanity test"
+# FILE: test/integration/targets/nxos_vlans/tests/cli/replaced.yaml
+---
+- debug:
+    msg: "Start nxos_vlans replaced integration tests connection={{ ansible_connection }}"
+
+- name: setup1
+  cli_config: &cleanup
+    config: |
+      no vlan 2-100
+
+- block:
+  - name: setup2
+    cli_config:
+      config: |
+        vlan 5
+          name test-vlan5
+        vlan 6
+          name test-vlan6
+          exit
+
+  - name: Gather vlans facts
+    nxos_facts: &facts
+      gather_subset:
+        - '!all'
+        - '!min'
+      gather_network_resources: vlans
+
+  - name: Replaced
+    nxos_vlans: &replaced
+      config:
+        - vlan_id: 6
+          state: suspend
+      state: replaced
+    register: result
+
+  - assert:
+      that:
+        - "result.before|length == (ansible_facts.network_resources.vlans|length - 1)"
+        - "result.changed == true"
+        - "'vlan 6' in result.commands"
+        - "'no name' in result.commands"
+        - "'state suspend' in result.commands"
+        - "result.commands|length == 3"
+
+  - name: Gather vlans post facts
+    nxos_facts: *facts
+
+  - assert:
+      that:
+        - "result.after|length == (ansible_facts.network_resources.vlans|length - 1)"
+
+  - name: Idempotence - Replaced
+    nxos_vlans: *replaced
+    register: result
+
+  - assert:
+      that:
+        - "result.changed == false"
+        - "result.commands|length == 0"
+
+  always:
+  - name: teardown
+    cli_config: *cleanup
+# FILE: test/integration/targets/iosxr_l3_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+      msg: "START Replaced iosxr_l3_interfaces state for integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Replaces device configuration of listed interfaces with provided configuration
+      iosxr_l3_interfaces: &replaced
+        config:
+          - name: GigabitEthernet0/0/0/0
+            ipv4:
+            - address: 203.0.113.27/24
+            - address: 203.0.114.1/24
+              secondary: True
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) | length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ replaced['before'] | symmetric_difference(result['before']) | length == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['after']) | length == 0 }}"
+
+    - name: Replaces device configuration of listed interfaces with provided configuration (IDEMPOTENT)
+      iosxr_l3_interfaces: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+       that:
+         - "result['changed'] == false"
+
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/eos_lacp_interfaces/tests/cli/replaced.yaml
+---
+- include_tasks: reset_config.yml
+
+- set_fact:
+    config:
+      - name: Ethernet1
+        rate: fast
+        port_priority: 45
+    other_config:
+      - name: Ethernet2
+        rate: fast
+
+- eos_facts:
+    gather_network_resources: lacp_interfaces
+  become: yes
+
+- name: Replaces device configuration of listed vlans with provided configuration
+  eos_lacp_interfaces:
+    config: "{{ config }}"
+    state: replaced
+  register: result
+  become: yes
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.lacp_interfaces|symmetric_difference(result.before) == []"
+
+- eos_facts:
+    gather_network_resources: lacp_interfaces
+  become: yes
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.lacp_interfaces|symmetric_difference(result.after) == []"
+
+- set_fact:
+    expected_config: "{{ config }} + {{ other_config }}"
+
+- assert:
+    that:
+      - "expected_config|symmetric_difference(ansible_facts.network_resources.lacp_interfaces) == []"
+# FILE: test/integration/targets/eos_vlans/tests/cli/replaced.yaml
+---
+- include_tasks: reset_config.yml
+
+- set_fact:
+    config:
+      - vlan_id: 20
+        state: suspend
+    other_config:
+      - vlan_id: 10
+        name: ten
+
+- eos_facts:
+    gather_network_resources: vlans
+  become: yes
+
+- name: Replaces device configuration of listed vlans with provided configuration
+  eos_vlans:
+    config: "{{ config }}"
+    state: replaced
+  register: result
+  become: yes
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.vlans|symmetric_difference(result.before) == []"
+
+- eos_facts:
+    gather_network_resources: vlans
+  become: yes
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.vlans|symmetric_difference(result.after) == []"
+
+- set_fact:
+    expected_config: "{{ config }} + {{ other_config }}"
+
+- assert:
+    that:
+      - "expected_config|symmetric_difference(ansible_facts.network_resources.vlans) == []"
+# FILE: test/integration/targets/iosxr_lldp_global/tests/cli/replaced.yaml
+---
+- debug:
+      msg: "START iosxr_lldp_global replaced integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Replace global LLDP configuration with provided configurations
+      iosxr_lldp_global: &replaced
+        config:
+          holdtime: 100
+          tlv_select:
+            port_description: False
+            system_description: False
+            management_address: False
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ merged['after'] == result['before'] }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] == result['after'] }}"
+
+    - name: Replace device global LLDP configurations with provided configurarions (IDEMPOTENT)
+      iosxr_lldp_global: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+       that:
+         - "result['changed'] == false"
+
+    - name: Assert that before dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] == result['before'] }}"
+  
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/iosxr_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+      msg: "START Replaced iosxr_interfaces state for integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Replaces device configuration of listed interfaces with provided configuration
+      iosxr_interfaces: &replaced
+        config:
+          - name: GigabitEthernet0/0/0/0
+            description: 'Configured and Replaced by Ansible-Network'
+            mtu: 110
+          - name: GigabitEthernet0/0/0/1
+            description: 'Configured and Replaced by Ansible-Network'
+            speed: 100
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) | length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ replaced['before'] | symmetric_difference(result['before']) | length == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['after']) | length == 0 }}"
+
+    - name: Replaces device configuration of listed interfaces with provided configuration (IDEMPOTENT)
+      iosxr_interfaces: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+       that:
+         - "result['changed'] == false"
+
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/nxos_bfd_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+    msg: "Start nxos_bfd_interfaces replaced integration tests connection={{ ansible_connection }}"
+
+- set_fact: test_int1="{{ nxos_int1 }}"
+- set_fact:
+    bfd_enable: enable
+    bfd_disable: disable
+  when: platform is not search('N5K|N6K')
+
+- name: setup1
+  cli_config: &setup_teardown
+    config: |
+      no feature bfd
+      default interface {{ test_int1 }}
+
+- block:
+  - name: setup2
+    cli_config:
+      config: |
+        feature bfd
+        interface {{ test_int1 }}
+          no switchport
+
+  - name: setup initial bfd state
+    nxos_bfd_interfaces:
+      config:
+        - name: "{{ test_int1 }}"
+          bfd: "{{ bfd_disable|default(omit)}}"
+          echo: enable
+      state: merged
+
+  - name: Replaced
+    nxos_bfd_interfaces: &replaced
+      config:
+        - name: "{{ test_int1 }}"
+          bfd: "{{ bfd_enable|default(omit)}}"
+          echo: disable
+      state: replaced
+    register: result
+
+  - assert:
+      that:
+        - "result.changed == true"
+        - "'no bfd echo' in result.commands"
+      msg: "Assert failed. 'result.commands': {{ result.commands }}"
+
+  - assert:
+      that:
+        - "{{ 'bfd' in result.commands }}"
+      msg: "Assert failed. 'result.commands': {{ result.commands }}"
+    when: bfd_enable is defined
+
+  - name: Idempotence - Replaced
+    nxos_bfd_interfaces: *replaced
+    register: result
+
+  - assert:
+      that:
+        - "result.changed == false"
+        - "result.commands|length == 0"
+
+  always:
+  - name: teardown
+    cli_config: *setup_teardown
+# FILE: test/integration/targets/ios_lag_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+      msg: "START Replaced ios_lag_interfaces state for integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Replaces device configuration of listed interfaces with provided configuration
+      ios_lag_interfaces: &replaced
+        config:
+          - name: Port-channel2
+            members:
+            - member: GigabitEthernet0/1
+              mode: active
+          - name: Port-channel40
+            members:
+            - member: GigabitEthernet0/2
+              mode: active
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) | length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ replaced['before'] | symmetric_difference(result['before']) | length == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['after']) | length == 0 }}"
+
+    - name: Replaces device configuration of listed interfaces with provided configuration (IDEMPOTENT)
+      ios_lag_interfaces: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+       that:
+         - "result['changed'] == false"
+  when: ansible_net_version != "15.6(2)T"
+
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/iosxr_lag_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+      msg: "START iosxr_lag_interfaces replaced integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Replace device configurations of listed interfaces with provided configurations
+      iosxr_lag_interfaces: &replaced
+        config:
+          - name: Bundle-Ether10
+            mode: passive
+            members:
+              - member: GigabitEthernet0/0/0/0
+                mode: passive
+            load_balancing_hash: dst-ip
+
+          - name: Bundle-Ether12
+            mode: active
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ merged['after'] | symmetric_difference(result['before']) |length == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['after']) |length == 0 }}"
+
+    - name: Replace device configurations of listed interfaces with provided configurarions (IDEMPOTENT)
+      iosxr_lag_interfaces: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+       that:
+         - "result['changed'] == false"
+         - "result.commands|length == 0"
+
+    - name: Assert that before dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['before']) |length == 0 }}"
+  
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/exos_lldp_interfaces/tests/httpapi/replaced.yaml
+---
+- debug:
+    msg: "START exos_lldp_interfaces replaced integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _reset_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- set_fact:
+    config:
+      - enabled: true
+        name: '3'
+      - enabled: false
+        name: '4'
+
+- exos_facts:
+    gather_network_resources: lldp_interfaces
+
+- block:
+  - name: Replace LLDP interface configuration with provided configuration
+    exos_lldp_interfaces: &replaced
+      config: "{{ config }}"
+      state: replaced
+    register: result
+
+  - name: Assert that correct set of results were generated
+    assert:
+      that:
+        - "replaced['requests']|symmetric_difference(result['requests']) == []"
+        - "ansible_facts.network_resources.lldp_interfaces|symmetric_difference(result.before) == []"
+
+  - exos_facts:
+      gather_network_resources: lldp_interfaces
+
+  - name: Assert that after dicts were correctly generated
+    assert:
+      that:
+        - "ansible_facts.network_resources.lldp_interfaces|symmetric_difference(result.after) == []"
+        - "config|difference(ansible_facts.network_resources.lldp_interfaces) == []"
+
+  - name: Replace LLDP interface configuration with provided configuration (IDEMPOTENT)
+    exos_lldp_interfaces: *replaced
+    register: result
+
+  - name: Assert that task was idempotent
+    assert:
+      that:
+        - "result['changed'] == false"
+
+  - exos_facts:
+      gather_network_resources: lldp_interfaces
+
+  - name: Assert that the before dicts were correctly generated
+    assert:
+      that:
+        - "ansible_facts.network_resources.lldp_interfaces|symmetric_difference(result.before) == []"
+        - "config|difference(ansible_facts.network_resources.lldp_interfaces) == []"
+# FILE: test/integration/targets/vyos_lldp_global/tests/cli/replaced.yaml
+---
+- debug:
+    msg: "START vyos_lldp_global replaced integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Replace device configurations of LLDP service with provided configurations
+      vyos_lldp_global: &replaced
+        config:
+          legacy_protocols:
+            - 'edp'
+            - 'sonmp'
+            - 'cdp'
+          address: 192.0.2.14
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ populate == result['before'] }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] == result['after'] }}"
+
+    - name: Replace device configurations of LLDP service with provided configurarions (IDEMPOTENT)
+      vyos_lldp_global: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+        that:
+          - "result['changed'] == false"
+
+    - name: Assert that before dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] == result['before'] }}"
+
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/eos_lldp_interfaces/tests/cli/replaced.yaml
+---
+- include_tasks: reset_config.yml
+
+- set_fact:
+    config:
+      - name: Ethernet1
+        transmit: False
+    other_config:
+      - name: Ethernet2
+        transmit: False
+
+- eos_facts:
+    gather_network_resources: lldp_interfaces
+  become: yes
+
+- name: Replace existing LLDP configuration of specified interfaces with provided configuration
+  eos_lldp_interfaces:
+    config: "{{ config }}"
+    state: replaced
+  register: result
+  become: yes
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.lldp_interfaces|symmetric_difference(result.before) == []"
+
+- eos_facts:
+    gather_network_resources: lldp_interfaces
+  become: yes
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.lldp_interfaces|symmetric_difference(result.after) == []"
+
+- set_fact:
+    expected_config: "{{ config }} + {{ other_config }}"
+
+- assert:
+    that:
+      - "expected_config|symmetric_difference(ansible_facts.network_resources.lldp_interfaces) == []"
+# FILE: test/integration/targets/iosxr_lacp/tests/cli/replaced.yaml
+---
+- debug:
+      msg: "START iosxr_lacp replaced integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Replace LACP configuration with provided configurations
+      iosxr_lacp: &replaced
+        config:
+          system:
+            priority: 11
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ populate == result['before'] }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] == result['after'] }}"
+
+    - name: Replace device configurations of listed interfaces with provided configurarions (IDEMPOTENT)
+      iosxr_lacp: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+       that:
+         - "result['changed'] == false"
+
+    - name: Assert that before dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] == result['before'] }}"
+  
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/vyos_lag_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+    msg: "START vyos_lag_interfaces replaced integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Replace device configurations of listed LAG interfaces with provided configurations
+      vyos_lag_interfaces: &replaced
+        config:
+          - name: bond1
+            mode: "802.3ad"
+            hash_policy: "layer2"
+            members:
+              - member: eth2
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ populate | symmetric_difference(result['before']) |length == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['after']) |length == 0 }}"
+
+    - name: Replace device configurations of listed LAG interfaces with provided configurarions (IDEMPOTENT)
+      vyos_lag_interfaces: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+        that:
+          - "result['changed'] == false"
+
+    - name: Assert that before dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['before']) |length == 0 }}"
+
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/eos_lag_interfaces/tests/cli/replaced.yaml
+---
+- include_tasks: reset_config.yml
+
+- set_fact:
+    config:
+      - name: "Port-Channel10"
+        members:
+          - member: Ethernet2
+            mode: "on"
+    other_config:
+      - name: "Port-Channel5"
+        members:
+          - member: Ethernet1
+            mode: "on"
+
+- eos_facts:
+    gather_network_resources: lag_interfaces
+  become: yes
+
+- name: Replace device configuration of specified LAGs with provided configuration.
+  eos_lag_interfaces:
+    config: "{{ config }}"
+    state: replaced
+  become: yes
+  register: result
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.lag_interfaces|symmetric_difference(result.before)|length == 0"
+
+- eos_facts:
+    gather_network_resources: lag_interfaces
+  become: yes
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.lag_interfaces|symmetric_difference(result.after)|length == 0"
+
+- set_fact:
+    expected_config: "{{ config }} + {{ other_config }}"
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.lag_interfaces|symmetric_difference(expected_config)|length == 0"
+# FILE: test/integration/targets/vyos_l3_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+    msg: "START vyos_l3_interfaces replaced integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- block:
+    - include_tasks: _populate.yaml
+
+    - name: Replace device configurations of listed interfaces with provided configurations
+      vyos_l3_interfaces: &replaced
+        config:
+          - name: eth1
+            ipv4:
+              - address: 192.0.2.19/24
+          - name: eth2
+            ipv6:
+              - address: 2001:db8::11/32
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ populate | symmetric_difference(result['before']) |length == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['after']) |length == 0 }}"
+
+    - name: Replace device configurations of listed interfaces with provided configurarions (IDEMPOTENT)
+      vyos_l3_interfaces: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+        that:
+          - "result['changed'] == false"
+
+    - name: Assert that before dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['before']) |length == 0 }}"
+
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/ios_lldp_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+      msg: "START Replaced ios_lldp_interfaces state for integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _enable_lldp.yaml
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Replaces device configuration of listed lldp_interfaces with provided configuration
+      ios_lldp_interfaces: &replaced
+        config:
+          - name: GigabitEthernet0/1
+            transmit: True
+          - name: GigabitEthernet0/2
+            receive: True
+            transmit: False
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) | length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ replaced['before'] | symmetric_difference(result['before']) | length == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['after']) | length == 0 }}"
+
+    - name: Replaces device configuration of listed lldp_interfaces with provided configuration (IDEMPOTENT)
+      ios_lldp_interfaces: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+       that:
+         - "result['changed'] == false"
+
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/junos_static_routes/tests/netconf/replaced.yaml
+---
+- debug:
+    msg: "START junos_static_routes overridden integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+- include_tasks: _base_config.yaml
+
+- set_fact:
+    expected_overridden_output:
+      - address_families:
+        - afi: 'ipv6'
+          routes:
+            - dest: 2001:db8::5/128
+              next_hop:
+                - forward_router_address: 2001:db8:0:1:2a0:a502:0:19da
+        - afi: 'ipv4'
+          routes:
+            - dest: 192.168.0.0/24
+              next_hop:
+                - forward_router_address: 192.168.20.1
+
+- block:
+    - name: Replace the provided configuration with the exisiting running configuration
+      junos_static_routes: &overridden
+        config:
+          - address_families:
+            - afi: 'ipv4'
+              routes:
+                - dest: 192.168.0.0/24
+                  next_hop:
+                    - forward_router_address: 192.168.20.1
+        state: replaced
+      register: result
+
+    - name: Assert the configuration is reflected on host
+      assert:
+        that:
+          - "{{ expected_overridden_output | symmetric_difference(result['after']) |length == 0 }}"
+      debugger: on_failed
+
+    - name: Override the provided configuration with the existing running configuration (IDEMPOTENT)
+      junos_static_routes: *overridden
+      register: result
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - "result['changed'] == false"
+
+  always:
+    - include_tasks: _remove_config.yaml
+
+- debug:
+    msg: "END junos_static_routes overridden integration tests on connection={{ ansible_connection }}"
+# FILE: test/integration/targets/junos_lag_interfaces/tests/netconf/replaced.yaml
+---
+- debug:
+    msg: "START junos_lag_interfaces replaced integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+- include_tasks: _base_config.yaml
+
+- set_fact:
+    expected_replaced_output:
+      - name: ae1
+        members:
+          - member: ge-0/0/1
+        mode: passive
+      - name: ae2
+        link_protection: True
+        members:
+          - member: ge-0/0/3
+            link_type: primary
+          - member: ge-0/0/4
+            link_type: backup
+        mode: passive
+
+- block:
+    - name: Base LAG configuration
+      junos_lag_interfaces:
+        config:
+          - name: ae1
+            members:
+              - member: ge-0/0/1
+              - member: ge-0/0/2
+            mode: active
+          - name: ae2
+            link_protection: True
+            members:
+              - member: ge-0/0/3
+                link_type: primary
+              - member: ge-0/0/4
+                link_type: backup
+            mode: passive
+        state: merged
+
+    - name: Replace the provided configuration with the exisiting running configuration
+      junos_lag_interfaces: &replaced
+        config:
+        - name: ae1
+          members:
+            - member: ge-0/0/1
+          mode: passive
+        state: replaced
+      register: result
+
+    - name: Assert the configuration is reflected on host
+      assert:
+        that:
+          - "{{ expected_replaced_output | symmetric_difference(result['after']) |length == 0 }}"
+
+    - name: Replace the provided configuration with the existing running configuration (IDEMPOTENT)
+      junos_lag_interfaces: *replaced
+      register: result
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - "result['changed'] == false"
+
+  always:
+    - include_tasks: _remove_config.yaml
+
+- debug:
+    msg: "END junos_lag_interfaces replaced integration tests on connection={{ ansible_connection }}"
+# FILE: test/integration/targets/nxos_lacp_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+    msg: "Start nxos_lacp_interfaces replaced integration tests connection={{ ansible_connection }}"
+
+#
+# "lacp mode delay" is not supported on Nexus 9500 series switches.
+# Three models of Nexus 9500 switches have chassis types C9504, C9508 and C9516.
+#
+
+- set_fact:
+    mode: delay
+  when: platform is not search('N3K|N5K|N6K|N7K') and imagetag is not search('A8|I2') and
+    image_version is not search ('9.2') and chassis_type is not search('C95')
+
+- name: setup1
+  cli_config: &cleanup
+    config: |
+      no interface port-channel10
+      no feature lacp
+
+- block:
+  - name: setup2
+    cli_config:
+      config: |
+        feature lacp
+        interface port-channel10
+          switchport
+          lacp min-links 5
+
+  - name: Gather lacp_interfaces facts
+    nxos_facts: &facts
+      gather_subset:
+        - '!all'
+        - '!min'
+      gather_network_resources: lacp_interfaces
+
+  - name: Replaced
+    nxos_lacp_interfaces: &replaced
+      config:
+        - name: port-channel10
+          links:
+            max: 10
+          mode: "{{ mode | default(omit) }}"
+      state: replaced
+    register: result
+
+  - assert:
+      that:
+        - "ansible_facts.network_resources.lacp_interfaces|symmetric_difference(result.before)|length == 0"
+        - "result.changed == true"
+        - "'interface port-channel10' in result.commands"
+        - "'no lacp min-links' in result.commands"
+        - "'lacp max-bundle 10' in result.commands"
+
+  - assert:
+      that:
+        - "'lacp mode delay' in result.commands"
+        - "result.commands|length == 4"
+    when: mode is defined
+
+  - name: Gather lacp_interfaces post facts
+    nxos_facts: *facts
+
+  - assert:
+      that:
+        - "ansible_facts.network_resources.lacp_interfaces|symmetric_difference(result.after)|length == 0"
+
+  - name: Idempotence - Replaced
+    nxos_lacp_interfaces: *replaced
+    register: result
+
+  - assert:
+      that:
+        - "result.changed == false"
+        - "result.commands|length == 0"
+
+  always:
+  - name: teardown
+    cli_config: *cleanup
+# FILE: test/integration/targets/junos_lacp/tests/netconf/replaced.yaml
+---
+- debug:
+    msg: "START junos_lacp replaced integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- set_fact:
+    expected_replaced_output:
+      - system_priority: 73
+
+- block:
+    - name: Set initial config
+      junos_lacp:
+        config:
+          system_priority: 73
+          link_protection: revertive
+        state: replaced
+
+    - name: Replace the provided configuration with the exisiting running configuration
+      junos_lacp: &replaced
+        config:
+          system_priority: 73
+        state: replaced
+      register: result
+
+    - name: Assert the configuration is reflected on host
+      assert:
+        that:
+          - "{{ expected_replaced_output | symmetric_difference([result['after']]) |length == 0 }}"
+
+    - name: Replace the provided configuration with the existing running configuration (IDEMPOTENT)
+      junos_lacp: *replaced
+      register: result
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - "result['changed'] == false"
+
+  always:
+    - include_tasks: _remove_config.yaml
+
+- debug:
+    msg: "END junos_lacp replaced integration tests on connection={{ ansible_connection }}"
+# FILE: test/integration/targets/vyos_lldp_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+    msg: "START vyos_lldp_interfaces replaced integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Replace device configurations of listed LLDP interfaces with provided configurations
+      vyos_lldp_interfaces: &replaced
+        config:
+          - name: 'eth2'
+            enable: false
+            location:
+              civic_based:
+                country_code: 'US'
+                ca_info:
+                  - ca_type: 0
+                    ca_value: 'ENGLISH'
+
+          - name: 'eth1'
+            enable: false
+            location:
+              coordinate_based:
+                altitude: 2200
+                datum: 'WGS84'
+                longitude: '222.267255W'
+                latitude: '33.524449N'
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ populate | symmetric_difference(result['before']) |length == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['after']) |length == 0 }}"
+
+    - name: Replace device configurations of listed LLDP interfaces with provided configurarions (IDEMPOTENT)
+      vyos_lldp_interfaces: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+        that:
+          - "result['changed'] == false"
+
+    - name: Assert that before dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['before']) |length == 0 }}"
+
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/nxos_lacp/tests/cli/replaced.yaml
+---
+
+- debug:
+    msg: "Start nxos_lacp replaced integration tests connection={{ ansible_connection }}"
+
+- name: Enable lacp feature
+  nxos_feature:
+    feature: lacp
+
+- set_fact:
+    mac1: "lacp system-mac 00c1.4c00.bd20 role primary"
+  when: platform is search('N9K') and imagetag is not search('I[2-6]')
+
+- set_fact:
+    mac2:
+      address: 00c1.4c00.bd15
+      role: secondary
+  when: platform is search('N9K') and imagetag is not search('I[2-6]')
+
+- block:
+  - name: Setup1
+    cli_config:
+      config: lacp system-priority 11
+
+  - name: Setup2
+    cli_config:
+      config: "{{ mac1|default(omit) }}"
+
+  - name: Gather lacp facts
+    nxos_facts: &facts
+      gather_subset:
+        - '!all'
+        - '!min'
+      gather_network_resources: lacp
+
+  - name: Replaced
+    nxos_lacp: &replaced
+      config:
+        system:
+          priority: 12
+          mac: "{{ mac2|default(omit) }}"
+      state: replaced
+    register: result
+
+  - assert:
+      that:
+        - "ansible_facts.network_resources.lacp == result.before"
+        - "result.changed == true"
+        - "result.commands|length == 2"
+        - "'no lacp system-priority' in result.commands"
+        - "'lacp system-priority 12' in result.commands"
+    when: platform is not search('N9K')
+
+  - assert:
+      that:
+        - "ansible_facts.network_resources.lacp == result.before"
+        - "result.changed == true"
+        - "'no lacp system-priority' in result.commands"
+        - "'no lacp system-mac' in result.commands"
+        - "'lacp system-priority 12' in result.commands"
+        - "'lacp system-mac 00c1.4c00.bd15 role secondary' in result.commands"
+        - "result.commands|length == 4"
+    when: platform is search('N9K') and imagetag is not search('I[2-6]')
+
+  - name: Gather lacp interfaces post facts
+    nxos_facts: *facts
+
+  - assert:
+      that:
+        - "ansible_facts.network_resources.lacp == result.after"
+    when: platform is search('N9K') and imagetag is not search('I[2-6]')
+
+  - name: Idempotence - Replaced
+    nxos_lacp: *replaced
+    register: result
+
+  - assert:
+      that:
+        - "result.changed == false"
+        - "result.commands|length == 0"
+
+  - name: Setup3
+    cli_config:
+      config: "{{ mac1|default(omit) }}"
+
+  - name: Replaced
+    nxos_lacp:
+      state: replaced
+    register: result
+    when: platform is search('N9K') and imagetag is not search('I[2-6]')
+
+  - assert:
+      that:
+        - "result.changed == true"
+        - "result.commands|length == 2"
+        - "'no lacp system-mac' in result.commands"
+        - "'no lacp system-priority' in result.commands"
+    when: platform is search('N9K') and imagetag is not search('I[2-6]')
+
+  always:
+  - name: teardown
+    nxos_feature:
+      feature: lacp
+      state: disabled
+# FILE: test/integration/targets/eos_l3_interfaces/tests/cli/replaced.yaml
+---
+- include_tasks: reset_config.yml
+
+- set_fact:
+    config:
+      - name: Ethernet2
+        ipv4:
+          - address: 203.0.113.205/31
+    other_config:
+      - name: Ethernet1
+        ipv4:
+          - address: 192.0.2.12/24
+          - address: 203.0.113.27/31
+            secondary: true
+      - name: Management1
+        ipv4:
+          - address: dhcp
+
+- eos_facts:
+    gather_network_resources: l3_interfaces
+  become: yes
+
+- name: Replace device configuration of specified L3 interfaces with provided configuration.
+  eos_l3_interfaces:
+    config: "{{ config }}"
+    state: replaced
+  register: result
+  become: yes
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.l3_interfaces|symmetric_difference(result.before) == []"
+
+- eos_facts:
+    gather_network_resources: l3_interfaces
+  become: yes
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.l3_interfaces|symmetric_difference(result.after) == []"
+  become: yes
+
+- set_fact:
+    expected_config: "{{ config }} + {{ other_config }}"
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.l3_interfaces|symmetric_difference(expected_config) == []"
+# FILE: test/integration/targets/junos_lldp_global/tests/netconf/replaced.yaml
+---
+- debug:
+    msg: "START junos_lldp_global replaced integration tests on connection={{ ansible_connection }}"
+
+- name: get supported protocols
+  junos_command:
+    commands: show lldp
+  register: result
+  ignore_errors: yes
+
+- name: lldp supported
+  set_fact:
+    lldp_supported: True
+  when: not result.failed
+
+- name: lldp not supported
+  set_fact:
+    lldp_supported: False
+  when: result.failed
+
+- block:
+  - include_tasks: _remove_config.yaml
+
+  - set_fact:
+      expected_replaced_output:
+        - interval: 20000
+          address: 10.1.1.2
+          transmit_delay: 500
+          hold_multiplier: 5
+          enabled: False
+
+  - name: Configure initial state for lldp global
+    junos_lldp_global:
+      config:
+        interval: 10000
+        address: 10.1.1.1
+        transmit_delay: 400
+        hold_multiplier: 10
+      state: merged
+    register: result
+
+  - name: Replace the provided configuration with the exisiting running configuration
+    junos_lldp_global: &replaced
+      config:
+        interval: 20000
+        address: 10.1.1.2
+        transmit_delay: 500
+        hold_multiplier: 5
+        enabled: False
+      state: replaced
+    register: result
+
+  - name: Assert the configuration is reflected on host
+    assert:
+      that:
+        - "{{ expected_replaced_output | symmetric_difference([result['after']]) |length == 0 }}"
+
+  - name: Replace the provided configuration with the existing running configuration (IDEMPOTENT)
+    junos_lldp_global: *replaced
+    register: result
+
+  - name: Assert that the previous task was idempotent
+    assert:
+      that:
+        - "result['changed'] == false"
+
+  always:
+    - include_tasks: _remove_config.yaml
+  when: lldp_supported
+
+- debug:
+    msg: "END junos_lldp_global replaced integration tests on connection={{ ansible_connection }}"
+# FILE: test/integration/targets/ios_lacp_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+      msg: "START Replaced ios_lacp_interfaces state for integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Replaces device configuration of listed lacp_interfaces with provided configuration
+      ios_lacp_interfaces: &replaced
+        config:
+        - name: GigabitEthernet0/1
+          port_priority: 10
+        - name: Port-channel40
+          fast_switchover: True
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) | length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ replaced['before'] | symmetric_difference(result['before']) | length == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['after']) | length == 0 }}"
+
+    - name: Replaces device configuration of listed lacp_interfaces with provided configuration (IDEMPOTENT)
+      ios_lacp_interfaces: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+       that:
+         - "result['changed'] == false"
+  when: ansible_net_version != "15.6(2)T"
+
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/exos_l2_interfaces/tests/httpapi/replaced.yaml
+---
+- debug:
+    msg: "START exos_l2_interfaces replaced integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _reset_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- set_fact:
+    config:
+      - access: null
+        name: '2'
+        trunk:
+          native_vlan: 30
+          trunk_allowed_vlans:
+            - 40
+      - access:
+          vlan: 10
+        name: '3'
+        trunk: null
+
+- exos_facts:
+    gather_network_resources: l2_interfaces
+
+- block:
+  - name: Replace L2 interface configuration with provided configuration
+    exos_l2_interfaces: &replaced
+      config: "{{ config }}"
+      state: replaced
+    register: result
+
+  - name: Assert that correct set of results were generated
+    assert:
+      that:
+        - "replaced['requests']|symmetric_difference(result['requests']) == []"
+        - "ansible_facts.network_resources.l2_interfaces|symmetric_difference(result.before) == []"
+
+  - exos_facts:
+      gather_network_resources: l2_interfaces
+
+  - name: Assert that after dicts were correctly generated
+    assert:
+      that:
+        - "ansible_facts.network_resources.l2_interfaces|symmetric_difference(result.after) == []"
+        - "config|difference(ansible_facts.network_resources.l2_interfaces) == []"
+
+  - name: Replace L2 interface configuration with provided configuration (IDEMPOTENT)
+    exos_l2_interfaces: *replaced
+    register: result
+
+  - name: Assert that task was idempotent
+    assert:
+      that:
+        - "result['changed'] == false"
+
+  - exos_facts:
+      gather_network_resources: l2_interfaces
+
+  - name: Assert that the before dicts were correctly generated
+    assert:
+      that:
+        - "ansible_facts.network_resources.l2_interfaces|symmetric_difference(result.before) == []"
+        - "config|difference(ansible_facts.network_resources.l2_interfaces) == []"
+# FILE: test/integration/targets/ios_l3_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+      msg: "START Replaced ios_l3_interfaces state for integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Replaces device configuration of listed interfaces with provided configuration
+      ios_l3_interfaces: &replaced
+        config:
+          - name: GigabitEthernet0/1
+            ipv4:
+            - address: 203.0.114.1/24
+          - name: GigabitEthernet0/2
+            ipv4:
+            - address: 198.51.100.1/24
+              secondary: True
+            - address: 198.51.100.2/24
+            ipv6:
+            - address: 2001:db8:1:1::/64
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) | length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ replaced['before'] | symmetric_difference(result['before']) | length == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['after']) | length == 0 }}"
+
+    - name: Replaces device configuration of listed interfaces with provided configuration (IDEMPOTENT)
+      ios_l3_interfaces: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+       that:
+         - "result['changed'] == false"
+
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/nxos_l3_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+    msg: "Start nxos_l3_interfaces replaced integration tests connection={{ ansible_connection }}"
+
+- set_fact:
+    test_int3: "{{ nxos_int3 }}"
+    subint3: "{{ nxos_int3 }}.42"
+
+- name: setup1
+  cli_config: &cleanup
+    config: |
+      no system default switchport
+      default interface {{ test_int3 }}
+      interface {{ test_int3 }}
+        no switchport
+  ignore_errors: yes
+
+- name: setup2 cleanup all L3 states on all interfaces
+  nxos_l3_interfaces:
+    state: deleted
+
+- block:
+  - name: setup3
+    cli_config:
+      config: |
+        interface {{ subint3 }}
+          encapsulation dot1q 42
+          ip address 192.168.10.2/24
+          no ip redirects
+          ip unreachables
+
+  - name: Gather l3_interfaces facts
+    nxos_facts: &facts
+      gather_subset:
+        - '!all'
+        - '!min'
+      gather_network_resources: l3_interfaces
+
+  - name: Replaced
+    nxos_l3_interfaces: &replaced
+      config:
+        - name: "{{ subint3 }}"
+          dot1q: 442
+          # Note: device auto-disables redirects when secondaries are present
+          redirects: false
+          unreachables: false
+          ipv4:
+            - address: 192.168.20.2/24
+              tag: 5
+            - address: 192.168.200.2/24
+              secondary: True
+      state: replaced
+    register: result
+
+  - assert:
+      that:
+        - "result.before|length == (ansible_facts.network_resources.l3_interfaces|length|int - rsvd_intf_len|int)"
+        - "result.changed == true"
+        - "'interface {{ subint3 }}' in result.commands"
+        - "'encapsulation dot1q 442' in result.commands"
+        - "'no ip unreachables' in result.commands"
+        - "'ip address 192.168.20.2/24 tag 5' in result.commands"
+        - "'ip address 192.168.200.2/24 secondary' in result.commands"
+        - "result.commands|length == 5"
+
+  - name: Gather l3_interfaces post facts
+    nxos_facts: *facts
+
+  - assert:
+      that:
+        - "result.after|length == (ansible_facts.network_resources.l3_interfaces|length|int - rsvd_intf_len|int)"
+
+  - name: Idempotence - Replaced
+    nxos_l3_interfaces: *replaced
+    register: result
+
+  - assert:
+      that:
+        - "result.changed == false"
+        - "result.commands|length == 0"
+
+  - name: Replaced with no optional attrs specified
+    nxos_l3_interfaces: &replaced_no_attrs
+      config:
+        - name: "{{ subint3 }}"
+      state: replaced
+    register: result
+
+  - assert:
+      that:
+        - "result.changed == true"
+        - "'interface {{ subint3 }}' in result.commands"
+        - "'no encapsulation dot1q' in result.commands"
+        - "'no ip address' in result.commands"
+
+  - assert:
+      that:
+        # 'ip redirects' normally auto-enables due to rmv'ing the secondaries;
+        # this behavior is unreliable on legacy platforms thus command is explicit.
+        - "'ip redirects' in result.commands"
+    when: platform is match('N[3567]')
+
+  - name: Idempotence - Replaced with no attrs specified
+    nxos_l3_interfaces: *replaced_no_attrs
+    register: result
+
+  - assert:
+      that:
+        - "result.changed == false"
+        - "result.commands|length == 0"
+
+  always:
+  - name: teardown
+    cli_config:
+      config: |
+        no interface {{ subint3 }}
+    ignore_errors: yes
+# FILE: test/integration/targets/iosxr_l2_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+      msg: "START Replaced ios_interfaces state for integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Replaces device L2 configuration of listed interfaces with provided configuration
+      iosxr_l2_interfaces: &replaced
+        config:
+          - name: GigabitEthernet0/0/0/1
+            native_vlan: 40
+            l2transport: True
+            l2protocol:
+            - vtp: tunnel
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) | length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ replaced['before'] | symmetric_difference(result['before']) | length == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['after']) | length == 0 }}"
+
+    - name: Replaces device L2 configuration of listed interfaces with provided configuration (IDEMPOTENT)
+      iosxr_l2_interfaces: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+       that:
+         - "result['changed'] == false"
+
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/nxos_lag_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+    msg: "Start nxos_lag_interfaces replaced integration tests connection={{ ansible_connection }}"
+
+- set_fact: test_int1="{{ nxos_int1 }}"
+- set_fact: test_int2="{{ nxos_int2 }}"
+
+- name: enable feature lacp
+  nxos_feature:
+    feature: lacp
+
+- name: setup1
+  nxos_config:
+    lines:
+      - no interface port-channel 10
+      - no interface port-channel 11
+  ignore_errors: yes
+
+- name: setup2
+  nxos_lag_interfaces: &remove_lags
+    state: deleted
+
+- block:
+  - name: setup3
+    nxos_config:
+      lines:
+        - "channel-group 10"
+      parents: "{{ item }}"
+    ignore_errors: yes
+    loop:
+      - "interface {{ test_int1 }}"
+      - "interface {{ test_int2 }}"
+
+  - name: Gather LAG interfaces facts
+    nxos_facts: &facts
+      gather_subset:
+        - '!all'
+        - '!min'
+      gather_network_resources: lag_interfaces
+
+  - name: Replaced
+    nxos_lag_interfaces: &replaced
+      config:
+        - name: port-channel11
+          members:
+            - member: "{{ test_int2 }}"
+              mode: active
+      state: replaced
+    register: result
+
+  - assert:
+      that:
+        - "ansible_facts.network_resources.lag_interfaces|symmetric_difference(result.before)|length == 0"
+
+  - name: Gather LAG interfaces post facts
+    nxos_facts: *facts
+
+  - assert:
+      that:
+        - "ansible_facts.network_resources.lag_interfaces|symmetric_difference(result.after)|length == 0"
+
+  - name: Idempotence - Replaced
+    nxos_lag_interfaces: *replaced
+    register: result
+
+  - assert:
+      that:
+        - "result.changed == false"
+
+  always:
+  - name: teardown1
+    nxos_lag_interfaces: *remove_lags
+    ignore_errors: yes
+
+  - name: disable feature lacp
+    nxos_feature:
+      feature: lacp
+      state: disabled
+# FILE: test/integration/targets/eos_l2_interfaces/tests/cli/replaced.yaml
+---
+- include_tasks: reset_config.yml
+
+- set_fact:
+    config:
+      - name: Ethernet1
+        trunk:
+          native_vlan: 20
+          trunk_allowed_vlans:
+            - 5-10
+            - "15"
+
+- eos_facts:
+    gather_network_resources: l2_interfaces
+  become: yes
+
+- name: Replace device configuration of specified L2 interfaces with provided configuration.
+  eos_l2_interfaces:
+    config: "{{ config }}"
+    state: replaced
+  register: result
+  become: yes
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.l2_interfaces|symmetric_difference(result.before) == []"
+
+- eos_facts:
+    gather_network_resources: l2_interfaces
+  become: yes
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.l2_interfaces|symmetric_difference(result.after) == []"
+
+- set_fact:
+    expected_config: "{{ config }} + [{'name': 'Ethernet2', 'trunk': {'native_vlan': 20}}, {'name': 'Management1'}]"
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.l2_interfaces|symmetric_difference(expected_config) == []"
+# FILE: test/integration/targets/ios_l2_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+      msg: "START Replaced ios_l2_interfaces state for integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Replaces device L2 configuration from listed interfaces with provided configuration
+      ios_l2_interfaces: &replaced
+        config:
+          - name: GigabitEthernet0/1
+            access:
+              vlan: 40
+          - name: GigabitEthernet0/2
+            trunk:
+              native_vlan: 20
+              pruning_vlans: 10-20,30
+              encapsulation: dot1q
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) | length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ replaced['before'] | symmetric_difference(result['before']) | length == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['after']) | length == 0 }}"
+
+    - name: Replaces device L2 configuration from listed interfaces with provided configuration (IDEMPOTENT)
+      ios_l2_interfaces: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+       that:
+         - "result['changed'] == false"
+  when: ansible_net_version != "15.6(2)T"
+
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/nxos_l2_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+    msg: "Start nxos_l2_interfaces replaced integration tests connection={{ ansible_connection }}"
+
+- set_fact: test_int1="{{ nxos_int1 }}"
+- set_fact: test_int2="{{ nxos_int2 }}"
+
+- name: setup1
+  cli_config: &cleanup
+    config: |
+      default interface {{ test_int1 }}
+      default interface {{ test_int2 }}
+  ignore_errors: yes
+
+- block:
+  - name: setup2
+    cli_config:
+      config: |
+        interface {{ test_int1 }}
+          switchport
+          switchport access vlan 5
+        interface {{ test_int2 }}
+          switchport
+          switchport trunk native vlan 15
+          switchport trunk allowed vlan 25-27
+
+  - name: Gather l2_interfaces facts
+    nxos_facts: &facts
+      gather_subset:
+        - '!all'
+        - '!min'
+      gather_network_resources: l2_interfaces
+
+  - name: Replaced
+    nxos_l2_interfaces: &replaced
+      config:
+        - name: "{{ test_int1 }}"
+          access:
+            vlan: 8
+          trunk:
+            allowed_vlans: "10-12"
+      state: replaced
+    register: result
+
+  - assert:
+      that:
+        - "result.changed == true"
+        - "'interface {{ test_int1 }}' in result.commands"
+        - "'switchport access vlan 8' in result.commands"
+        - "'switchport trunk allowed vlan 10,11,12' in result.commands"
+        - "result.commands|length == 3"
+
+  - name: Gather l2_interfaces post facts
+    nxos_facts: *facts
+
+  - assert:
+      that:
+        - "ansible_facts.network_resources.l2_interfaces|symmetric_difference(result.after)|length == 0"
+
+  - name: Idempotence - Replaced
+    nxos_l2_interfaces: *replaced
+    register: result
+
+  - assert:
+      that:
+        - "result.changed == false"
+        - "result.commands|length == 0"
+
+  always:
+  - name: teardown
+    cli_config: *cleanup
+    ignore_errors: yes
+# FILE: test/integration/targets/vyos_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+    msg: "START vyos_interfaces replaced integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Replace device configurations of listed interfaces with provided configurations
+      vyos_interfaces: &replaced
+        config:
+          - name: eth1
+            description: "Replaced by Ansible"
+            vifs:
+              - vlan_id: 100
+                description: "VIF 100 - Replaced by Ansible"
+
+          - name: eth2
+            mtu: 1400
+            description: "Replaced by Ansible"
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ populate | symmetric_difference(result['before']) |length == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['after']) |length == 0 }}"
+
+    - name: Replace device configurations of listed interfaces with provided configurarions (IDEMPOTENT)
+      vyos_interfaces: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+        that:
+          - "result['changed'] == false"
+
+    - name: Assert that before dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['before']) |length == 0 }}"
+
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/nxos_hsrp_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+    msg: "Start nxos_hsrp_interfaces replaced integration tests connection={{ ansible_connection }}"
+
+- set_fact: test_int1="{{ nxos_int1 }}"
+- set_fact: test_int2="{{ nxos_int2 }}"
+- set_fact:
+    bfd_enable: enable
+    bfd_disable: disable
+  when: platform is not search('N35')
+
+- block:
+  - name: setup1
+    cli_config: &setup_teardown
+      config: |
+        no feature bfd
+        no feature hsrp
+        default interface {{ test_int1 }}
+        default interface {{ test_int2 }}
+
+  - name: setup2
+    cli_config:
+      config: |
+        feature bfd
+        feature hsrp
+        interface {{ test_int1 }}
+          no switchport
+          hsrp bfd
+        interface {{ test_int2 }}
+          no switchport
+
+  - name: Replaced
+    nxos_hsrp_interfaces: &replaced
+      config:
+        - name: "{{ test_int1 }}"
+          bfd: "{{ bfd_disable|default(omit)}}"
+      state: replaced
+    register: result
+
+  - assert:
+      that:
+        - "result.changed == true"
+        - "'no hsrp bfd' in result.commands"
+      msg: "Assert failed. 'result.commands': {{ result.commands }}"
+
+  - name: Idempotence - Replaced
+    nxos_hsrp_interfaces: *replaced
+    register: result
+
+  - assert:
+      that:
+        - "result.changed == false"
+        - "result.commands|length == 0"
+
+  always:
+  - name: teardown
+    cli_config: *setup_teardown
+# FILE: test/integration/targets/exos_vlans/tests/httpapi/replaced.yaml
+---
+- debug:
+    msg: "START exos_vlans replaced integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _reset_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+  - name: Replace existing VLAN configurations with provided configurations
+    exos_vlans: &replaced
+      config:
+        - name: Test_VLAN20
+          vlan_id: 20
+          state: active
+        - name: vlan_40
+          vlan_id: 40
+          state: suspend
+      state: replaced
+    register: result
+
+  - name: Assert that correct set of requests are correctly generated
+    assert:
+      that:
+        - "{{ replaced['requests'] == result['requests'] }}"
+
+  - name: Assert that before dicts were correctly generated
+    assert: 
+      that:
+        - "{{ initial_state == result['before'] }}"
+
+  - name: Assert that after dicts were correctly generated
+    assert:
+      that:
+        - "{{ replaced['after'] == result['after'] }}"
+
+  - name: Replace existing VLAN configuration with provided configurations (IDEMPOTENT)
+    exos_vlans: *replaced
+    register: result
+
+  - name: Assert that task was idempotent
+    assert:
+      that: 
+        - "result.changed == false"
+
+  - name: Assert that before dict was correctly generated
+    assert:
+      that:
+        - "{{ replaced['after'] == result['before'] }}"
+# FILE: test/integration/targets/iosxr_lldp_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+      msg: "START iosxr_lldp_interfaces replaced integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Replace device configurations of listed interfaces with provided configurations
+      iosxr_lldp_interfaces: &replaced
+        config:
+          - name: GigabitEthernet0/0/0/1
+            transmit: False
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ populate | symmetric_difference(result['before']) |length == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['after']) |length == 0 }}"
+
+    - name: Replace device configurations of listed interfaces with provided configurarions (IDEMPOTENT)
+      iosxr_lldp_interfaces: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+       that:
+         - "result['changed'] == false"
+         - "result.commands|length == 0"
+
+    - name: Assert that before dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['before']) |length == 0 }}"
+  
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/ios_interfaces/tests/cli/replaced.yaml
+---
+- debug:
+      msg: "START Replaced ios_interfaces state for integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Replaces device configuration of listed interfaces with provided configuration
+      ios_interfaces: &replaced
+        config:
+          - name: GigabitEthernet0/1
+            description: 'Configured and Replaced by Ansible-Network'
+            mtu: 110
+          - name: GigabitEthernet0/2
+            description: 'Configured and Replaced by Ansible-Network'
+            speed: 10
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) | length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ replaced['before'] | symmetric_difference(result['before']) | length == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['after']) | length == 0 }}"
+
+    - name: Replaces device configuration of listed interfaces with provided configuration (IDEMPOTENT)
+      ios_interfaces: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+       that:
+         - "result['changed'] == false"
+
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/ios_vlans/tests/cli/replaced.yaml
+---
+- debug:
+      msg: "START Replaced ios_vlans state for integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Replaces device configuration of listed VLANs with provided configuration
+      ios_vlans: &replaced
+        config:
+          - vlan_id: 20
+            name: Test_VLAN20
+            mtu: 700
+            shutdown: disabled
+          - vlan_id: 30
+            name: Test_VLAN30
+            mtu: 1000
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) | length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ replaced['before'] | symmetric_difference(result['before']) | length == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['after']) | length == 0 }}"
+
+    - name: Replaces device configuration of listed interfaces with provided configuration (IDEMPOTENT)
+      ios_vlans: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+       that:
+         - "result['changed'] == false"
+  when: ansible_net_version != "15.6(2)T"
+
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/junos_vlans/tests/netconf/replaced.yaml
+---
+- debug:
+    msg: "START junos_vlans replaced integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+- include_tasks: _base_config.yaml
+
+- set_fact:
+    expected_replaced_output:
+      - name: vlan1
+        vlan_id: 10
+      - name: vlan2
+        vlan_id: 2
+
+- block:
+    - name: Replace the provided configuration with the exisiting running configuration
+      junos_vlans: &replaced
+        config:
+          - name: vlan1
+            vlan_id: 10
+        state: replaced
+      register: result
+
+    - name: Assert the configuration is reflected on host
+      assert:
+        that:
+          - "{{ expected_replaced_output | symmetric_difference(result['after']) |length == 0 }}"
+
+    - name: Replace the provided configuration with the existing running configuration (IDEMPOTENT)
+      junos_vlans: *replaced
+      register: result
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - "result['changed'] == false"
+
+  always:
+    - include_tasks: _remove_config.yaml
+
+- debug:
+    msg: "END junos_vlans replaced integration tests on connection={{ ansible_connection }}"
+# FILE: test/integration/targets/eos_interfaces/tests/cli/replaced.yaml
+---
+- include_tasks: reset_config.yml
+
+- set_fact:
+    config:
+      - name: Ethernet1
+        duplex: auto
+        enabled: True
+      - name: Ethernet2
+        description: 'Configured by Ansible'
+        duplex: auto
+        enabled: False
+
+- eos_facts:
+    gather_network_resources: interfaces
+  become: yes
+
+- name: Replaces device configuration of listed interfaces with provided configuration
+  eos_interfaces:
+    config: "{{ config }}"
+    state: replaced
+  register: result
+  become: yes
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.interfaces|symmetric_difference(result.before)|length == 0"
+
+- eos_facts:
+    gather_network_resources: interfaces
+  become: yes
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.interfaces|symmetric_difference(result.after)|length == 0"
+
+- assert:
+    that:
+      - "config|difference(ansible_facts.network_resources.interfaces)|length == 0"
+# FILE: test/integration/targets/junos_interfaces/tests/netconf/replaced.yaml
+---
+- debug:
+    msg: "START junos_interfaces replaced integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- set_fact:
+    expected_replaced_output:
+      - name: ge-0/0/1
+        description: "Replaced by Ansible - Interface 1"
+        mtu: 2048
+        speed: 10m
+        enabled: true
+      - name: ge-0/0/2
+        description: "Configured by Ansible - Interface 2"
+        mtu: 2048
+        speed: 10m
+        enabled: true
+        hold_time:
+          up: 3000
+          down: 3200
+      - name: fxp0
+        enabled: true
+
+- block:
+    - name: Configure initial state for interface
+      junos_interfaces:
+        config:
+          - name: ge-0/0/1
+            description: "Configured by Ansible - Interface 1"
+            mtu: 1024
+            speed: 100m
+            enabled: False
+            duplex: full-duplex
+            hold_time:
+              up: 2000
+              down: 2200
+          - name: ge-0/0/2
+            description: "Configured by Ansible - Interface 2"
+            mtu: 2048
+            speed: 10m
+            hold_time:
+              up: 3000
+              down: 3200
+        state: merged
+      register: result
+
+    - name: Replace the provided configuration with the exisiting running configuration
+      junos_interfaces: &replaced
+        config:
+          - name: ge-0/0/1
+            description: "Replaced by Ansible - Interface 1"
+            mtu: 2048
+            speed: 10m
+            enabled: True
+        state: replaced
+      register: result
+
+    - name: Assert the configuration is reflected on host
+      assert:
+        that:
+          - "{{ expected_replaced_output | symmetric_difference(result['after']) |length == 0 }}"
+
+    - name: Replace the provided configuration with the existing running configuration (IDEMPOTENT)
+      junos_interfaces: *replaced
+      register: result
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - "result['changed'] == false"
+
+  always:
+    - include_tasks: _remove_config.yaml
+
+- debug:
+    msg: "END junos_interfaces replaced integration tests on connection={{ ansible_connection }}"
+# FILE: test/integration/targets/eos_lldp_global/tests/cli/replaced.yaml
+---
+- include_tasks: reset_config.yml
+
+- set_fact:
+    config:
+      holdtime: 100
+      tlv_select:
+        management_address: False
+        port_description: False
+        system_description: True
+
+- eos_facts:
+    gather_network_resources: lldp_global
+  become: yes
+
+- name: Replaces device configuration with provided LLDP configuration
+  eos_lldp_global:
+    config: "{{ config }}"
+    state: replaced
+  register: result
+  become: yes
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.lldp_global == result.before"
+
+- eos_facts:
+    gather_network_resources: lldp_global
+  become: yes
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.lldp_global == result.after"
+
+- set_fact:
+    expected_config:
+      holdtime: 100
+      tlv_select:
+        management_address: False
+        port_description: False
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.lldp_global == expected_config"
+# FILE: test/integration/targets/ios_lacp/tests/cli/replaced.yaml
+---
+- debug:
+      msg: "START Replaced ios_lacp state for integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Replaces system LACP configuration provided LACP configuration
+      ios_lacp: &replaced
+        config:
+          system:
+            priority: 20
+        state: replaced
+      register: result
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) | length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ replaced['before'] == result['before'] }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['before'] == result['before'] }}"
+
+    - name: Replaces system LACP configuration provided LACP configuration (IDEMPOTENT)
+      ios_lacp: *replaced
+      register: result
+
+    - name: Assert that task was idempotent
+      assert:
+       that:
+         - "result['changed'] == false"
+  when: ansible_net_version != "15.6(2)T"
+
+  always:
+    - include_tasks: _remove_config.yaml
+# FILE: test/integration/targets/nxos_lldp_global/tests/cli/replaced.yml
+---
+  - debug:
+      msg: "Start nxos_lldp_global replaced integration tests connection = {{ansible_connection}}"
+
+  # N35 skips all tests, image issues.
+  - block:
+    - set_fact:
+        port_id: 1
+        tlv_power_mgmt:
+          power_management: false
+      when: platform is not search('N[567]K') and imagetag is not search("I[2345]")
+
+    - name: feature off to cleanup lldp
+      nxos_feature: &feature_off
+        feature: lldp
+        state: disabled
+
+    - name: Enable lldp feature
+      nxos_feature:
+        feature: lldp
+        state: enabled
+
+    - name: Setup
+      cli_config:
+        config: |
+          lldp holdtime 125
+          lldp tlv-select system-name
+          no lldp tlv-select port-vlan
+
+    - name: Setup2
+      cli_config:
+        config: |
+          lldp portid-subtype 1
+          no lldp tlv-select power-management
+      when: port_id is defined
+
+    - name: Replaced
+      nxos_lldp_global: &replaced
+        config:
+          holdtime: 125
+          timer: 35
+          tlv_select:
+            system:
+               name: false
+               description: false
+            port:
+              vlan: false
+            dcbxp: false
+        state: replaced
+      register: result
+
+    - assert:
+        that:
+          - "result.changed == true"
+          - "'lldp timer 35' in result.commands"
+          - "'no lldp tlv-select system-name' in result.commands"
+          - "'no lldp tlv-select system-description' in result.commands"
+          - "'no lldp tlv-select dcbxp' in result.commands"
+
+    - assert:
+        that:
+          - "'no lldp portid-subtype 1' in result.commands"
+      when: port_id is defined
+
+    - assert:
+        that:
+          - "'lldp tlv-select power-management' in result.commands"
+      when: tlv_power_mgmt is defined
+
+    - name: Gather lldp_global post facts
+      nxos_facts:
+        gather_subset:
+          - '!all'
+          - '!min'
+        gather_network_resources: lldp_global
+
+    - assert:
+        that:
+          - "ansible_facts.network_resources.lldp_global == result.after"
+
+    - name: Idempotence - Replaced
+      nxos_lldp_global: *replaced
+      register: result
+
+    - assert:
+        that:
+          - "result.changed == false"
+          - "result.commands|length == 0"
+    always:
+    - name: teardown
+      nxos_feature: *feature_off
+
+    when: platform is not search('N35')
+# FILE: test/integration/targets/junos_l2_interfaces/tests/netconf/replaced.yaml
+---
+- debug:
+    msg: "START junos_l2_interfaces replaced integration tests on connection={{ ansible_connection }}"
+
+- include_tasks: _remove_config.yaml
+- include_tasks: _base_config.yaml
+
+- set_fact:
+    expected_replaced_output:
+      - name: ge-0/0/1
+        trunk:
+          allowed_vlans:
+            - vlan100
+            - vlan300
+          native_vlan: "400"
+        enhanced_layer: True
+        unit: 0
+      - name: ge-0/0/2
+        access:
+          vlan: vlan200
+        enhanced_layer: True
+        unit: 0
+
+- block:
+    - name: Replace the provided configuration with the exisiting running configuration
+      junos_l2_interfaces: &replaced
+        config:
+          - name: ge-0/0/1
+            trunk:
+              allowed_vlans:
+                - vlan100
+                - vlan300
+              native_vlan: "400"
+          - name: ge-0/0/2
+            access:
+              vlan: vlan200
+        state: replaced
+      register: result
+
+    - name: Assert the configuration is reflected on host
+      assert:
+        that:
+          - "{{ expected_replaced_output | symmetric_difference(result['after']) |length == 0 }}"
+
+    - name: Replace the provided interface configuration from running configuration (IDEMPOTENT)
+      junos_l2_interfaces: *replaced
+      register: result
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - "result['changed'] == false"
+
+  always:
+    - include_tasks: _remove_config.yaml
+
+- debug:
+    msg: "END junos_l2_interfaces replaced integration tests on connection={{ ansible_connection }}"
+# FILE: test/integration/targets/junos_lldp_interfaces/tests/netconf/replaced.yaml
+---
+- debug:
+    msg: "START junos_lldp_interfaces replaced integration tests on connection={{ ansible_connection }}"
+
+- name: get supported protocols
+  junos_command:
+    commands: show lldp
+  register: result
+  ignore_errors: yes
+
+- name: lldp supported
+  set_fact:
+    lldp_supported: True
+  when: not result.failed
+
+- name: lldp not supported
+  set_fact:
+    lldp_supported: False
+  when: result.failed
+
+- block:
+    - include_tasks: _remove_config.yaml
+
+    - set_fact:
+        expected_replaced_output:
+          - name: ge-0/0/1
+            enabled: False
+          - name: ge-0/0/2
+            enabled: False
+
+    - name: Configure initial state for interface
+      junos_lldp_interfaces:
+        config:
+          - name: ge-0/0/1
+          - name: ge-0/0/2
+            enabled: False
+      register: result
+
+    - name: Replace the provided configuration with the exisiting running configuration
+      junos_lldp_interfaces: &replaced
+        config:
+          - name: ge-0/0/1
+            enabled: False
+        state: replaced
+      register: result
+
+    - name: Assert the configuration is reflected on host
+      assert:
+        that:
+          - "{{ expected_replaced_output | symmetric_difference(result['after']) |length == 0 }}"
+
+    - name: Replace the provided configuration with the existing running configuration (IDEMPOTENT)
+      junos_lldp_interfaces: *replaced
+      register: result
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - "result['changed'] == false"
+
+  always:
+    - include_tasks: _remove_config.yaml
+  when: lldp_supported
+
+- debug:
+    msg: "END junos_lldp_interfaces replaced integration tests on connection={{ ansible_connection }}"
+# FILE: test/integration/targets/eos_lacp/tests/cli/replaced.yaml
+---
+- include_tasks: reset_config.yml
+
+- set_fact:
+    config:
+      system:
+        priority: 20
+
+- eos_facts:
+    gather_network_resources: lacp
+  become: yes
+
+- name: Replaces device lacp configuration with provided configuration
+  eos_lacp:
+    config: "{{ config }}"
+    state: replaced
+  register: result
+  become: yes
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.lacp == result.before"
+
+- eos_facts:
+    gather_network_resources: lacp
+  become: yes
+
+- assert:
+    that:
+      - "ansible_facts.network_resources.lacp == result.after"
+
+- assert:
+    that:
+      - "config == ansible_facts.network_resources.lacp"

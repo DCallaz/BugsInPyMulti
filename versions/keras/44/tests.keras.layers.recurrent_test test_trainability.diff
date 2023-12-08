@@ -1,0 +1,34 @@
+from keras import backend as K
+# BLOCK
+import pytest
+# BLOCK
+from keras.utils.test_utils import keras_test
+# BLOCK
+@keras_test
+def rnn_test(f):
+    """
+    All the recurrent layers share the same interface,
+    so we can run through them with a single function.
+    """
+    f = keras_test(f)
+    return pytest.mark.parametrize('layer_class', [
+        recurrent.SimpleRNN,
+        recurrent.GRU,
+        recurrent.LSTM
+    ])(f)
+# BLOCK
+@rnn_test
+def test_trainability(layer_class):
+    layer = layer_class(units)
+    layer.build((None, None, embedding_dim))
+    assert len(layer.weights) == 3
+    assert len(layer.trainable_weights) == 3
+    assert len(layer.non_trainable_weights) == 0
+    layer.trainable = False
+    assert len(layer.weights) == 3
+    assert len(layer.trainable_weights) == 0
+    assert len(layer.non_trainable_weights) == 3
+    layer.trainable = True
+    assert len(layer.weights) == 3
+    assert len(layer.trainable_weights) == 3
+    assert len(layer.non_trainable_weights) == 0

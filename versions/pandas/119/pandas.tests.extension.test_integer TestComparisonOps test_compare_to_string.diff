@@ -1,0 +1,14 @@
+# CLASS: class TestComparisonOps(base.BaseComparisonOpsTests):
+import pandas as pd
+# BLOCK
+import pytest
+# BLOCK
+from pandas.tests.extension import base
+# BLOCK
+    def test_compare_to_string(self, any_nullable_int_dtype):
+        # GH 28930
+        s = pd.Series([1, None], dtype=any_nullable_int_dtype)
+        result = s == "a"
+        expected = pd.Series([False, False])
+
+        self.assert_series_equal(result, expected)

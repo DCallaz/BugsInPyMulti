@@ -1,0 +1,14 @@
+import numpy as np
+# BLOCK
+import pytest
+# BLOCK
+from pandas.core.dtypes.cast import astype_nansafe
+# BLOCK
+@pytest.mark.parametrize("val", [np.datetime64("NaT"), np.timedelta64("NaT")])
+@pytest.mark.parametrize("typ", [np.int64])
+def test_astype_nansafe(val, typ):
+    arr = np.array([val])
+
+    msg = "Cannot convert NaT values to integer"
+    with pytest.raises(ValueError, match=msg):
+        astype_nansafe(arr, dtype=typ)

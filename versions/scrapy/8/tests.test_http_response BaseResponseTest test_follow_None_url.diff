@@ -1,0 +1,4 @@
+# CLASS: class BaseResponseTest(unittest.TestCase):
+    def test_follow_None_url(self):
+        r = self.response_class("http://example.com")
+        self.assertRaises(ValueError, r.follow, None)

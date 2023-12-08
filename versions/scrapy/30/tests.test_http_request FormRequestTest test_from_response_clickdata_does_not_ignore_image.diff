@@ -1,0 +1,39 @@
+# CLASS: class FormRequestTest(RequestTest):
+from scrapy.http import HtmlResponse
+# BLOCK
+import six
+# BLOCK
+from six.moves.urllib.parse import unquote, parse_qs
+# BLOCK
+from scrapy.utils.python import to_native_str
+# BLOCK
+from urllib.parse import unquote_to_bytes
+# BLOCK
+def _qs(req, encoding='utf-8', to_unicode=False):
+    if req.method == 'POST':
+        qs = req.body
+    else:
+        qs = req.url.partition('?')[2]
+    if six.PY2:
+        uqs = unquote(to_native_str(qs, encoding))
+    elif six.PY3:
+        uqs = unquote_to_bytes(qs)
+    if to_unicode:
+        uqs = uqs.decode(encoding)
+    return parse_qs(uqs, True)
+# BLOCK
+def _buildresponse(body, **kwargs):
+    kwargs.setdefault('body', body)
+    kwargs.setdefault('url', 'http://example.com')
+    kwargs.setdefault('encoding', 'utf-8')
+    return HtmlResponse(**kwargs)
+# BLOCK
+    def test_from_response_clickdata_does_not_ignore_image(self):
+        response = _buildresponse(
+            """<form>
+            <input type="text" name="i1" value="i1v">
+            <input id="image" name="i2" type="image" value="i2v" alt="Login" src="http://my.image.org/1.jpg">
+            </form>""")
+        req = self.request_class.from_response(response)
+        fs = _qs(req)
+        self.assertEqual(fs, {b'i1': [b'i1v'], b'i2': [b'i2v']})

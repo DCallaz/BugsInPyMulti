@@ -1,0 +1,21 @@
+# CLASS: class InterfaceTest(LuigiTestCase):
+import luigi
+# BLOCK
+import sys
+# BLOCK
+from mock import patch
+# BLOCK
+from helpers import LuigiTestCase
+# BLOCK
+    def test_just_run_main_task_cls(self):
+        class MyTestTask(luigi.Task):
+            pass
+
+        class MyOtherTestTask(luigi.Task):
+            my_param = luigi.Parameter()
+
+        with patch.object(sys, 'argv', ['my_module.py', '--no-lock', '--local-scheduler']):
+            luigi.run(main_task_cls=MyTestTask)
+
+        with patch.object(sys, 'argv', ['my_module.py', '--no-lock', '--my-param', 'my_value', '--local-scheduler']):
+            luigi.run(main_task_cls=MyOtherTestTask)

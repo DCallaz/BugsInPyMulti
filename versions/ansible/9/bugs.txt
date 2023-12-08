@@ -1,0 +1,6 @@
+4,test.units.playbook.test_collectionsearch test_collection_static_warning
+5,test.units.module_utils.common.validation.test_check_required_arguments test_check_required_arguments_missing_multiple
+6,test.units.galaxy.test_collection_install test_add_collection_requirement_to_unknown_installed_version
+7,test.units.modules.network.eos.test_eos_vlans TestEosVlansModule test_eos_vlan_replaced
+8,test.units.plugins.shell.test_powershell test_join_path_unc
+9,test.units.modules.packaging.os.test_redhat_subscription test_redhat_subscribtion

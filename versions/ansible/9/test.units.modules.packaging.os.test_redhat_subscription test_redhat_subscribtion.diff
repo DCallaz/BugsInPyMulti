@@ -1,0 +1,52 @@
+from ansible.module_utils import basic
+# BLOCK
+import pytest
+# BLOCK
+import json
+# BLOCK
+from ansible.modules.packaging.os import redhat_subscription
+# BLOCK
+TEST_CASES_IDS = [item[1]['id'] for item in TEST_CASES]
+# BLOCK
+@pytest.fixture
+def patch_redhat_subscription(mocker):
+    """
+    Function used for mocking some parts of redhat_subscribtion module
+    """
+    mocker.patch('ansible.modules.packaging.os.redhat_subscription.RegistrationBase.REDHAT_REPO')
+    mocker.patch('ansible.modules.packaging.os.redhat_subscription.isfile', return_value=False)
+    mocker.patch('ansible.modules.packaging.os.redhat_subscription.unlink', return_value=True)
+    mocker.patch('ansible.modules.packaging.os.redhat_subscription.AnsibleModule.get_bin_path',
+                 return_value='/testbin/subscription-manager')
+# BLOCK
+@pytest.mark.parametrize('patch_ansible_module, testcase', TEST_CASES, ids=TEST_CASES_IDS, indirect=['patch_ansible_module'])
+@pytest.mark.usefixtures('patch_ansible_module')
+def test_redhat_subscribtion(mocker, capfd, patch_redhat_subscription, testcase):
+    """
+    Run unit tests for test cases listen in TEST_CASES
+    """
+
+    # Mock function used for running commands first
+    call_results = [item[2] for item in testcase['run_command.calls']]
+    mock_run_command = mocker.patch.object(
+        basic.AnsibleModule,
+        'run_command',
+        side_effect=call_results)
+
+    # Try to run test case
+    with pytest.raises(SystemExit):
+        redhat_subscription.main()
+
+    out, err = capfd.readouterr()
+    results = json.loads(out)
+
+    assert 'changed' in results
+    assert results['changed'] == testcase['changed']
+    if 'msg' in results:
+        assert results['msg'] == testcase['msg']
+
+    assert basic.AnsibleModule.run_command.call_count == len(testcase['run_command.calls'])
+    if basic.AnsibleModule.run_command.call_count:
+        call_args_list = [(item[0][0], item[1]) for item in basic.AnsibleModule.run_command.call_args_list]
+        expected_call_args_list = [(item[0], item[1]) for item in testcase['run_command.calls']]
+        assert call_args_list == expected_call_args_list

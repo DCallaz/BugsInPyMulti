@@ -1,0 +1,10 @@
+# CLASS: class ItemTest(unittest.TestCase):
+from scrapy.item import Field, Item
+# BLOCK
+    def test_metaclass_with_fields_attribute(self):
+        class TestItem(Item):
+            fields = {'new': Field(default='X')}
+
+        item = TestItem(new=u'New')
+        self.assertSortedEqual(list(item.keys()), ['new'])
+        self.assertSortedEqual(list(item.values()), [u'New'])

@@ -1,0 +1,9 @@
+from ansible.module_utils.six.moves import builtins
+# BLOCK
+from ansible.module_utils.facts.system.distribution import DistributionFactCollector
+# BLOCK
+import pytest
+# BLOCK
+from itertools import product
+# BLOCK
+@pytest.mark.parametrize("stdin, testcase", product([{}], TESTSETS), ids=lambda x: x.get('name'), indirect=['stdin'])

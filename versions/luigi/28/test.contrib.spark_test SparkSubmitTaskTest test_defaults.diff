@@ -1,0 +1,24 @@
+# CLASS: class SparkSubmitTaskTest(unittest.TestCase):
+from luigi import six
+# BLOCK
+from helpers import unittest
+# BLOCK
+from luigi.contrib.spark import SparkSubmitTask
+# BLOCK
+class TestDefaultSparkSubmitTask(SparkSubmitTask):
+    app = 'test.py'
+
+    def output(self):
+        return luigi.LocalTarget('output')
+# BLOCK
+    @with_config({'spark': {'spark-submit': ss, 'master': 'spark://host:7077', 'conf': 'prop1=val1', 'jars': 'jar1.jar,jar2.jar',
+                            'files': 'file1,file2', 'py-files': 'file1.py,file2.py', 'archives': 'archive1'}})
+    @patch('luigi.contrib.spark.subprocess.Popen')
+    def test_defaults(self, proc):
+        proc.return_value.returncode = 0
+        job = TestDefaultSparkSubmitTask()
+        job.run()
+        self.assertEqual(proc.call_args[0][0],
+                         ['ss-stub', '--master', 'spark://host:7077', '--jars', 'jar1.jar,jar2.jar',
+                          '--py-files', 'file1.py,file2.py', '--files', 'file1,file2', '--archives', 'archive1',
+                          '--conf', 'prop1=val1', 'test.py'])

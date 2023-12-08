@@ -1,0 +1,2 @@
+3,tornado.test.httpclient_test SyncHTTPClientSubprocessTest test_destructor_log
+13,tornado.test.auth_test AuthTest test_facebook_login

@@ -1,0 +1,4 @@
+2,tests.test_redirects TestRedirects test_max_redirects
+3,tests.test_sessions TestSession test_download_in_session
+4,tests.test_regressions test_Host_header_overwrite
+5,tests.tests TestItemParsing test_escape_longsep

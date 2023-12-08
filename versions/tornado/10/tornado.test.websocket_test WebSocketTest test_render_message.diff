@@ -1,0 +1,34 @@
+# CLASS: class WebSocketTest(WebSocketBaseTestCase):
+import sys
+# BLOCK
+import functools
+# BLOCK
+from tornado import gen
+# BLOCK
+from tornado.testing import AsyncHTTPTestCase
+# BLOCK
+class WebSocketBaseTestCase(AsyncHTTPTestCase):
+    @gen.coroutine
+    def ws_connect(self, path, **kwargs):
+        ws = yield websocket_connect(
+            'ws://127.0.0.1:%d%s' % (self.get_http_port(), path),
+            **kwargs)
+        raise gen.Return(ws)
+
+    @gen.coroutine
+    def close(self, ws):
+        """Close a websocket connection and wait for the server side.
+
+        If we don't wait here, there are sometimes leak warnings in the
+        tests.
+        """
+        ws.close()
+        yield self.close_future
+# BLOCK
+    @gen_test
+    def test_render_message(self):
+        ws = yield self.ws_connect('/render')
+        ws.write_message('hello')
+        response = yield ws.read_message()
+        self.assertEqual(response, '<b>hello</b>')
+        yield self.close(ws)

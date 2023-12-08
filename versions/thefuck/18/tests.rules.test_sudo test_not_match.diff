@@ -1,0 +1,9 @@
+from thefuck.rules.sudo import match
+# BLOCK
+from tests.utils import Command
+# BLOCK
+import pytest
+# BLOCK
+def test_not_match():
+    assert not match(Command())
+    assert not match(Command(script='sudo ls', stderr='Permission denied'))

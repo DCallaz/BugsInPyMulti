@@ -1,0 +1,14 @@
+import pytest
+# BLOCK
+from fastapi import FastAPI
+# BLOCK
+app = FastAPI()
+# BLOCK
+def test_route_classes():
+    routes = {}
+    r: APIRoute
+    for r in app.router.routes:
+        routes[r.path] = r
+    assert routes["/a/"].x_type == "A"
+    assert routes["/a/b/"].x_type == "B"
+    assert routes["/a/b/c/"].x_type == "C"

@@ -1,0 +1,4 @@
+1,tests.test_generate_context test_generate_context_decodes_non_ascii_chars
+2,tests.test_hooks TestFindHooks test_find_hook
+2,tests.test_hooks TestExternalHooks test_run_hook
+3,tests.test_read_user_choice test_click_invocation

@@ -1,0 +1,9 @@
+# CLASS: class AuthTest(AsyncHTTPTestCase):
+from tornado.testing import AsyncHTTPTestCase
+# BLOCK
+    def test_facebook_login(self):
+        response = self.fetch('/facebook/client/login', follow_redirects=False)
+        self.assertEqual(response.code, 302)
+        self.assertTrue('/facebook/server/authorize?' in response.headers['Location'])
+        response = self.fetch('/facebook/client/login?code=1234', follow_redirects=False)
+        self.assertEqual(response.code, 200)

@@ -1,0 +1,19 @@
+# CLASS: class CentralPlannerTest(unittest.TestCase):
+from luigi.scheduler import CentralPlannerScheduler, FAILED, DISABLED
+# BLOCK
+from helpers import unittest
+# BLOCK
+luigi.notifications.DEBUG = True
+WORKER = 'myworker'
+# BLOCK
+    def test_automatic_re_enable_with_one_failure_allowed(self):
+        self.sch = CentralPlannerScheduler(disable_failures=1, disable_persist=100)
+        self.setTime(0)
+        self.sch.add_task(worker=WORKER, task_id='A', status=FAILED)
+
+        # should be disabled now
+        self.assertEqual(DISABLED, self.sch.task_list('', '')['A']['status'])
+
+        # re-enables after 100 seconds
+        self.setTime(101)
+        self.assertEqual(FAILED, self.sch.task_list('', '')['A']['status'])

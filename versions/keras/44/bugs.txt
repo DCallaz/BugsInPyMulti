@@ -1,0 +1,15 @@
+24,tests.keras.test_callbacks test_TensorBoard_multi_input_output
+25,tests.keras.applications.imagenet_utils_test test_preprocess_input
+31,tests.keras.backend.backend_test TestBackend test_ctc
+32,tests.keras.test_callbacks test_ReduceLROnPlateau_patience
+32,tests.keras.test_callbacks test_ReduceLROnPlateau_backwards_compatibility
+33,tests.keras.preprocessing.text_test test_text_to_word_sequence_multichar_split
+33,tests.keras.preprocessing.text_test test_text_to_word_sequence_unicode_multichar_split
+35,tests.keras.preprocessing.image_test TestImage test_directory_iterator
+36,tests.keras.layers.convolutional_test test_separable_conv_1d
+38,tests.keras.layers.recurrent_test test_minimal_rnn_cell_layer
+39,tests.keras.utils.generic_utils_test test_progbar
+40,tests.keras.layers.recurrent_test test_stacked_rnn_compute_output_shape
+41,tests.keras.utils.data_utils_test test_generator_enqueuer_fail_threads
+43,tests.keras.utils.np_utils_test test_to_categorical
+44,tests.keras.layers.recurrent_test test_trainability

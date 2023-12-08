@@ -1,0 +1,21 @@
+import matplotlib.pyplot as plt
+# BLOCK
+import numpy as np
+# BLOCK
+import pytest
+# BLOCK
+from numpy.testing import assert_array_equal
+# BLOCK
+@pytest.mark.parametrize('auto', (True, False, None))
+def test_unautoscalex(auto):
+    fig, ax = plt.subplots()
+    x = np.arange(100)
+    y = np.linspace(-.1, .1, 100)
+    ax.scatter(y, x)
+
+    post_auto = ax.get_autoscalex_on() if auto is None else auto
+
+    ax.set_xlim((-.5, .5), auto=auto)
+    assert post_auto == ax.get_autoscalex_on()
+    fig.canvas.draw()
+    assert_array_equal(ax.get_xlim(), (-.5, .5))

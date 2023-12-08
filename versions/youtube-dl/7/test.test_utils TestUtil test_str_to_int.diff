@@ -1,0 +1,7 @@
+# CLASS: class TestUtil(unittest.TestCase):
+from youtube_dl.utils import str_to_int
+# BLOCK
+    def test_str_to_int(self):
+        self.assertEqual(str_to_int('123,456'), 123456)
+        self.assertEqual(str_to_int('123.456'), 123456)
+        self.assertEqual(str_to_int(523), 523)

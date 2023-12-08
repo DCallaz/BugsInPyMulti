@@ -1,0 +1,28 @@
+from thefuck.rules.dnf_no_such_command import _get_operations
+# BLOCK
+import pytest
+# BLOCK
+from io import BytesIO
+# BLOCK
+@pytest.fixture
+def set_help(mocker):
+    mock = mocker.patch('subprocess.Popen')
+
+    def _set_text(text):
+        mock.return_value.stdout = BytesIO(text)
+
+    return _set_text
+# BLOCK
+dnf_operations = ['autoremove', 'check', 'check-update', 'clean', 'deplist',
+                  'distro-sync', 'downgrade', 'group', 'help', 'history',
+                  'info', 'install', 'list', 'makecache', 'mark', 'provides',
+                  'reinstall', 'remove', 'repolist', 'repoquery',
+                  'repository-packages', 'search', 'shell', 'swap', 'updateinfo',
+                  'upgrade', 'upgrade-minimal', 'builddep', 'config-manager',
+                  'copr', 'debug-dump', 'debug-restore', 'debuginfo-install',
+                  'download', 'needs-restarting', 'playground', 'repoclosure',
+                  'repograph', 'repomanage', 'reposync']
+# BLOCK
+def test_get_operations(set_help):
+    set_help(help_text)
+    assert _get_operations() == dnf_operations

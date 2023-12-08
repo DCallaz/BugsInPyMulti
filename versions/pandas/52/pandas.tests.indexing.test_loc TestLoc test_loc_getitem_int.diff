@@ -1,0 +1,9 @@
+# CLASS: class TestLoc(Base):
+import pytest
+# BLOCK
+from pandas.tests.indexing.common import Base
+# BLOCK
+    def test_loc_getitem_int(self):
+
+        # int label
+        self.check_result("loc", 2, typs=["labels"], fails=KeyError)

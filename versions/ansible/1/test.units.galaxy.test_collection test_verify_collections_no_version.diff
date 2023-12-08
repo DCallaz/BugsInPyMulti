@@ -1,0 +1,310 @@
+import pytest
+# BLOCK
+import os
+# BLOCK
+from units.compat.mock import patch
+# BLOCK
+from ansible.galaxy import collection, api, token
+# BLOCK
+from ansible import context
+# BLOCK
+@pytest.fixture()
+def galaxy_server():
+    context.CLIARGS._store = {'ignore_certs': False}
+    galaxy_api = api.GalaxyAPI(None, 'test_server', 'https://galaxy.ansible.com',
+                               token=token.GalaxyToken(token='key'))
+    return galaxy_api
+# BLOCK
+@pytest.fixture()
+def mock_collection(galaxy_server):
+    def create_mock_collection(namespace='ansible_namespace', name='collection', version='0.1.0', local=True, local_installed=True):
+        b_path = None
+        force = False
+
+        if local:
+            mock_collection = collection.CollectionRequirement(namespace, name, b_path, galaxy_server, [version], version, force, skip=local_installed)
+        else:
+            download_url = 'https://galaxy.ansible.com/download/{0}-{1}-{2}.tar.gz'.format(namespace, name, version)
+            digest = '19415a6a6df831df61cffde4a09d1d89ac8d8ca5c0586e85bea0b106d6dff29a'
+            dependencies = {}
+            metadata = api.CollectionVersionMetadata(namespace, name, version, download_url, digest, dependencies)
+            mock_collection = collection.CollectionRequirement(namespace, name, b_path, galaxy_server, [version], version, force, metadata=metadata)
+
+        return mock_collection
+    return create_mock_collection
+# BLOCK
+@patch.object(os.path, 'isdir', return_value=True)
+def test_verify_collections_no_version(mock_isdir, mock_collection, monkeypatch):
+    namespace = 'ansible_namespace'
+    name = 'collection'
+    version = '*'  # Occurs if MANIFEST.json does not exist
+
+    local_collection = mock_collection(namespace=namespace, name=name, version=version)
+    monkeypatch.setattr(collection.CollectionRequirement, 'from_path', MagicMock(return_value=local_collection))
+
+    collections = [('%s.%s' % (namespace, name), version, None)]
+
+    with pytest.raises(AnsibleError) as err:
+        collection.verify_collections(collections, './', local_collection.api, False, False)
+
+    err_msg = 'Collection %s.%s does not appear to have a MANIFEST.json. ' % (namespace, name)
+    err_msg += 'A MANIFEST.json is expected if the collection has been built and installed via ansible-galaxy.'
+    assert err.value.message == err_msg
+# FILE: test/lib/ansible_test/_internal/provider/layout/collection.py
+"""Layout provider for Ansible collections."""
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
+import os
+
+from ... import types as t
+
+from . import (
+    ContentLayout,
+    LayoutProvider,
+    CollectionDetail,
+    LayoutMessages,
+)
+
+
+class CollectionLayout(LayoutProvider):
+    """Layout provider for Ansible collections."""
+    __module_path = 'plugins/modules'
+    __unit_path = 'test/unit'
+
+    @staticmethod
+    def is_content_root(path):  # type: (str) -> bool
+        """Return True if the given path is a content root for this provider."""
+        if os.path.basename(os.path.dirname(os.path.dirname(path))) == 'ansible_collections':
+            return True
+
+        return False
+
+    def create(self, root, paths):  # type: (str, t.List[str]) -> ContentLayout
+        """Create a Layout using the given root and paths."""
+        plugin_paths = dict((p, os.path.join('plugins', p)) for p in self.PLUGIN_TYPES)
+
+        collection_root = os.path.dirname(os.path.dirname(root))
+        collection_dir = os.path.relpath(root, collection_root)
+        collection_namespace, collection_name = collection_dir.split(os.path.sep)
+
+        collection_root = os.path.dirname(collection_root)
+
+        sanity_messages = LayoutMessages()
+        integration_messages = LayoutMessages()
+        unit_messages = LayoutMessages()
+
+        # these apply to all test commands
+        self.__check_test_path(paths, sanity_messages)
+        self.__check_test_path(paths, integration_messages)
+        self.__check_test_path(paths, unit_messages)
+
+        # these apply to specific test commands
+        integration_targets_path = self.__check_integration_path(paths, integration_messages)
+        self.__check_unit_path(paths, unit_messages)
+
+        return ContentLayout(root,
+                             paths,
+                             plugin_paths=plugin_paths,
+                             collection=CollectionDetail(
+                                 name=collection_name,
+                                 namespace=collection_namespace,
+                                 root=collection_root,
+                             ),
+                             test_path='tests',
+                             results_path='tests/output',
+                             sanity_path='tests/sanity',
+                             sanity_messages=sanity_messages,
+                             integration_path='tests/integration',
+                             integration_targets_path=integration_targets_path.rstrip(os.path.sep),
+                             integration_vars_path='tests/integration/integration_config.yml',
+                             integration_messages=integration_messages,
+                             unit_path='tests/unit',
+                             unit_module_path='tests/unit/plugins/modules',
+                             unit_module_utils_path='tests/unit/plugins/module_utils',
+                             unit_messages=unit_messages,
+                             )
+
+    @staticmethod
+    def __check_test_path(paths, messages):  # type: (t.List[str], LayoutMessages) -> None
+        modern_test_path = 'tests/'
+        modern_test_path_found = any(path.startswith(modern_test_path) for path in paths)
+        legacy_test_path = 'test/'
+        legacy_test_path_found = any(path.startswith(legacy_test_path) for path in paths)
+
+        if modern_test_path_found and legacy_test_path_found:
+            messages.warning.append('Ignoring tests in "%s" in favor of "%s".' % (legacy_test_path, modern_test_path))
+        elif legacy_test_path_found:
+            messages.warning.append('Ignoring tests in "%s" that should be in "%s".' % (legacy_test_path, modern_test_path))
+
+    @staticmethod
+    def __check_integration_path(paths, messages):  # type: (t.List[str], LayoutMessages) -> str
+        modern_integration_path = 'roles/test/'
+        modern_integration_path_found = any(path.startswith(modern_integration_path) for path in paths)
+        legacy_integration_path = 'tests/integration/targets/'
+        legacy_integration_path_found = any(path.startswith(legacy_integration_path) for path in paths)
+
+        if modern_integration_path_found and legacy_integration_path_found:
+            messages.warning.append('Ignoring tests in "%s" in favor of "%s".' % (legacy_integration_path, modern_integration_path))
+            integration_targets_path = modern_integration_path
+        elif legacy_integration_path_found:
+            messages.info.append('Falling back to tests in "%s" because "%s" was not found.' % (legacy_integration_path, modern_integration_path))
+            integration_targets_path = legacy_integration_path
+        elif modern_integration_path_found:
+            messages.info.append('Loading tests from "%s".' % modern_integration_path)
+            integration_targets_path = modern_integration_path
+        else:
+            messages.error.append('Cannot run integration tests without "%s" or "%s".' % (modern_integration_path, legacy_integration_path))
+            integration_targets_path = modern_integration_path
+
+        return integration_targets_path
+
+    @staticmethod
+    def __check_unit_path(paths, messages):  # type: (t.List[str], LayoutMessages) -> None
+        modern_unit_path = 'tests/unit/'
+        modern_unit_path_found = any(path.startswith(modern_unit_path) for path in paths)
+        legacy_unit_path = 'tests/units/'  # test/units/ will be covered by the warnings for test/ vs tests/
+        legacy_unit_path_found = any(path.startswith(legacy_unit_path) for path in paths)
+
+        if modern_unit_path_found and legacy_unit_path_found:
+            messages.warning.append('Ignoring tests in "%s" in favor of "%s".' % (legacy_unit_path, modern_unit_path))
+        elif legacy_unit_path_found:
+            messages.warning.append('Rename "%s" to "%s" to run unit tests.' % (legacy_unit_path, modern_unit_path))
+        elif modern_unit_path_found:
+            pass  # unit tests only run from one directory so no message is needed
+        else:
+            messages.error.append('Cannot run unit tests without "%s".' % modern_unit_path)
+# FILE: test/lib/ansible_test/_data/sanity/pylint/config/collection.cfg
+[MESSAGES CONTROL]
+
+disable=
+    abstract-method,
+    access-member-before-definition,
+    arguments-differ,
+    assignment-from-no-return,
+    assignment-from-none,
+    attribute-defined-outside-init,
+    bad-continuation,
+    bad-indentation,
+    bad-mcs-classmethod-argument,
+    broad-except,
+    c-extension-no-member,
+    cell-var-from-loop,
+    chained-comparison,
+    comparison-with-callable,
+    consider-iterating-dictionary,
+    consider-merging-isinstance,
+    consider-using-dict-comprehension,
+    consider-using-enumerate,
+    consider-using-get,
+    consider-using-in,
+    consider-using-set-comprehension,
+    consider-using-ternary,
+    deprecated-lambda,
+    deprecated-method,
+    deprecated-module,
+    eval-used,
+    exec-used,
+    expression-not-assigned,
+    fixme,
+    function-redefined,
+    global-statement,
+    global-variable-undefined,
+    import-error,
+    import-self,
+    inconsistent-return-statements,
+    invalid-envvar-default,
+    invalid-name,
+    invalid-sequence-index,
+    keyword-arg-before-vararg,
+    len-as-condition,
+    line-too-long,
+    literal-comparison,
+    locally-disabled,
+    method-hidden,
+    misplaced-comparison-constant,
+    missing-docstring,
+    no-else-raise,
+    no-else-return,
+    no-init,
+    no-member,
+    no-name-in-module,
+    no-self-use,
+    no-value-for-parameter,
+    non-iterator-returned,
+    not-a-mapping,
+    not-an-iterable,
+    not-callable,
+    old-style-class,
+    pointless-statement,
+    pointless-string-statement,
+    possibly-unused-variable,
+    protected-access,
+    redefined-argument-from-local,
+    redefined-builtin,
+    redefined-outer-name,
+    redefined-variable-type,
+    reimported,
+    relative-beyond-top-level,  # https://github.com/PyCQA/pylint/issues/2967
+    signature-differs,
+    simplifiable-if-expression,
+    simplifiable-if-statement,
+    subprocess-popen-preexec-fn,
+    super-init-not-called,
+    superfluous-parens,
+    too-few-public-methods,
+    too-many-ancestors,
+    too-many-arguments,
+    too-many-boolean-expressions,
+    too-many-branches,
+    too-many-function-args,
+    too-many-instance-attributes,
+    too-many-lines,
+    too-many-locals,
+    too-many-nested-blocks,
+    too-many-public-methods,
+    too-many-return-statements,
+    too-many-statements,
+    trailing-comma-tuple,
+    trailing-comma-tuple,
+    try-except-raise,
+    unbalanced-tuple-unpacking,
+    undefined-loop-variable,
+    unexpected-keyword-arg,
+    ungrouped-imports,
+    unidiomatic-typecheck,
+    unnecessary-pass,
+    unsubscriptable-object,
+    unsupported-assignment-operation,
+    unsupported-delete-operation,
+    unsupported-membership-test,
+    unused-argument,
+    unused-import,
+    unused-variable,
+    used-before-assignment,
+    useless-object-inheritance,
+    useless-return,
+    useless-super-delegation,
+    wrong-import-order,
+    wrong-import-position,
+
+[BASIC]
+
+bad-names=foo,
+          bar,
+          baz,
+          toto,
+          tutu,
+          tata,
+          _,
+
+good-names=i,
+           j,
+           k,
+           ex,
+           Run,
+
+[TYPECHECK]
+
+ignored-modules=
+    _MovedItems,

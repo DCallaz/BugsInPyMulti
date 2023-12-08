@@ -1,0 +1,78 @@
+import os
+# BLOCK
+import json
+# BLOCK
+import pytest
+# BLOCK
+import yaml
+# BLOCK
+from ansible.module_utils._text import to_bytes, to_text
+# BLOCK
+from ansible.galaxy import collection
+# BLOCK
+from ansible.utils import co
+# BLOCK
+from ansible.cli.galaxy import GalaxyCLI
+# BLOCK
+def call_galaxy_cli(args):
+    orig = co.GlobalCLIArgs._Singleton__instance
+    co.GlobalCLIArgs._Singleton__instance = None
+    try:
+        GalaxyCLI(args=['ansible-galaxy', 'collection'] + args).run()
+    finally:
+        co.GlobalCLIArgs._Singleton__instance = orig
+# BLOCK
+@pytest.fixture()
+def collection_artifact(request, tmp_path_factory):
+    test_dir = to_text(tmp_path_factory.mktemp('test-ÅÑŚÌβŁÈ Collections Input'))
+    namespace = 'ansible_namespace'
+    collection = 'collection'
+
+    skeleton_path = os.path.join(os.path.dirname(os.path.split(__file__)[0]), 'cli', 'test_data', 'collection_skeleton')
+    collection_path = os.path.join(test_dir, namespace, collection)
+
+    call_galaxy_cli(['init', '%s.%s' % (namespace, collection), '-c', '--init-path', test_dir,
+                     '--collection-skeleton', skeleton_path])
+    dependencies = getattr(request, 'param', None)
+    if dependencies:
+        galaxy_yml = os.path.join(collection_path, 'galaxy.yml')
+        with open(galaxy_yml, 'rb+') as galaxy_obj:
+            existing_yaml = yaml.safe_load(galaxy_obj)
+            existing_yaml['dependencies'] = dependencies
+
+            galaxy_obj.seek(0)
+            galaxy_obj.write(to_bytes(yaml.safe_dump(existing_yaml)))
+            galaxy_obj.truncate()
+
+    call_galaxy_cli(['build', collection_path, '--output-path', test_dir])
+
+    collection_tar = os.path.join(test_dir, '%s-%s-0.1.0.tar.gz' % (namespace, collection))
+    return to_bytes(collection_path), to_bytes(collection_tar)
+# BLOCK
+@pytest.mark.parametrize('version', ['1.1.1', 1.1, 1])
+def test_build_requirement_from_path_with_manifest(version, collection_artifact):
+    manifest_path = os.path.join(collection_artifact[0], b'MANIFEST.json')
+    manifest_value = json.dumps({
+        'collection_info': {
+            'namespace': 'namespace',
+            'name': 'name',
+            'version': version,
+            'dependencies': {
+                'ansible_namespace.collection': '*'
+            }
+        }
+    })
+    with open(manifest_path, 'wb') as manifest_obj:
+        manifest_obj.write(to_bytes(manifest_value))
+
+    actual = collection.CollectionRequirement.from_path(collection_artifact[0], True)
+
+    # While the folder name suggests a different collection, we treat MANIFEST.json as the source of truth.
+    assert actual.namespace == u'namespace'
+    assert actual.name == u'name'
+    assert actual.b_path == collection_artifact[0]
+    assert actual.api is None
+    assert actual.skip is True
+    assert actual.versions == set([to_text(version)])
+    assert actual.latest_version == to_text(version)
+    assert actual.dependencies == {'ansible_namespace.collection': '*'}

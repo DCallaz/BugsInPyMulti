@@ -1,0 +1,4 @@
+1,tests.test_utils_misc.__init__ UtilsMiscTestCase test_create_instance
+2,tests.test_spidermiddleware_offsite TestOffsiteMiddleware4 _get_spiderargs
+3,tests.test_utils_datatypes LocalCacheTest test_cache_without_limit
+4,tests.test_downloadermiddleware_redirect RedirectMiddlewareTest test_redirect_302_relative

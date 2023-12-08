@@ -1,0 +1,90 @@
+# CLASS: class TestImage(object):
+import os
+# BLOCK
+import pytest
+# BLOCK
+from keras.preprocessing import image
+# BLOCK
+    def test_directory_iterator(self, tmpdir):
+        num_classes = 2
+
+        # create folders and subfolders
+        paths = []
+        for cl in range(num_classes):
+            class_directory = 'class-{}'.format(cl)
+            classpaths = [
+                class_directory,
+                os.path.join(class_directory, 'subfolder-1'),
+                os.path.join(class_directory, 'subfolder-2'),
+                os.path.join(class_directory, 'subfolder-1', 'sub-subfolder')
+            ]
+            for path in classpaths:
+                tmpdir.join(path).mkdir()
+            paths.append(classpaths)
+
+        # save the images in the paths
+        count = 0
+        filenames = []
+        for test_images in self.all_test_images:
+            for im in test_images:
+                # rotate image class
+                im_class = count % num_classes
+                # rotate subfolders
+                classpaths = paths[im_class]
+                filename = os.path.join(classpaths[count % len(classpaths)], 'image-{}.jpg'.format(count))
+                filenames.append(filename)
+                im.save(str(tmpdir / filename))
+                count += 1
+
+        # create iterator
+        generator = image.ImageDataGenerator()
+        dir_iterator = generator.flow_from_directory(str(tmpdir))
+
+        # check number of classes and images
+        assert len(dir_iterator.class_indices) == num_classes
+        assert len(dir_iterator.classes) == count
+        assert set(dir_iterator.filenames) == set(filenames)
+
+        # Test invalid use cases
+        with pytest.raises(ValueError):
+            generator.flow_from_directory(str(tmpdir), color_mode='cmyk')
+        with pytest.raises(ValueError):
+            generator.flow_from_directory(str(tmpdir), class_mode='output')
+
+        # Test usage as Sequence
+        generator = image.ImageDataGenerator()
+        dir_seq = generator.flow_from_directory(str(tmpdir),
+                                                target_size=(26, 26),
+                                                color_mode='rgb',
+                                                batch_size=3,
+                                                class_mode='categorical')
+        assert len(dir_seq) == count // 3 + 1
+        x1, y1 = dir_seq[1]
+        assert x1.shape == (3, 26, 26, 3)
+        assert y1.shape == (3, num_classes)
+        x1, y1 = dir_seq[5]
+        with pytest.raises(ValueError):
+            x1, y1 = dir_seq[9]
+
+        # Test Preprocessing before resize
+        def preprocess_test(img):
+            return img.resize((1, 1))
+
+        generator = image.ImageDataGenerator(preprocessing_function=preprocess_test)
+        dir_seq = generator.flow_from_directory(str(tmpdir),
+                                                target_size=(26, 26),
+                                                color_mode='rgb',
+                                                batch_size=1,
+                                                class_mode='categorical')
+
+        gen_x1, gen_y1 = dir_seq[1]
+
+        test_x1 = image.load_img(os.path.join(dir_seq.directory, dir_seq.filenames[1]),
+                                 grayscale=False)
+        test_x1 = preprocess_test(test_x1)
+        test_x1 = test_x1.resize((26, 26))
+        test_x1 = image.img_to_array(test_x1)
+        test_x1 = dir_seq.image_data_generator.random_transform(test_x1)
+        test_x1 = dir_seq.image_data_generator.standardize(test_x1)
+
+        assert gen_x1.shape[1:] == test_x1.shape

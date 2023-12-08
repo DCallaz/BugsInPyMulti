@@ -1,0 +1,20 @@
+from pandas import DataFrame, Series
+# BLOCK
+import pandas as pd
+# BLOCK
+import pytest
+# BLOCK
+from pandas.util.testing import assert_frame_equal
+# BLOCK
+def test_merge_on_cat_and_ext_array():
+    # GH 28668
+    right = DataFrame(
+        {"a": Series([pd.Interval(0, 1), pd.Interval(1, 2)], dtype="interval")}
+    )
+    left = right.copy()
+    left["a"] = left["a"].astype("category")
+
+    result = pd.merge(left, right, how="inner", on="a")
+    expected = right.copy()
+
+    assert_frame_equal(result, expected)

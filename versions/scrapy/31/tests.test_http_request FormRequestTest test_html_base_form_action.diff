@@ -1,0 +1,26 @@
+# CLASS: class FormRequestTest(RequestTest):
+from scrapy.http import HtmlResponse
+# BLOCK
+def _buildresponse(body, **kwargs):
+    kwargs.setdefault('body', body)
+    kwargs.setdefault('url', 'http://example.com')
+    kwargs.setdefault('encoding', 'utf-8')
+    return HtmlResponse(**kwargs)
+# BLOCK
+    def test_html_base_form_action(self):
+        response = _buildresponse(
+            """
+            <html>
+                <head>
+                    <base href="http://b.com/">
+                </head>
+                <body>
+                    <form action="test_form">
+                    </form>
+                </body>
+            </html>
+            """,
+            url='http://a.com/'
+        )
+        req = self.request_class.from_response(response)
+        self.assertEqual(req.url, 'http://b.com/test_form')

@@ -1,0 +1,14 @@
+from numpy.testing import assert_array_almost_equal
+# BLOCK
+import matplotlib.colors as mcolors
+# BLOCK
+import pytest
+# BLOCK
+@pytest.mark.parametrize('N, result', [
+    (5, [1, .6, .2, .1, 0]),
+    (2, [1, 0]),
+    (1, [0]),
+])
+def test_makeMappingArray(N, result):
+    data = [(0.0, 1.0, 1.0), (0.5, 0.2, 0.2), (1.0, 0.0, 0.0)]
+    assert_array_almost_equal(mcolors.makeMappingArray(N, data), result)

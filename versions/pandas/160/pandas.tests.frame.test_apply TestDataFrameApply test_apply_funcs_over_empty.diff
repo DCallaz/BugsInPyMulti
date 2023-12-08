@@ -1,0 +1,16 @@
+from pandas import DataFrame
+# BLOCK
+import numpy as np
+# BLOCK
+import pytest
+# BLOCK
+from pandas.util.testing import assert_series_equal
+# BLOCK
+    @pytest.mark.parametrize("func", ["sum", "prod", "any", "all"])
+    def test_apply_funcs_over_empty(self, func):
+        # GH 28213
+        df = DataFrame(columns=["a", "b", "c"])
+
+        result = df.apply(getattr(np, func))
+        expected = getattr(df, func)()
+        assert_series_equal(result, expected)

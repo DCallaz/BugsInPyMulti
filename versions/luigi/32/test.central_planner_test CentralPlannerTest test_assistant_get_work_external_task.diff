@@ -1,0 +1,6 @@
+# CLASS: class CentralPlannerTest(unittest.TestCase):
+from helpers import unittest
+# BLOCK
+    def test_assistant_get_work_external_task(self):
+        self.sch.add_task('X', task_id='A', runnable=False)
+        self.assertTrue(self.sch.get_work('Y', assistant=True)['task_id'] is None)

@@ -1,0 +1,6 @@
+# CLASS: class TestOffsiteMiddleware4(TestOffsiteMiddleware3):
+from urllib.parse import urlparse
+# BLOCK
+    def _get_spiderargs(self):
+        bad_hostname = urlparse('http:////scrapytest.org').hostname
+        return dict(name='foo', allowed_domains=['scrapytest.org', None, bad_hostname])

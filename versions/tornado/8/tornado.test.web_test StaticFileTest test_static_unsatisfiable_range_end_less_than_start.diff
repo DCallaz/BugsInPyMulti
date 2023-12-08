@@ -1,0 +1,26 @@
+# CLASS: class StaticFileTest(WebTestCase):
+from tornado.testing import AsyncHTTPTestCase
+# BLOCK
+class WebTestCase(AsyncHTTPTestCase):
+    """Base class for web tests that also supports WSGI mode.
+
+    Override get_handlers and get_app_kwargs instead of get_app.
+    This class is deprecated since WSGI mode is no longer supported.
+    """
+
+    def get_app(self):
+        self.app = Application(self.get_handlers(), **self.get_app_kwargs())
+        return self.app
+
+    def get_handlers(self):
+        raise NotImplementedError()
+
+    def get_app_kwargs(self):
+        return {}
+# BLOCK
+    def test_static_unsatisfiable_range_end_less_than_start(self):
+        response = self.get_and_head(
+            "/static/robots.txt", headers={"Range": "bytes=10-3"}
+        )
+        self.assertEqual(response.code, 416)
+        self.assertEqual(response.headers.get("Content-Range"), "bytes */26")

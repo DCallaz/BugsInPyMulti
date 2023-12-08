@@ -1,0 +1,14 @@
+# CLASS: class ParameterTest(unittest.TestCase):
+import luigi
+# BLOCK
+import unittest
+# BLOCK
+    def test_local_insignificant_param(self):
+        """ Ensure we have the same behavior as in before a78338c  """
+        class MyTask(luigi.Task):
+            # This could typically be "--num-threads=True"
+            x = luigi.Parameter(significant=False)
+
+        MyTask('arg')
+        self.assertRaises(luigi.parameter.MissingParameterException,
+                          lambda: MyTask())

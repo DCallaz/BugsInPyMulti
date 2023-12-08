@@ -1,0 +1,7 @@
+3,tests.test_utils_datatypes LocalCacheTest test_cache_without_limit
+4,tests.test_downloadermiddleware_redirect RedirectMiddlewareTest test_redirect_302_relative
+5,tests.test_http_request RequestTest test_url_no_scheme
+6,tests.test_contracts ContractsManagerTest test_errback
+7,tests.test_http_request FormRequestTest test_from_response_clickdata_does_not_ignore_image
+10,tests.test_spider DeprecationTest test_make_requests_from_url_deprecated
+11,tests.test_http_request FormRequestTest test_spaces_in_action

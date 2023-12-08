@@ -1,0 +1,16 @@
+from thefuck.rules.open import get_new_command
+# BLOCK
+import pytest
+# BLOCK
+@pytest.mark.parametrize('command, new_command', [
+    (Command('open foo.com'), 'open http://foo.com'),
+    (Command('open foo.ly'), 'open http://foo.ly'),
+    (Command('open foo.org'), 'open http://foo.org'),
+    (Command('open foo.net'), 'open http://foo.net'),
+    (Command('open foo.se'), 'open http://foo.se'),
+    (Command('open foo.io'), 'open http://foo.io'),
+    (Command('xdg-open foo.io'), 'xdg-open http://foo.io'),
+    (Command('gnome-open foo.io'), 'gnome-open http://foo.io'),
+    (Command('kde-open foo.io'), 'kde-open http://foo.io')])
+def test_get_new_command(command, new_command):
+    assert get_new_command(command, None) == new_command

@@ -1,0 +1,11 @@
+# CLASS: class TestUrlConcat(unittest.TestCase):
+from tornado.httputil import url_concat
+# BLOCK
+from tornado.test.util import unittest
+# BLOCK
+    def test_url_concat_none_params(self):
+        url = url_concat(
+            "https://localhost/path?r=1&t=2",
+            None,
+        )
+        self.assertEqual(url, "https://localhost/path?r=1&t=2")

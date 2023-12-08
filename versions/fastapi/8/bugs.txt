@@ -1,0 +1,5 @@
+1,tests.test_jsonable_encoder test_encode_model_with_default
+6,tests.test_forms_from_non_typing_sequences test_python_list_param_as_form
+6,tests.test_forms_from_non_typing_sequences test_python_set_param_as_form
+6,tests.test_forms_from_non_typing_sequences test_python_tuple_param_as_form
+8,tests.test_custom_route_class test_route_classes

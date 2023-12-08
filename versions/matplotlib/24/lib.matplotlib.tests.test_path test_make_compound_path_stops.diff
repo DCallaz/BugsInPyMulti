@@ -1,0 +1,11 @@
+from matplotlib.path import Path
+# BLOCK
+import numpy as np
+# BLOCK
+import pytest
+# BLOCK
+def test_make_compound_path_stops():
+    zero = [0, 0]
+    paths = 3*[Path([zero, zero], [Path.MOVETO, Path.STOP])]
+    compound_path = Path.make_compound_path(*paths)
+    assert np.sum(compound_path.codes == Path.STOP) == 1

@@ -1,0 +1,56 @@
+# CLASS: class TestS3CopyToSchemaTable(unittest.TestCase):
+import unittest
+# BLOCK
+import luigi
+# BLOCK
+class DummyS3CopyToTableBase(luigi.contrib.redshift.S3CopyToTable):
+    # Class attributes taken from `DummyPostgresImporter` in
+    # `../postgres_test.py`.
+    host = 'dummy_host'
+    database = 'dummy_database'
+    user = 'dummy_user'
+    password = 'dummy_password'
+    table = luigi.Parameter(default='dummy_table')
+    columns = (
+        ('some_text', 'varchar(255)'),
+        ('some_int', 'int'),
+    )
+
+    copy_options = ''
+    prune_table = ''
+    prune_column = ''
+    prune_date = ''
+
+    def s3_load_path(self):
+        return 's3://%s/%s' % (BUCKET, KEY)
+# BLOCK
+# Fake AWS and S3 credentials taken from `../redshift_test.py`.
+AWS_ACCESS_KEY = 'key'
+AWS_SECRET_KEY = 'secret'
+# BLOCK
+class DummyS3CopyToTableKey(DummyS3CopyToTableBase):
+    aws_access_key_id = AWS_ACCESS_KEY
+    aws_secret_access_key = AWS_SECRET_KEY
+# BLOCK
+    @mock.patch("luigi.contrib.redshift.S3CopyToTable.copy")
+    @mock.patch("luigi.contrib.redshift.RedshiftTarget")
+    def test_s3_copy_to_table(self, mock_redshift_target, mock_copy):
+        task = DummyS3CopyToTableKey(table='dummy_schema.dummy_table')
+        task.run()
+
+        # The mocked connection cursor passed to
+        # S3CopyToTable.copy(self, cursor, f).
+        mock_cursor = (mock_redshift_target.return_value
+                                           .connect
+                                           .return_value
+                                           .cursor
+                                           .return_value)
+
+        # Check the SQL query in `S3CopyToTable.does_table_exist`.
+        mock_cursor.execute.assert_called_with(
+            "select 1 as table_exists "
+            "from information_schema.tables "
+            "where table_schema = lower(%s) and "
+            "table_name = lower(%s) limit 1",
+            tuple(task.table.split('.')),
+        )

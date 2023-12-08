@@ -1,0 +1,13 @@
+# CLASS: class FormRequestTest(RequestTest):
+from scrapy.http import HtmlResponse
+# BLOCK
+def _buildresponse(body, **kwargs):
+    kwargs.setdefault('body', body)
+    kwargs.setdefault('url', 'http://example.com')
+    kwargs.setdefault('encoding', 'utf-8')
+    return HtmlResponse(**kwargs)
+# BLOCK
+    def test_spaces_in_action(self):
+        resp = _buildresponse('<body><form action=" path\n"></form></body>')
+        req = self.request_class.from_response(resp)
+        self.assertEqual(req.url, 'http://example.com/path')

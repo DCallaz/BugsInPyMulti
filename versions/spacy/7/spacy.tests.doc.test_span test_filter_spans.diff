@@ -1,0 +1,41 @@
+from spacy.util import filter_spans
+# BLOCK
+import pytest
+# BLOCK
+from ..util import get_doc
+# BLOCK
+@pytest.fixture
+def doc(en_tokenizer):
+    # fmt: off
+    text = "This is a sentence. This is another sentence. And a third."
+    heads = [1, 0, 1, -2, -3, 1, 0, 1, -2, -3, 0, 1, -2, -1]
+    deps = ["nsubj", "ROOT", "det", "attr", "punct", "nsubj", "ROOT", "det",
+            "attr", "punct", "ROOT", "det", "npadvmod", "punct"]
+    # fmt: on
+    tokens = en_tokenizer(text)
+    return get_doc(tokens.vocab, words=[t.text for t in tokens], heads=heads, deps=deps)
+# BLOCK
+def test_filter_spans(doc):
+    # Test filtering duplicates
+    spans = [doc[1:4], doc[6:8], doc[1:4], doc[10:14]]
+    filtered = filter_spans(spans)
+    assert len(filtered) == 3
+    assert filtered[0].start == 1 and filtered[0].end == 4
+    assert filtered[1].start == 6 and filtered[1].end == 8
+    assert filtered[2].start == 10 and filtered[2].end == 14
+    # Test filtering overlaps with longest preference
+    spans = [doc[1:4], doc[1:3], doc[5:10], doc[7:9], doc[1:4]]
+    filtered = filter_spans(spans)
+    assert len(filtered) == 2
+    assert len(filtered[0]) == 3
+    assert len(filtered[1]) == 5
+    assert filtered[0].start == 1 and filtered[0].end == 4
+    assert filtered[1].start == 5 and filtered[1].end == 10
+    # Test filtering overlaps with earlier preference for identical length
+    spans = [doc[1:4], doc[2:5], doc[5:10], doc[7:9], doc[1:4]]
+    filtered = filter_spans(spans)
+    assert len(filtered) == 2
+    assert len(filtered[0]) == 3
+    assert len(filtered[1]) == 5
+    assert filtered[0].start == 1 and filtered[0].end == 4
+    assert filtered[1].start == 5 and filtered[1].end == 10

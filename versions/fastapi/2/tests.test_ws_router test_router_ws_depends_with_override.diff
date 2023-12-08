@@ -1,0 +1,16 @@
+from fastapi.testclient import TestClient
+# BLOCK
+from fastapi import APIRouter, FastAPI
+# BLOCK
+async def ws_dependency():
+    return "Socket Dependency"
+# BLOCK
+router = APIRouter()
+prefix_router = APIRouter()
+app = FastAPI()
+# BLOCK
+def test_router_ws_depends_with_override():
+    client = TestClient(app)
+    app.dependency_overrides[ws_dependency] = lambda: "Override"
+    with client.websocket_connect("/router-ws-depends/") as websocket:
+        assert websocket.receive_text() == "Override"

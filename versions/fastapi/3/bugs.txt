@@ -1,0 +1,9 @@
+1,tests.test_jsonable_encoder test_encode_model_with_default
+3,tests.test_serialize_response_model test_valid
+3,tests.test_serialize_response_model test_coerce
+3,tests.test_serialize_response_model test_validlist
+3,tests.test_serialize_response_model test_validdict
+3,tests.test_serialize_response_model test_valid_exclude_unset
+3,tests.test_serialize_response_model test_coerce_exclude_unset
+3,tests.test_serialize_response_model test_validlist_exclude_unset
+3,tests.test_serialize_response_model test_validdict_exclude_unset

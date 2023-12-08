@@ -1,0 +1,12 @@
+from starlette.testclient import TestClient
+# BLOCK
+from fastapi import FastAPI
+# BLOCK
+app = FastAPI()
+# BLOCK
+client = TestClient(app)
+# BLOCK
+def test_post_item():
+    response = client.post("/items/", json={"name": "Foo"})
+    assert response.status_code == 200
+    assert response.json() == {"item": {"name": "Foo"}}

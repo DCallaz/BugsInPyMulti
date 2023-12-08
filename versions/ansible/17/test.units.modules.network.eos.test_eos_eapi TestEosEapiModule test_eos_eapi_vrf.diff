@@ -1,0 +1,3672 @@
+from units.modules.utils import set_module_args
+# BLOCK
+    def test_eos_eapi_vrf(self):
+        set_module_args(dict(vrf='test'))
+        commands = ['management api http-commands', 'no shutdown', 'vrf test', 'no shutdown']
+        self.start_unconfigured(changed=True, commands=commands)
+# FILE: test/integration/targets/connection_paramiko_ssh/test.sh
+#!/usr/bin/env bash
+
+set -eux
+
+# Connection tests for POSIX platforms use this script by linking to it from the appropriate 'connection_' target dir.
+# The name of the inventory group to test is extracted from the directory name following the 'connection_' prefix.
+
+group=$(python -c \
+    "from os import path; print(path.basename(path.abspath(path.dirname('$0'))).replace('connection_', ''))")
+
+cd ../connection
+
+INVENTORY="../connection_${group}/test_connection.inventory" ./test.sh \
+    -e target_hosts="${group}" \
+    -e action_prefix= \
+    -e local_tmp=/tmp/ansible-local \
+    -e remote_tmp=/tmp/ansible-remote \
+    "$@"
+# FILE: test/integration/targets/eos_config/templates/defaults/test.j2
+interface Ethernet2
+   description this is a test
+   shutdown
+# FILE: test/integration/targets/npm/tasks/test.yml
+- name: 'Remove any node modules'
+  file:
+    path: '{{ remote_dir }}/node_modules'
+    state: absent
+
+- vars:
+    # sample: node-v8.2.0-linux-x64.tar.xz
+    node_path: '{{ remote_dir }}/{{ nodejs_path }}/bin'
+    package: 'iconv-lite'
+  block:
+    - shell: npm --version
+      environment:
+        PATH: '{{ node_path }}:{{ ansible_env.PATH }}'
+      register: npm_version
+
+    - debug:
+        var: npm_version.stdout
+
+    - name: 'Install simple package without dependency'
+      npm:
+        path: '{{ remote_dir }}'
+        executable: '{{ node_path }}/npm'
+        state: present
+        name: '{{ package }}'
+      environment:
+        PATH: '{{ node_path }}:{{ ansible_env.PATH }}'
+      register: npm_install
+
+    - assert:
+        that:
+          - npm_install is success
+          - npm_install is changed
+
+    - name: 'Reinstall simple package without dependency'
+      npm:
+        path: '{{ remote_dir }}'
+        executable: '{{ node_path }}/npm'
+        state: present
+        name: '{{ package }}'
+      environment:
+        PATH: '{{ node_path }}:{{ ansible_env.PATH }}'
+      register: npm_reinstall
+
+    - name: Check there is no change
+      assert:
+        that:
+          - npm_reinstall is success
+          - not (npm_reinstall is changed)
+
+    - name: 'Manually delete package'
+      file:
+        path: '{{ remote_dir }}/node_modules/{{ package }}'
+        state: absent
+
+    - name: 'reinstall simple package'
+      npm:
+        path: '{{ remote_dir }}'
+        executable: '{{ node_path }}/npm'
+        state: present
+        name: '{{ package }}'
+      environment:
+        PATH: '{{ node_path }}:{{ ansible_env.PATH }}'
+      register: npm_fix_install
+
+    - name: Check result is changed and successful
+      assert:
+        that:
+          - npm_fix_install is success
+          - npm_fix_install is changed
+# FILE: test/integration/targets/ansible-runner/test.yml
+- hosts: localhost
+  roles:
+    - ansible-runner
+# FILE: test/integration/targets/timezone/tasks/test.yml
+##
+## test setting timezone, idempotency and checkmode
+##
+
+- name: set timezone to Australia/Brisbane (checkmode)
+  timezone:
+    name: Australia/Brisbane
+  check_mode: yes
+  register: timezone_set_checkmode
+
+- name: ensure timezone reported as changed in checkmode
+  assert:
+    that:
+      - timezone_set_checkmode.changed
+      - timezone_set_checkmode.diff.after.name == 'Australia/Brisbane'
+      - timezone_set_checkmode.diff.before.name == 'Etc/UTC'
+
+- name: ensure checkmode didn't change the timezone
+  command: cmp /etc/localtime /usr/share/zoneinfo/Australia/Brisbane
+  register: result
+  failed_when: result is not failed
+  changed_when: no
+
+- name: ensure that checkmode didn't update the timezone in the config file
+  command: egrep '^(TIME)?ZONE="Etc/UTC"' {{ timezone_config_file }}
+  when:
+    - ansible_service_mgr != 'systemd'
+    - ansible_os_family == 'RedHat'
+
+- name: ensure that checkmode didn't update the timezone in the config file
+  command: egrep '^Etc/UTC' {{ timezone_config_file }}
+  when:
+    - ansible_service_mgr != 'systemd'
+    - ansible_os_family == 'Debian'
+
+- name: set timezone to Australia/Brisbane
+  timezone:
+    name: Australia/Brisbane
+  register: timezone_set
+
+- name: ensure timezone changed
+  assert:
+    that:
+      - timezone_set.changed
+      - timezone_set.diff.after.name == 'Australia/Brisbane'
+      - timezone_set.diff.before.name == 'Etc/UTC'
+
+- name: ensure that the timezone is actually set
+  command: cmp /etc/localtime /usr/share/zoneinfo/Australia/Brisbane
+  changed_when: no
+
+- name: ensure that the timezone is updated in the config file
+  command: egrep '^(TIME)?ZONE="Australia/Brisbane"' {{ timezone_config_file }}
+  when:
+    - ansible_service_mgr != 'systemd'
+    - ansible_os_family == 'RedHat'
+
+- name: ensure that the timezone is updated in the config file
+  command: egrep '^Australia/Brisbane' {{ timezone_config_file }}
+  when:
+    - ansible_service_mgr != 'systemd'
+    - ansible_os_family == 'Debian'
+
+- name: set timezone to Australia/Brisbane again
+  timezone:
+    name: Australia/Brisbane
+  register: timezone_again
+
+- name: ensure timezone idempotency
+  assert:
+    that:
+      - not timezone_again.changed
+
+- name: set timezone to Australia/Brisbane again in checkmode
+  timezone:
+    name: Australia/Brisbane
+  register: timezone_again_checkmode
+
+- name: set timezone idempotency (checkmode)
+  assert:
+    that:
+      - not timezone_again_checkmode.changed
+
+##
+## tests for same timezones with different names
+##
+
+- name: check dpkg-reconfigure
+  shell: type dpkg-reconfigure
+  register: check_dpkg_reconfigure
+  ignore_errors: yes
+  changed_when: no
+
+- name: check timedatectl
+  shell: type timedatectl && timedatectl
+  register: check_timedatectl
+  ignore_errors: yes
+  changed_when: no
+
+- block:
+    - name: set timezone to Etc/UTC
+      timezone:
+        name: Etc/UTC
+
+    - name: change timezone from Etc/UTC to UTC
+      timezone:
+        name: UTC
+      register: timezone_etcutc_to_utc
+
+    - name: check timezone changed from Etc/UTC to UTC
+      assert:
+        that:
+          - timezone_etcutc_to_utc.changed
+          - timezone_etcutc_to_utc.diff.before.name == 'Etc/UTC'
+          - timezone_etcutc_to_utc.diff.after.name == 'UTC'
+
+    - name: change timezone from UTC to Etc/UTC
+      timezone:
+        name: Etc/UTC
+      register: timezone_utc_to_etcutc
+
+    - name: check timezone changed from UTC to Etc/UTC
+      assert:
+        that:
+          - timezone_utc_to_etcutc.changed
+          - timezone_utc_to_etcutc.diff.before.name == 'UTC'
+          - timezone_utc_to_etcutc.diff.after.name == 'Etc/UTC'
+
+  when:
+    # FIXME: Due to the bug of the dpkg-reconfigure, those tests failed on non-systemd debian
+    - check_dpkg_reconfigure.rc != 0 or check_timedatectl.rc == 0
+
+##
+## no systemd tests for timezone
+##
+
+- block:
+  ##
+  ## test with empty config file
+  ##
+
+    - name: empty config file
+      command: cp /dev/null {{ timezone_config_file }}
+
+    - name: set timezone to Europe/Belgrade (empty config file)
+      timezone:
+        name: Europe/Belgrade
+      register: timezone_empty_conf
+
+    - name: check if timezone set (empty config file)
+      assert:
+        that:
+          - timezone_empty_conf.changed
+          - timezone_empty_conf.diff.after.name == 'Europe/Belgrade'
+          - timezone_empty_conf.diff.before.name == 'n/a'
+
+    - name: check if the timezone is actually set (empty config file)
+      command: cmp /etc/localtime /usr/share/zoneinfo/Europe/Belgrade
+      changed_when: no
+
+
+  ##
+  ## test with deleted config file
+  ##
+
+    - name: remove config file
+      file:
+        path: '{{ timezone_config_file }}'
+        state: absent
+
+    - name: set timezone to Europe/Belgrade (no config file)
+      timezone:
+        name: Europe/Belgrade
+      register: timezone_missing_conf
+
+    - name: check if timezone set (no config file)
+      assert:
+        that:
+          - timezone_missing_conf.changed
+          - timezone_missing_conf.diff.after.name == 'Europe/Belgrade'
+          - timezone_missing_conf.diff.before.name == 'n/a'
+
+    - name: check if the timezone is actually set (no config file)
+      command: cmp /etc/localtime /usr/share/zoneinfo/Europe/Belgrade
+      changed_when: no
+
+
+  ##
+  ## test with /etc/localtime as symbolic link to a zoneinfo file
+  ##
+
+    - name: create symlink /etc/locatime -> /usr/share/zoneinfo/Etc/UTC
+      file:
+        src: /usr/share/zoneinfo/Etc/UTC
+        dest: /etc/localtime
+        state: link
+        force: yes
+
+    - name: set timezone to Europe/Belgrade (over symlink)
+      timezone:
+        name: Europe/Belgrade
+      register: timezone_symllink
+
+    - name: check if timezone set (over symlink)
+      assert:
+        that:
+          - timezone_symllink.changed
+          - timezone_symllink.diff.after.name == 'Europe/Belgrade'
+          - timezone_symllink.diff.before.name == 'Etc/UTC'
+
+    - name: check if the timezone is actually set (over symlink)
+      command: cmp /etc/localtime /usr/share/zoneinfo/Europe/Belgrade
+      changed_when: no
+
+
+  ##
+  ## test with /etc/localtime as broken symbolic link
+  ##
+
+    - name: set timezone to a broken symlink
+      file:
+        src: /tmp/foo
+        dest: /etc/localtime
+        state: link
+        force: yes
+
+    - name: set timezone to Europe/Belgrade (over broken symlink)
+      timezone:
+        name: Europe/Belgrade
+      register: timezone_symllink_broken
+
+    - name: check if timezone set (over broken symlink)
+      assert:
+        that:
+          - timezone_symllink_broken.changed
+          - timezone_symllink_broken.diff.after.name == 'Europe/Belgrade'
+          - timezone_symllink_broken.diff.before.name == 'n/a'
+
+    - name: check if the timezone is actually set (over broken symlink)
+      command: cmp /etc/localtime /usr/share/zoneinfo/Europe/Belgrade
+      changed_when: no
+
+
+  ##
+  ## test with /etc/localtime set manually using copy
+  ##
+
+    - name: set timezone manually by coping zone info file to /etc/localtime
+      copy:
+        src: /usr/share/zoneinfo/Etc/UTC
+        dest: /etc/localtime
+        remote_src: yes
+
+    - name: set timezone to Europe/Belgrade (over copied file)
+      timezone:
+        name: Europe/Belgrade
+      register: timezone_copied
+
+    - name: check if timezone set (over copied file)
+      assert:
+        that:
+          - timezone_copied.changed
+          - timezone_copied.diff.after.name == 'Europe/Belgrade'
+          - timezone_copied.diff.before.name == 'n/a'
+
+    - name: check if the timezone is actually set (over copied file)
+      command: cmp /etc/localtime /usr/share/zoneinfo/Europe/Belgrade
+      changed_when: no
+  when:
+    - ansible_service_mgr != 'systemd'
+    - timezone_config_file is defined
+
+
+####
+#### hwclock tests
+####
+
+- name: check if hwclock is supported in the environment
+  command: hwclock --test
+  register: hwclock_test
+  ignore_errors: yes
+
+- name: check if timedatectl works in the environment
+  command: timedatectl
+  register: timedatectl_test
+  ignore_errors: yes
+
+- name:
+  set_fact:
+    hwclock_supported: '{{ hwclock_test is successful or timedatectl_test is successful }}'
+##
+## test set hwclock, idempotency and checkmode
+##
+
+- block:
+    - name: set hwclock to local
+      timezone:
+        hwclock: local
+
+    - name: set hwclock to UTC (checkmode)
+      timezone:
+        hwclock: UTC
+      check_mode: yes
+      register: hwclock_set_checkmode
+
+    - name: ensure hwclock reported as changed (checkmode)
+      assert:
+        that:
+          - hwclock_set_checkmode.changed
+          - hwclock_set_checkmode.diff.after.hwclock == 'UTC'
+          - hwclock_set_checkmode.diff.before.hwclock == 'local'
+
+    - block:
+        - name: ensure that checkmode didn't update hwclock in /etc/adjtime
+          command: grep ^UTC /etc/adjtime
+          register: result
+          failed_when: result is not failed
+
+        - name: ensure that checkmode didn't update hwclock the config file
+          command: grep ^UTC=no {{ hwclock_config_file }}
+      when: ansible_service_mgr != 'systemd'
+
+    - name: set hwclock to UTC
+      timezone:
+        hwclock: UTC
+      register: hwclock_set
+
+    - name: ensure hwclock changed
+      assert:
+        that:
+          - hwclock_set.changed
+          - hwclock_set.diff.after.hwclock == 'UTC'
+          - hwclock_set.diff.before.hwclock == 'local'
+
+    - block:
+        - name: ensure that hwclock is updated in /etc/adjtime
+          command: grep ^UTC /etc/adjtime
+
+        - name: ensure that hwclock is updated in the config file
+          command: grep ^UTC=yes {{ hwclock_config_file }}
+      when: ansible_service_mgr != 'systemd'
+
+    - name: set hwclock to RTC again
+      timezone:
+        hwclock: UTC
+      register: hwclock_again
+
+    - name: set hwclock idempotency
+      assert:
+        that:
+          - not hwclock_again.changed
+
+    - name: set hwclock to RTC again (checkmode)
+      timezone:
+        hwclock: UTC
+      check_mode: yes
+      register: hwclock_again_checkmode
+
+    - name: set hwclock idempotency (checkmode)
+      assert:
+        that:
+          - not hwclock_again_checkmode.changed
+
+
+    ##
+    ## no systemd tests for hwclock
+    ##
+
+    - block:
+        ##
+        ## test set hwclock with both /etc/adjtime and conf file deleted
+        ##
+
+        - name: remove /etc/adjtime and conf file
+          file:
+            path: '{{ item }}'
+            state: absent
+          with_items:
+            - /etc/adjtime
+            - '{{ hwclock_config_file }}'
+
+        - name: set hwclock to UTC with deleted /etc/adjtime and conf file
+          timezone:
+            hwclock: UTC
+          register: hwclock_set_utc_deleted_adjtime_and_conf
+
+        - name: ensure hwclock changed with deleted /etc/adjtime and conf
+          assert:
+            that:
+              - hwclock_set_utc_deleted_adjtime_and_conf.changed
+              - hwclock_set_utc_deleted_adjtime_and_conf.diff.after.hwclock == 'UTC'
+              - hwclock_set_utc_deleted_adjtime_and_conf.diff.before.hwclock == 'n/a'
+
+
+        ##
+        ## test set hwclock with /etc/adjtime deleted
+        ##
+
+        - name: remove /etc/adjtime
+          file:
+            path: '{{ item }}'
+            state: absent
+          with_items:
+            - /etc/adjtime
+
+        - name: set hwclock to UTC with deleted /etc/adjtime
+          timezone:
+            hwclock: UTC
+          register: hwclock_set_utc_deleted_adjtime_utc
+
+        - name: ensure hwclock changed with deleted /etc/adjtime
+          assert:
+            that:
+              - not hwclock_set_utc_deleted_adjtime_utc.changed
+              - hwclock_set_utc_deleted_adjtime_utc.diff.after.hwclock == 'UTC'
+              - hwclock_set_utc_deleted_adjtime_utc.diff.before.hwclock == 'UTC'
+
+        - name: set hwclock to LOCAL with deleted /etc/adjtime
+          timezone:
+            hwclock: local
+          register: hwclock_set_local_deleted_adjtime_local
+
+        - name: ensure hwclock changed to LOCAL with deleted /etc/adjtime
+          assert:
+            that:
+              - hwclock_set_local_deleted_adjtime_local.changed
+              - hwclock_set_local_deleted_adjtime_local.diff.after.hwclock == 'local'
+              - hwclock_set_local_deleted_adjtime_local.diff.before.hwclock == 'UTC'
+     
+
+        ##
+        ## test set hwclock with conf file deleted
+        ##
+
+        - name: remove conf file
+          file:
+            path: '{{ item }}'
+            state: absent
+          with_items:
+            - '{{ hwclock_config_file }}'
+
+        - name: set hwclock to UTC with deleted conf
+          timezone:
+            hwclock: UTC
+          register: hwclock_set_utc_deleted_conf
+
+        - name: ensure hwclock changed with deleted /etc/adjtime
+          assert:
+            that:
+              - hwclock_set_utc_deleted_conf.changed
+              - hwclock_set_utc_deleted_conf.diff.after.hwclock == 'UTC'
+              - hwclock_set_utc_deleted_conf.diff.before.hwclock == 'n/a'
+
+
+        ##
+        ## test set hwclock with /etc/adjtime missing UTC/LOCAL strings
+        ##
+
+        - name: create /etc/adjtime without UTC/LOCAL
+          copy:
+            content: '0.0 0 0\n0'
+            dest: /etc/adjtime
+
+        - name: set hwclock to UTC with broken /etc/adjtime
+          timezone:
+            hwclock: UTC
+          register: hwclock_set_utc_broken_adjtime
+
+        - name: ensure hwclock doesn't report changed with broken /etc/adjtime
+          assert:
+            that:
+              - not hwclock_set_utc_broken_adjtime.changed
+              - hwclock_set_utc_broken_adjtime.diff.after.hwclock == 'UTC'
+              - hwclock_set_utc_broken_adjtime.diff.before.hwclock == 'UTC'
+
+        - name: set hwclock to LOCAL with broken /etc/adjtime
+          timezone:
+            hwclock: local
+          register: hwclock_set_local_broken_adjtime
+
+        - name: ensure hwclock changed to LOCAL with broken /etc/adjtime
+          assert:
+            that:
+              - hwclock_set_local_broken_adjtime.changed
+              - hwclock_set_local_broken_adjtime.diff.after.hwclock == 'local'
+              - hwclock_set_local_broken_adjtime.diff.before.hwclock == 'UTC'
+      when:
+        - ansible_service_mgr != 'systemd'
+        - hwclock_config_file is defined
+
+    ####
+    #### timezone + hwclock tests
+    ####
+
+    ##
+    ## test set timezone and hwclock, idempotency and checkmode
+    ##
+
+    - name: set timezone to Etc/UTC and hwclock to local
+      timezone:
+        name: Etc/UTC
+        hwclock: local
+
+    - name: set timezone to Europe/Belgrade and hwclock to UTC (checkmode)
+      timezone:
+        name: Europe/Belgrade
+        hwclock: UTC
+      check_mode: yes
+      register: tzclock_set_checkmode
+
+    - name: ensure timezone and hwclock reported as changed in checkmode
+      assert:
+        that:
+          - tzclock_set_checkmode.changed
+          - tzclock_set_checkmode.diff.after.name == 'Europe/Belgrade'
+          - tzclock_set_checkmode.diff.before.name == 'Etc/UTC'
+          - tzclock_set_checkmode.diff.after.hwclock == 'UTC'
+          - tzclock_set_checkmode.diff.before.hwclock == 'local'
+
+    - name: ensure checkmode didn't change the timezone
+      command: cmp /etc/localtime /usr/share/zoneinfo/Australia/Brisbane
+      register: result
+      failed_when: result is not failed
+      changed_when: no
+
+    - block:
+        - name: ensure that checkmode didn't update the timezone in the config file
+          command: egrep '^(TIME)?ZONE="Etc/UTC"' {{ timezone_config_file }}
+          when:
+            - ansible_os_family == 'RedHat'
+
+        - name: ensure that checkmode didn't update the timezone in the config file
+          command: egrep '^Etc/UTC' {{ timezone_config_file }}
+          when:
+            - ansible_os_family == 'Debian'
+
+        - name: ensure that checkmode didn't update hwclock in /etc/adjtime
+          command: grep ^UTC /etc/adjtime
+          register: result
+          failed_when: result is not failed
+
+        - name: ensure that checkmode didn't update hwclock the config file
+          command: grep ^UTC=no {{ hwclock_config_file }}
+      when: ansible_service_mgr != 'systemd'
+
+    - name: set timezone to Europe/Belgrade and hwclock to UTC
+      timezone:
+        name: Europe/Belgrade
+        hwclock: UTC
+      register: tzclock_set
+
+    - name: ensure timezone and hwclock changed
+      assert:
+        that:
+          - tzclock_set.changed
+          - tzclock_set.diff.after.name == 'Europe/Belgrade'
+          - tzclock_set.diff.before.name == 'Etc/UTC'
+          - tzclock_set.diff.after.hwclock == 'UTC'
+          - tzclock_set.diff.before.hwclock == 'local'
+
+    - name: ensure that the timezone is actually set
+      command: cmp /etc/localtime /usr/share/zoneinfo/Europe/Belgrade
+      changed_when: no
+
+    - block:
+        - name: ensure that the timezone is updated in the config file
+          command: egrep '^(TIME)?ZONE="Europe/Belgrade"' {{ timezone_config_file }}
+          when:
+            - ansible_os_family == 'RedHat'
+
+        - name: ensure that the timezone is updated in the config file
+          command: egrep 'Europe/Belgrade' {{ timezone_config_file }}
+          when:
+            - ansible_os_family == 'Debian'
+
+        - name: ensure that hwclock is updated in /etc/adjtime
+          command: grep ^UTC /etc/adjtime
+
+        - name: ensure that hwclock is updated in the config file
+          command: grep ^UTC=yes {{ hwclock_config_file }}
+      when: ansible_service_mgr != 'systemd'
+
+    - name: set timezone to Europe/Belgrade and hwclock to UTC again
+      timezone:
+        name: Europe/Belgrade
+        hwclock: UTC
+      register: tzclock_set_again
+
+    - name: set timezone and hwclock idempotency
+      assert:
+        that:
+          - not tzclock_set_again.changed
+
+    - name: set timezone to Europe/Belgrade and hwclock to UTC again (checkmode)
+      timezone:
+        name: Europe/Belgrade
+        hwclock: UTC
+      register: tzclock_set_again_checkmode
+
+    - name: set timezone and hwclock idempotency in checkmode
+      assert:
+        that:
+          - not tzclock_set_again_checkmode.changed
+
+  when:
+    - ansible_system == 'Linux'
+    - hwclock_supported
+# FILE: test/integration/targets/inventory_yaml/test.yml
+all:
+    children:
+        kids:
+            hosts:
+                marcia:
+                    popular: True
+                jan:
+                    popular: False
+                cindy:
+                    popular: True
+                greg:
+                    popular: True
+                peter:
+                    popular: False
+                bobby:
+                    popular: False
+            vars:
+                in_trouble: True
+        cousins:
+            children:
+                redheads:
+                    hosts:
+                        #oliver:  # this used to cause an error and deliver incomplete inventory
+        the-maid:
+            hosts:
+                alice:
+                    status: single
+# FILE: test/integration/targets/collections_plugin_namespace/test.yml
+- hosts: testhost
+  roles:
+    - my_ns.my_col.test
+# FILE: test/integration/targets/flatpak_remote/tasks/test.yml
+# state=present
+
+- name: Test addition - {{ method }}
+  flatpak_remote:
+    name: flatpak-test
+    flatpakrepo_url: /tmp/flatpak/repo/dummy-repo.flatpakrepo
+    state: present
+    method: "{{ method }}"
+  register: addition_result
+
+- name: Verify addition test result - {{ method }}
+  assert:
+    that:
+      - "addition_result.changed == true"
+    msg: "state=preset shall add flatpak when absent"
+
+- name: Test idempotency of addition - {{ method }}
+  flatpak_remote:
+    name: flatpak-test
+    flatpakrepo_url: /tmp/flatpak/repo/dummy-repo.flatpakrepo
+    state: present
+    method: "{{ method }}"
+  register: double_addition_result
+
+- name: Verify idempotency of addition test result - {{ method }}
+  assert:
+    that:
+      - "double_addition_result.changed == false"
+    msg: "state=present shall not do anything when flatpak is already present"
+
+- name: Test updating remote url does not do anything - {{ method }}
+  flatpak_remote:
+    name: flatpak-test
+    flatpakrepo_url: https://a.different/repo.flatpakrepo
+    state: present
+    method: "{{ method }}"
+  register: url_update_result
+
+- name: Verify updating remote url does not do anything - {{ method }}
+  assert:
+    that:
+      - "url_update_result.changed == false"
+    msg: "Trying to update the URL of an existing flatpak remote shall not do anything"
+
+
+# state=absent
+
+- name: Test removal - {{ method }}
+  flatpak_remote:
+    name: flatpak-test
+    state: absent
+    method: "{{ method }}"
+  register: removal_result
+
+- name: Verify removal test result - {{ method }}
+  assert:
+    that:
+      - "removal_result.changed == true"
+    msg: "state=absent shall remove flatpak when present"
+
+- name: Test idempotency of removal - {{ method }}
+  flatpak_remote:
+    name: flatpak-test
+    state: absent
+    method: "{{ method }}"
+  register: double_removal_result
+
+- name: Verify idempotency of removal test result - {{ method }}
+  assert:
+    that:
+      - "double_removal_result.changed == false"
+    msg: "state=absent shall not do anything when flatpak is not present"
+# FILE: test/integration/targets/lineinfile/files/test.conf
+[section_one]
+
+[section_two]
+
+[section_three]
+# FILE: test/integration/targets/lineinfile/files/test.txt
+This is line 1
+This is line 2
+REF this is a line for backrefs REF
+This is line 4
+This is line 5
+# FILE: test/integration/targets/connection_posix/test.sh
+#!/usr/bin/env bash
+
+set -eux
+
+# Connection tests for POSIX platforms use this script by linking to it from the appropriate 'connection_' target dir.
+# The name of the inventory group to test is extracted from the directory name following the 'connection_' prefix.
+
+group=$(python -c \
+    "from os import path; print(path.basename(path.abspath(path.dirname('$0'))).replace('connection_', ''))")
+
+cd ../connection
+
+INVENTORY="../connection_${group}/test_connection.inventory" ./test.sh \
+    -e target_hosts="${group}" \
+    -e action_prefix= \
+    -e local_tmp=/tmp/ansible-local \
+    -e remote_tmp=/tmp/ansible-remote \
+    "$@"
+# FILE: test/integration/targets/callback_retry_task_name/test.yml
+---
+- hosts: testhost
+  gather_facts: False
+  vars:
+      foo: blippy
+  tasks:
+  - name: First run {{ foo }}
+    command: echo "18236 callback task template fix OUTPUT 1"
+    register: the_result_var
+
+  - block:
+      - name: "{{ the_result_var.stdout }}"
+        command: echo "18236 callback task template fix OUTPUT 2"
+        register: the_result_var
+        retries: 1
+        delay: 1
+        until: False
+        ignore_errors: true
+
+      #  - name: assert task_name was
+
+  - name: "{{ the_result_var.stdout }}"
+    command: echo "18236 callback taskadfadf template fix OUTPUT 3"
+    register: the_result_var
+
+  - name: "{{ the_result_var.stdout }}"
+    debug:
+        msg: "nothing to see here."
+# FILE: test/integration/targets/old_style_cache_plugins/plugins/inventory/test.py
+# Copyright (c) 2019 Ansible Project
+# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
+DOCUMENTATION = '''
+    name: test
+    plugin_type: inventory
+    short_description: test inventory source
+    extends_documentation_fragment:
+        - inventory_cache
+'''
+
+from ansible.plugins.inventory import BaseInventoryPlugin, Cacheable
+
+
+class InventoryModule(BaseInventoryPlugin, Cacheable):
+
+    NAME = 'test'
+
+    def populate(self, hosts):
+        for host in list(hosts.keys()):
+            self.inventory.add_host(host, group='all')
+            for hostvar, hostval in hosts[host].items():
+                self.inventory.set_variable(host, hostvar, hostval)
+
+    def get_hosts(self):
+        return {'host1': {'one': 'two'}, 'host2': {'three': 'four'}}
+
+    def parse(self, inventory, loader, path, cache=True):
+        super(InventoryModule, self).parse(inventory, loader, path)
+
+        self.load_cache_plugin()
+
+        cache_key = self.get_cache_key(path)
+
+        # cache may be True or False at this point to indicate if the inventory is being refreshed
+        # get the user's cache option
+        cache_setting = self.get_option('cache')
+
+        attempt_to_read_cache = cache_setting and cache
+        cache_needs_update = cache_setting and not cache
+
+        # attempt to read the cache if inventory isn't being refreshed and the user has caching enabled
+        if attempt_to_read_cache:
+            try:
+                results = self._cache[cache_key]
+            except KeyError:
+                # This occurs if the cache_key is not in the cache or if the cache_key expired, so the cache needs to be updated
+                cache_needs_update = True
+
+        if cache_needs_update:
+            results = self.get_hosts()
+
+            # set the cache
+            self._cache[cache_key] = results
+
+        self.populate(results)
+# FILE: test/integration/targets/command_shell/files/test.sh
+#!/usr/bin/env bash
+
+echo -n "win"
+# FILE: test/integration/targets/binary_modules/test.sh
+#!/usr/bin/env bash
+
+set -eux
+
+[ -f "${INVENTORY}" ]
+
+ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook download_binary_modules.yml -i "${INVENTORY}" -v "$@"
+ANSIBLE_HOST_KEY_CHECKING=false ansible-playbook test_binary_modules.yml     -i "${INVENTORY}" -v "$@"
+# FILE: test/integration/targets/collections_relative_imports/test.yml
+- hosts: testhost
+  roles:
+    - my_ns.my_col.test
+# FILE: test/integration/targets/win_certificate_store/tasks/test.yml
+---
+- name: fail with invalid store location
+  win_certificate_store:
+    state: present
+    path: '{{win_cert_dir}}\subj-cert.pem'
+    store_location: FakeLocation
+  register: fail_fake_location
+  failed_when: "fail_fake_location.msg != 'value of store_location must be one of: CurrentUser, LocalMachine. Got no match for: FakeLocation'"
+
+- name: fail with invalid store name
+  win_certificate_store:
+    state: present
+    path: '{{win_cert_dir}}\subj-cert.pem'
+    store_name: FakeName
+  register: fail_fake_name
+  failed_when: "fail_fake_name.msg != 'value of store_name must be one of: AddressBook, AuthRoot, CertificateAuthority, Disallowed, My, Root, TrustedPeople, TrustedPublisher. Got no match for: FakeName'"
+
+- name: fail when state=present and no path is set
+  win_certificate_store:
+    state: present
+  register: fail_present_no_path
+  failed_when: "fail_present_no_path.msg != 'state is present but all of the following are missing: path'"
+
+- name: fail when state=exported and no path is set
+  win_certificate_store:
+    state: exported
+    thumbprint: ABC
+  register: fail_export_no_path
+  failed_when: "fail_export_no_path.msg != 'state is exported but all of the following are missing: path'"
+
+- name: fail when state=exported and no thumbprint is set
+  win_certificate_store:
+    state: exported
+    path: '{{win_cert_dir}}'
+  register: fail_export_no_thumbprint
+  failed_when: "fail_export_no_thumbprint.msg != 'state is exported but all of the following are missing: thumbprint'"
+
+- name: fail to export thumbprint when path is a dir
+  win_certificate_store:
+    state: exported
+    thumbprint: '{{subj_thumbprint}}'
+    path: '{{win_cert_dir}}'
+  register: fail_export_path_is_dir
+  failed_when: fail_export_path_is_dir.msg != "Cannot export cert to path '" + win_cert_dir + "' as it is a directory"
+
+- name: fail when state=absent and not path or thumbprint is set
+  win_certificate_store:
+    state: absent
+  register: fail_absent_no_path_or_thumbprint
+  failed_when: "fail_absent_no_path_or_thumbprint.msg != 'state is absent but any of the following are missing: path, thumbprint'"
+
+- name: import pem certificate (check)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\subj-cert.pem'
+    state: present
+  register: import_pem_check
+  check_mode: yes
+
+- name: get result of import pem certificate (check)
+  win_shell: if (Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.Thumbprint -eq "{{subj_thumbprint}}" }) { $true } else { $false }
+  register: import_pem_result_check
+
+- name: assert results of import pem certificate (check)
+  assert:
+    that:
+    - import_pem_check is changed
+    - import_pem_check.thumbprints == [subj_thumbprint]
+    - import_pem_result_check.stdout_lines[0] == "False"
+
+- name: import pem certificate
+  win_certificate_store:
+    path: '{{win_cert_dir}}\subj-cert.pem'
+    state: present
+  register: import_pem
+
+- name: get result of import pem certificate
+  win_shell: if (Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.Thumbprint -eq "{{subj_thumbprint}}" }) { $true } else { $false }
+  register: import_pem_result
+
+- name: assert results of import pem certificate
+  assert:
+    that:
+    - import_pem is changed
+    - import_pem.thumbprints == [subj_thumbprint]
+    - import_pem_result.stdout_lines[0] == "True"
+
+- name: import pem certificate (idempotent)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\subj-cert.pem'
+    state: present
+  register: import_pem_again
+
+- name: assert results of import pem certificate (idempotent)
+  assert:
+    that:
+    - not import_pem_again is changed
+
+- name: remove certificate based on thumbprint (check)
+  win_certificate_store:
+    thumbprint: '{{subj_thumbprint}}'
+    state: absent
+  register: remove_thumbprint_check
+  check_mode: yes
+
+- name: get result of remove certificate based on thumbprint (check)
+  win_shell: if (Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.Thumbprint -eq "{{subj_thumbprint}}" }) { $true } else { $false }
+  register: remove_thumbprint_result_check
+
+- name: assert results of remove certificate based on thumbprint (check)
+  assert:
+    that:
+    - remove_thumbprint_check is changed
+    - remove_thumbprint_check.thumbprints == [subj_thumbprint]
+    - remove_thumbprint_result_check.stdout_lines[0] == "True"
+
+- name: remove certificate based on thumbprint
+  win_certificate_store:
+    thumbprint: '{{subj_thumbprint}}'
+    state: absent
+  register: remove_thumbprint
+
+- name: get result of remove certificate based on thumbprint
+  win_shell: if (Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.Thumbprint -eq "{{subj_thumbprint}}" }) { $true } else { $false }
+  register: remove_thumbprint_result
+
+- name: assert results of remove certificate based on thumbprint
+  assert:
+    that:
+    - remove_thumbprint is changed
+    - remove_thumbprint.thumbprints == [subj_thumbprint]
+    - remove_thumbprint_result.stdout_lines[0] == "False"
+
+- name: remove certificate based on thumbprint (idempotent)
+  win_certificate_store:
+    thumbprint: '{{subj_thumbprint}}'
+    state: absent
+  register: remove_thumbprint_again
+
+- name: assert results of remove certificate based on thumbprint (idempotent)
+  assert:
+    that:
+    - not remove_thumbprint_again is changed
+
+- name: import der certificate (check)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\subj-cert.cer'
+    state: present
+  register: import_der_check
+  check_mode: yes
+
+- name: get result of import der certificate (check)
+  win_shell: if (Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.Thumbprint -eq "{{subj_thumbprint}}" }) { $true } else { $false }
+  register: import_der_result_check
+
+- name: assert results of import der certificate (check)
+  assert:
+    that:
+    - import_der_check is changed
+    - import_der_check.thumbprints == [subj_thumbprint]
+    - import_der_result_check.stdout_lines[0] == "False"
+
+- name: import der certificate
+  win_certificate_store:
+    path: '{{win_cert_dir}}\subj-cert.cer'
+    state: present
+  register: import_der
+
+- name: get result of import der certificate
+  win_shell: if (Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.Thumbprint -eq "{{subj_thumbprint}}" }) { $true } else { $false }
+  register: import_der_result
+
+- name: assert results of import der certificate
+  assert:
+    that:
+    - import_der is changed
+    - import_der.thumbprints == [subj_thumbprint]
+    - import_der_result.stdout_lines[0] == "True"
+
+- name: import der certificate (idempotent)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\subj-cert.cer'
+    state: present
+  register: import_der_again
+
+- name: assert results of import der certificate (idempotent)
+  assert:
+    that:
+    - not import_der_again is changed
+
+- name: remove certificate based on path (check)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\subj-cert.cer'
+    state: absent
+  register: remove_path_check
+  check_mode: yes
+
+- name: get result of remove certificate based on path (check)
+  win_shell: if (Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.Thumbprint -eq "{{subj_thumbprint}}" }) { $true } else { $false }
+  register: remove_path_result_check
+
+- name: assert results of remove certificate based on path (check)
+  assert:
+    that:
+    - remove_path_check is changed
+    - remove_path_check.thumbprints == [subj_thumbprint]
+    - remove_path_result_check.stdout_lines[0] == "True"
+
+- name: remove certificate based on path
+  win_certificate_store:
+    path: '{{win_cert_dir}}\subj-cert.cer'
+    state: absent
+  register: remove_path
+
+- name: get result of remove certificate based on path
+  win_shell: if (Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.Thumbprint -eq "{{subj_thumbprint}}" }) { $true } else { $false }
+  register: remove_path_result
+
+- name: assert results of remove certificate based on path
+  assert:
+    that:
+    - remove_path is changed
+    - remove_path.thumbprints == [subj_thumbprint]
+    - remove_path_result.stdout_lines[0] == "False"
+
+- name: remove certificate based on path (idempotent)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\subj-cert.cer'
+    state: absent
+  register: remove_path_again
+
+- name: assert results of remove certificate based on path (idempotent)
+  assert:
+    that:
+    - not remove_path_again is changed
+
+- name: import PEM encoded p7b chain (check)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\chain.pem'
+    state: present
+  register: import_pem_p7b_check
+  check_mode: yes
+
+- name: get result of subj in p7b chain (check)
+  win_shell: if (Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.Thumbprint -eq "{{subj_thumbprint}}" }) { $true } else { $false }
+  register: import_pem_p7b_subj_result_check
+
+- name: get result of root in p7b chain (check)
+  win_shell: if (Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.Thumbprint -eq "{{root_thumbprint}}" }) { $true } else { $false }
+  register: import_pem_p7b_root_result_check
+
+- name: assert results of import PEM encoded p7b chain (check)
+  assert:
+    that:
+    - import_pem_p7b_check is changed
+    - import_pem_p7b_check.thumbprints|count == 2
+    - subj_thumbprint in import_pem_p7b_check.thumbprints
+    - root_thumbprint in import_pem_p7b_check.thumbprints
+    - import_pem_p7b_subj_result_check.stdout_lines[0] == "False"
+    - import_pem_p7b_root_result_check.stdout_lines[0] == "False"
+
+- name: import PEM encoded p7b chain
+  win_certificate_store:
+    path: '{{win_cert_dir}}\chain.pem'
+    state: present
+  register: import_pem_p7b
+
+- name: get result of subj in p7b chain
+  win_shell: if (Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.Thumbprint -eq "{{subj_thumbprint}}" }) { $true } else { $false }
+  register: import_pem_p7b_subj_result
+
+- name: get result of root in p7b chain
+  win_shell: if (Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.Thumbprint -eq "{{root_thumbprint}}" }) { $true } else { $false }
+  register: import_pem_p7b_root_result
+
+- name: assert results of import PEM encoded p7b chain
+  assert:
+    that:
+    - import_pem_p7b is changed
+    - import_pem_p7b.thumbprints|count == 2
+    - subj_thumbprint in import_pem_p7b.thumbprints
+    - root_thumbprint in import_pem_p7b.thumbprints
+    - import_pem_p7b_subj_result.stdout_lines[0] == "True"
+    - import_pem_p7b_root_result.stdout_lines[0] == "True"
+
+- name: import PEM encoded p7b chain (idempotent)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\chain.pem'
+    state: present
+  register: import_pem_p7b_again
+
+- name: assert results of import PEM encoded p7b chain (idempotent)
+  assert:
+    that:
+    - not import_pem_p7b_again is changed
+
+- name: remove p7b chain certs
+  win_certificate_store:
+    thumbprint: '{{item}}'
+    state: absent
+  with_items:
+  - '{{subj_thumbprint}}'
+  - '{{root_thumbprint}}'
+
+- name: import DER encoded p7b chain into custom store (check)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\chain.p7b'
+    state: present
+    store_name: TrustedPeople
+    store_location: CurrentUser
+  register: import_der_p7b_check
+  check_mode: yes
+
+- name: get result of subj in p7b chain in custom store (check)
+  win_shell: if (Get-ChildItem -Path Cert:\CurrentUser\TrustedPeople | Where-Object { $_.Thumbprint -eq "{{subj_thumbprint}}" }) { $true } else { $false }
+  register: import_der_p7b_subj_result_check
+
+- name: get result of root in p7b chain in custom store (check)
+  win_shell: if (Get-ChildItem -Path Cert:\CurrentUser\TrustedPeople | Where-Object { $_.Thumbprint -eq "{{root_thumbprint}}" }) { $true } else { $false }
+  register: import_der_p7b_root_result_check
+
+- name: assert results of import DER encoded p7b chain into custom store (check)
+  assert:
+    that:
+    - import_der_p7b_check is changed
+    - import_der_p7b_check.thumbprints|count == 2
+    - subj_thumbprint in import_der_p7b_check.thumbprints
+    - root_thumbprint in import_der_p7b_check.thumbprints
+    - import_der_p7b_subj_result_check.stdout_lines[0] == "False"
+    - import_der_p7b_root_result_check.stdout_lines[0] == "False"
+
+- name: import DER encoded p7b chain into custom store
+  win_certificate_store:
+    path: '{{win_cert_dir}}\chain.p7b'
+    state: present
+    store_name: TrustedPeople
+    store_location: CurrentUser
+  register: import_der_p7b
+
+- name: get result of subj in p7b chain in custom store
+  win_shell: if (Get-ChildItem -Path Cert:\CurrentUser\TrustedPeople | Where-Object { $_.Thumbprint -eq "{{subj_thumbprint}}" }) { $true } else { $false }
+  register: import_der_p7b_subj_result
+
+- name: get result of root in p7b chain in custom store
+  win_shell: if (Get-ChildItem -Path Cert:\CurrentUser\TrustedPeople | Where-Object { $_.Thumbprint -eq "{{root_thumbprint}}" }) { $true } else { $false }
+  register: import_der_p7b_root_result
+
+- name: assert results of import DER encoded p7b chain into custom store
+  assert:
+    that:
+    - import_der_p7b is changed
+    - import_der_p7b.thumbprints|count == 2
+    - subj_thumbprint in import_der_p7b.thumbprints
+    - root_thumbprint in import_der_p7b.thumbprints
+    - import_der_p7b_root_result.stdout_lines[0] == "True"
+    - import_der_p7b_root_result.stdout_lines[0] == "True"
+
+- name: import DER encoded p7b chain into custom store (idempotent)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\chain.p7b'
+    state: present
+    store_name: TrustedPeople
+    store_location: CurrentUser
+  register: import_der_p7b_again
+
+- name: assert results of import DER encoded p7b chain into custom store (idempotent)
+  assert:
+    that:
+    - not import_der_p7b_again is changed
+
+- name: remove p7b chain certs from custom store
+  win_certificate_store:
+    thumbprint: '{{item}}'
+    state: absent
+    store_name: TrustedPeople
+    store_location: CurrentUser
+  with_items:
+  - '{{subj_thumbprint}}'
+  - '{{root_thumbprint}}'
+
+- name: import pfx without password and non exportable (check)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\subj-cert-without-pass.pfx'
+    state: present
+    key_exportable: no
+  vars: &become_vars
+    ansible_become: yes
+    ansible_become_method: runas
+    ansible_become_user: '{{ansible_user}}'
+    ansible_become_pass: '{{ansible_password}}'
+  register: import_pfx_without_pass_check
+  check_mode: yes
+
+- name: get results of import pfx without password and non exportable (check)
+  win_shell: if (Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.Thumbprint -eq "{{subj_thumbprint}}" }) { $true } else { $false }
+  register: import_pfx_without_pass_result_check
+
+- name: assert results of import pfx without password and non exportable (check)
+  assert:
+    that:
+    - import_pfx_without_pass_check is changed
+    - import_pfx_without_pass_check.thumbprints == [subj_thumbprint]
+    - import_pfx_without_pass_result_check.stdout_lines[0] == "False"
+
+- name: import pfx without password and non exportable
+  win_certificate_store:
+    path: '{{win_cert_dir}}\subj-cert-without-pass.pfx'
+    state: present
+    key_exportable: no
+  vars: *become_vars
+  register: import_pfx_without_pass
+
+- name: get results of import pfx without password and non exportable
+  win_shell: (Get-ChildItem -Path Cert:\LocalMachine\My | Where-Object { $_.Thumbprint -eq "{{subj_thumbprint}}" }).PrivateKey.CspKeyContainerInfo.Exportable
+  vars: *become_vars
+  register: import_pfx_without_pass_result
+
+- name: assert results of import pfx without password and non exportable
+  assert:
+    that:
+    - import_pfx_without_pass is changed
+    - import_pfx_without_pass.thumbprints == [subj_thumbprint]
+    - import_pfx_without_pass_result.stdout_lines[0] == "False"
+
+- name: import pfx without password and non exportable (idempotent)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\subj-cert-without-pass.pfx'
+    state: present
+    key_exportable: no
+  vars: *become_vars
+  register: import_pfx_without_pass_again
+
+- name: assert results of import pfx without password and non exportable (idempotent)
+  assert:
+    that:
+    - not import_pfx_without_pass_again is changed
+
+- name: fail import pfx with password and none set
+  win_certificate_store:
+    path: '{{win_cert_dir}}\subj-cert-with-pass.pfx'
+    state: present
+    store_location: CurrentUser
+    store_name: TrustedPeople
+  register: fail_import_pfx_with_password
+  failed_when: "'Failed to load cert from file' not in fail_import_pfx_with_password.msg and 'The specified network password is not correct' not in fail_import_pfx_with_password.msg"
+
+- name: import pfx with password (check)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\subj-cert-with-pass.pfx'
+    state: present
+    password: '{{key_password}}'
+    store_location: CurrentUser
+    store_name: TrustedPeople
+  register: import_pfx_with_pass_check
+  vars: *become_vars
+  check_mode: yes
+
+- name: get results of import pfx with password (check)
+  win_shell: if (Get-ChildItem -Path Cert:\CurrentUser\TrustedPeople | Where-Object { $_.Thumbprint -eq "{{subj_thumbprint}}" }) { $true } else { $false }
+  register: import_pfx_with_pass_result_check
+
+- name: assert results of import pfx with password (check)
+  assert:
+    that:
+    - import_pfx_with_pass_check is changed
+    - import_pfx_with_pass_check.thumbprints == [subj_thumbprint]
+    - import_pfx_with_pass_result_check.stdout_lines[0] == "False"
+
+- name: import pfx with password
+  win_certificate_store:
+    path: '{{win_cert_dir}}\subj-cert-with-pass.pfx'
+    state: present
+    password: '{{key_password}}'
+    store_location: CurrentUser
+    store_name: TrustedPeople
+  vars: *become_vars
+  register: import_pfx_with_pass
+
+- name: get results of import pfx with password
+  win_shell: (Get-ChildItem -Path Cert:\CurrentUser\TrustedPeople | Where-Object { $_.Thumbprint -eq "{{subj_thumbprint}}" }).PrivateKey.CspKeyContainerInfo.Exportable
+  vars: *become_vars
+  register: import_pfx_with_pass_result
+
+- name: assert results of import pfx with password
+  assert:
+    that:
+    - import_pfx_with_pass is changed
+    - import_pfx_with_pass.thumbprints == [subj_thumbprint]
+    - import_pfx_with_pass_result.stdout_lines[0] == "True"
+
+- name: import pfx with password (idempotent)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\subj-cert-with-pass.pfx'
+    state: present
+    password: '{{key_password}}'
+    store_location: CurrentUser
+    store_name: TrustedPeople
+  vars: *become_vars
+  register: import_pfx_with_pass_again
+
+- name: assert results of import pfx with password (idempotent)
+  assert:
+    that:
+    - not import_pfx_with_pass_again is changed
+
+- name: import root cert for export tests
+  win_certificate_store:
+    path: '{{win_cert_dir}}\root-cert.pem'
+    state: present
+
+- name: export cert as pem (check)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\exported\cert.pem'
+    thumbprint: '{{subj_thumbprint}}'
+    state: exported
+    file_type: pem
+  register: export_pem_check
+  check_mode: yes
+
+- name: get result of export cert as pem (check)
+  win_stat:
+    path: '{{win_cert_dir}}\exported\cert.pem'
+  register: export_pem_result_check
+
+- name: assert results of export cert as pem (check)
+  assert:
+    that:
+    - export_pem_check is changed
+    - export_pem_check.thumbprints == [subj_thumbprint]
+    - export_pem_result_check.stat.exists == False
+
+- name: export cert as pem
+  win_certificate_store:
+    path: '{{win_cert_dir}}\exported\cert.pem'
+    thumbprint: '{{subj_thumbprint}}'
+    state: exported
+    file_type: pem
+  register: export_pem
+
+- name: get result of export cert as pem
+  win_stat:
+    path: '{{win_cert_dir}}\exported\cert.pem'
+  register: export_pem_result
+
+- name: assert results of export cert as pem
+  assert:
+    that:
+    - export_pem is changed
+    - export_pem.thumbprints == [subj_thumbprint]
+    - export_pem_result.stat.checksum == '1ebf5467d18230e9f611940a74d12f1d0bc819b7'
+
+- name: export cert as pem (idempotent)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\exported\cert.pem'
+    thumbprint: '{{subj_thumbprint}}'
+    state: exported
+    file_type: pem
+  register: export_pem_again
+
+- name: assert results of export cert as pem
+  assert:
+    that:
+    - not export_pem_again is changed
+
+- name: export cert as der (check)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\exported\cert.cer'
+    thumbprint: '{{subj_thumbprint}}'
+    state: exported
+    file_type: der
+  register: export_der_check
+  check_mode: yes
+
+- name: get result of export cert as der (check)
+  win_stat:
+    path: '{{win_cert_dir}}\exported\cert.cer'
+  register: export_der_result_check
+
+- name: assert results of export cert as der (check)
+  assert:
+    that:
+    - export_der_check is changed
+    - export_der_check.thumbprints == [subj_thumbprint]
+    - export_der_result_check.stat.exists == False
+
+- name: export cert as der
+  win_certificate_store:
+    path: '{{win_cert_dir}}\exported\cert.cer'
+    thumbprint: '{{subj_thumbprint}}'
+    state: exported
+    file_type: der
+  register: export_der
+
+- name: get result of export cert as der
+  win_stat:
+    path: '{{win_cert_dir}}\exported\cert.cer'
+  register: export_der_result
+
+- name: assert results of export cert as der
+  assert:
+    that:
+    - export_der is changed
+    - export_der.thumbprints == [subj_thumbprint]
+    - export_der_result.stat.checksum == 'bd7af104cf1872bdb518d95c9534ea941665fd27'
+
+- name: export cert as der (idempotent)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\exported\cert.cer'
+    thumbprint: '{{subj_thumbprint}}'
+    state: exported
+    file_type: der
+  register: export_der_again
+
+- name: assert results of export cert as der
+  assert:
+    that:
+    - not export_der_again is changed
+
+- name: export cert as der replacing pem
+  win_certificate_store:
+    path: '{{win_cert_dir}}\exported\cert.pem'
+    thumbprint: '{{subj_thumbprint}}'
+    state: exported
+    file_type: der
+  register: export_der_over_pem
+
+- name: get result of export cert as der replacing pem
+  win_stat:
+    path: '{{win_cert_dir}}\exported\cert.pem'
+  register: export_der_over_pem_result
+
+- name: assert results of export cert as der replacing pem
+  assert:
+    that:
+    - export_der_over_pem is changed
+    - export_der_over_pem.thumbprints == [subj_thumbprint]
+    - export_der_over_pem_result.stat.checksum == 'bd7af104cf1872bdb518d95c9534ea941665fd27'
+
+- name: export cert as pem replacing der
+  win_certificate_store:
+    path: '{{win_cert_dir}}\exported\cert.cer'
+    thumbprint: '{{subj_thumbprint}}'
+    state: exported
+    file_type: pem
+  register: export_pem_over_der
+
+- name: get result of export cert as pem replacing der
+  win_stat:
+    path: '{{win_cert_dir}}\exported\cert.cer'
+  register: export_pem_over_der_result
+
+- name: assert results of export cert as pem replacing der
+  assert:
+    that:
+    - export_pem_over_der is changed
+    - export_pem_over_der.thumbprints == [subj_thumbprint]
+    - export_pem_over_der_result.stat.checksum == '1ebf5467d18230e9f611940a74d12f1d0bc819b7'
+
+- name: export cert with key and password as pfx (check)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\exported\cert-pass.pfx'
+    thumbprint: '{{subj_thumbprint}}'
+    state: exported
+    file_type: pkcs12
+    store_location: CurrentUser
+    store_name: TrustedPeople
+    password: '{{key_password}}'
+  register: export_pfx_with_pass_check
+  vars: *become_vars
+  check_mode: yes
+
+- name: get result of export cert with key and password as pfx (check)
+  win_stat:
+    path: '{{win_cert_dir}}\exported\cert-pass.pfx'
+  register: export_pfx_with_pass_result_check
+
+- name: assert results of export cert with key and password as pfx (check)
+  assert:
+    that:
+    - export_pfx_with_pass_check is changed
+    - export_pfx_with_pass_check.thumbprints == [subj_thumbprint]
+    - export_pfx_with_pass_result_check.stat.exists == False
+
+- name: export cert with key and password as pfx
+  win_certificate_store:
+    path: '{{win_cert_dir}}\exported\cert-pass.pfx'
+    thumbprint: '{{subj_thumbprint}}'
+    state: exported
+    file_type: pkcs12
+    store_location: CurrentUser
+    store_name: TrustedPeople
+    password: '{{key_password}}'
+  vars: *become_vars
+  register: export_pfx_with_pass
+
+- name: get result of export cert with key and password as pfx
+  win_shell: |
+    $cert = New-Object -TypeName System.Security.Cryptography.X509Certificates.X509Certificate2
+    $cert.Import("{{win_cert_dir}}\exported\cert-pass.pfx", "{{key_password}}", 0)
+    $cert.HasPrivateKey
+  vars: *become_vars
+  register: export_pfx_with_pass_result
+
+- name: assert results of export cert with key and password as pfx
+  assert:
+    that:
+    - export_pfx_with_pass is changed
+    - export_pfx_with_pass.thumbprints == [subj_thumbprint]
+    - export_pfx_with_pass_result.stdout_lines[0] == "True"
+
+- name: export cert with key and password as pfx (idempotent)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\exported\cert-pass.pfx'
+    thumbprint: '{{subj_thumbprint}}'
+    state: exported
+    file_type: pkcs12
+    store_location: CurrentUser
+    store_name: TrustedPeople
+    password: '{{key_password}}'
+  vars: *become_vars
+  register: export_pfx_with_pass_again
+
+- name: assert results of export cert with key and password as pfx (idempotent)
+  assert:
+    that:
+    - not export_pfx_with_pass_again is changed
+
+- name: export cert with key without password as pfx (check)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\exported\cert-without-pass.pfx'
+    thumbprint: '{{subj_thumbprint}}'
+    state: exported
+    file_type: pkcs12
+    store_location: CurrentUser
+    store_name: TrustedPeople
+  vars: *become_vars
+  register: export_pfx_without_pass_check
+  check_mode: yes
+
+- name: get result of export cert with key without password as pfx (check)
+  win_stat:
+    path: '{{win_cert_dir}}\exported\cert-without-pass.pfx'
+  register: export_pfx_without_pass_result_check
+
+- name: assert results of export cert with key without password as pfx (check)
+  assert:
+    that:
+    - export_pfx_without_pass_check is changed
+    - export_pfx_without_pass_check.thumbprints == [subj_thumbprint]
+    - export_pfx_without_pass_result_check.stat.exists == False
+
+- name: export cert with key without password as pfx
+  win_certificate_store:
+    path: '{{win_cert_dir}}\exported\cert-without-pass.pfx'
+    thumbprint: '{{subj_thumbprint}}'
+    state: exported
+    file_type: pkcs12
+    store_location: CurrentUser
+    store_name: TrustedPeople
+  vars: *become_vars
+  register: export_pfx_without_pass
+
+- name: get result of export cert with key without password as pfx
+  win_shell: |
+    $cert = New-Object -TypeName System.Security.Cryptography.X509Certificates.X509Certificate2
+    $cert.Import("{{win_cert_dir}}\exported\cert-without-pass.pfx", $null, 0)
+    $cert.HasPrivateKey
+  vars: *become_vars
+  register: export_pfx_without_pass_result
+
+- name: assert results of export cert with key without password as pfx
+  assert:
+    that:
+    - export_pfx_without_pass is changed
+    - export_pfx_without_pass.thumbprints == [subj_thumbprint]
+    - export_pfx_without_pass_result.stdout_lines[0] == "True"
+
+- name: export cert with key without password as pfx (idempotent)
+  win_certificate_store:
+    path: '{{win_cert_dir}}\exported\cert-without-pass.pfx'
+    thumbprint: '{{subj_thumbprint}}'
+    state: exported
+    file_type: pkcs12
+    store_location: CurrentUser
+    store_name: TrustedPeople
+  vars: *become_vars
+  register: export_pfx_without_pass_again
+
+- name: assert results of export cert with key without password as pfx (idempotent)
+  assert:
+    that:
+    - not export_pfx_without_pass_again is changed
+
+- name: fail to export cert with key as pfx when not marked as exportable
+  win_certificate_store:
+    path: '{{win_cert_dir}}\exported\cert-fail.pfx'
+    thumbprint: '{{subj_thumbprint}}'
+    state: exported
+    file_type: pkcs12
+  vars: *become_vars
+  register: fail_export_non_exportable
+  failed_when: fail_export_non_exportable.msg != 'Cannot export cert with key as PKCS12 when the key is not marked as exportable or not accessible by the current user'
+# FILE: test/integration/targets/inventory_aws_ec2/test.aws_ec2.yml
+
+# FILE: test/integration/targets/module_utils/library/test.py
+#!/usr/bin/python
+# Most of these names are only available via PluginLoader so pylint doesn't
+# know they exist
+# pylint: disable=no-name-in-module
+results = {}
+
+# Test import with no from
+import ansible.module_utils.foo0
+results['foo0'] = ansible.module_utils.foo0.data
+
+# Test depthful import with no from
+import ansible.module_utils.bar0.foo
+results['bar0'] = ansible.module_utils.bar0.foo.data
+
+# Test import of module_utils/foo1.py
+from ansible.module_utils import foo1
+results['foo1'] = foo1.data
+
+# Test import of an identifier inside of module_utils/foo2.py
+from ansible.module_utils.foo2 import data
+results['foo2'] = data
+
+# Test import of module_utils/bar1/__init__.py
+from ansible.module_utils import bar1
+results['bar1'] = bar1.data
+
+# Test import of an identifier inside of module_utils/bar2/__init__.py
+from ansible.module_utils.bar2 import data
+results['bar2'] = data
+
+# Test import of module_utils/baz1/one.py
+from ansible.module_utils.baz1 import one
+results['baz1'] = one.data
+
+# Test import of an identifier inside of module_utils/baz2/one.py
+from ansible.module_utils.baz2.one import data
+results['baz2'] = data
+
+# Test import of module_utils/spam1/ham/eggs/__init__.py
+from ansible.module_utils.spam1.ham import eggs
+results['spam1'] = eggs.data
+
+# Test import of an identifier inside module_utils/spam2/ham/eggs/__init__.py
+from ansible.module_utils.spam2.ham.eggs import data
+results['spam2'] = data
+
+# Test import of module_utils/spam3/ham/bacon.py
+from ansible.module_utils.spam3.ham import bacon
+results['spam3'] = bacon.data
+
+# Test import of an identifier inside of module_utils/spam4/ham/bacon.py
+from ansible.module_utils.spam4.ham.bacon import data
+results['spam4'] = data
+
+# Test import of module_utils.spam5.ham bacon and eggs (modules)
+from ansible.module_utils.spam5.ham import bacon, eggs
+results['spam5'] = (bacon.data, eggs.data)
+
+# Test import of module_utils.spam6.ham bacon and eggs (identifiers)
+from ansible.module_utils.spam6.ham import bacon, eggs
+results['spam6'] = (bacon, eggs)
+
+# Test import of module_utils.spam7.ham bacon and eggs (module and identifier)
+from ansible.module_utils.spam7.ham import bacon, eggs
+results['spam7'] = (bacon.data, eggs)
+
+# Test import of module_utils/spam8/ham/bacon.py and module_utils/spam8/ham/eggs.py separately
+from ansible.module_utils.spam8.ham import bacon
+from ansible.module_utils.spam8.ham import eggs
+results['spam8'] = (bacon.data, eggs)
+
+# Test that import of module_utils/qux1/quux.py using as works
+from ansible.module_utils.qux1 import quux as one
+results['qux1'] = one.data
+
+# Test that importing qux2/quux.py and qux2/quuz.py using as works
+from ansible.module_utils.qux2 import quux as one, quuz as two
+results['qux2'] = (one.data, two.data)
+
+# Test depth
+from ansible.module_utils.a.b.c.d.e.f.g.h import data
+
+results['abcdefgh'] = data
+from ansible.module_utils.basic import AnsibleModule
+AnsibleModule(argument_spec=dict()).exit_json(**results)
+# FILE: test/integration/targets/test_infra/library/test.py
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+from ansible.module_utils.basic import AnsibleModule
+
+
+def main():
+    module = AnsibleModule(
+        argument_spec=dict(),
+    )
+    result = {
+        'selinux_special_fs': module._selinux_special_fs,
+        'tmpdir': module._tmpdir,
+        'keep_remote_files': module._keep_remote_files,
+        'version': module.ansible_version,
+    }
+    module.exit_json(**result)
+
+
+if __name__ == '__main__':
+    main()
+# FILE: test/integration/targets/supervisorctl/tasks/test.yml
+- name: generate supervisor configuration
+  template:
+    src: supervisord.conf
+    dest: '{{ remote_dir }}/supervisord.conf'
+
+- block:
+    - import_tasks: start_supervisord.yml
+
+    - import_tasks: test_start.yml
+    - import_tasks: test_stop.yml
+  always:
+    - import_tasks: stop_supervisord.yml
+# FILE: test/integration/targets/inventory_kubevirt_conformance/test.out
+{
+    "_meta": {
+        "hostvars": {
+            "default-myvm-7ba1b196-57ad-11e9-9e2e-0800279ffc6b": {
+                "annotations": {
+                    "ansible": "{\"data1\": \"yes\", \"data2\": \"no\"}"
+                },
+                "ansible_host": "172.17.0.19",
+                "data1": "yes",
+                "data2": "no",
+                "labels": {
+                    "kubevirt.io/nodeName": "localhost",
+                    "label": "x",
+                    "vm.cnv.io/name": "myvm"
+                },
+                "object_type": "vm",
+                "resource_version": "1614085",
+                "uid": "7ba1b196-57ad-11e9-9e2e-0800279ffc6b"
+            }
+        }
+    },
+    "all": {
+        "children": [
+            "label_kubevirt_io_nodeName_localhost",
+            "label_label_x",
+            "label_vm_cnv_io_name_myvm",
+            "localhost_12345",
+            "ungrouped"
+        ]
+    },
+    "label_kubevirt_io_nodeName_localhost": {
+        "hosts": [
+            "default-myvm-7ba1b196-57ad-11e9-9e2e-0800279ffc6b"
+        ]
+    },
+    "label_label_x": {
+        "hosts": [
+            "default-myvm-7ba1b196-57ad-11e9-9e2e-0800279ffc6b"
+        ]
+    },
+    "label_vm_cnv_io_name_myvm": {
+        "hosts": [
+            "default-myvm-7ba1b196-57ad-11e9-9e2e-0800279ffc6b"
+        ]
+    },
+    "localhost_12345": {
+        "children": [
+            "namespace_default"
+        ]
+    },
+    "namespace_default": {
+        "children": [
+            "namespace_default_vms"
+        ]
+    },
+    "namespace_default_vms": {
+        "hosts": [
+            "default-myvm-7ba1b196-57ad-11e9-9e2e-0800279ffc6b"
+        ]
+    }
+}
+# FILE: test/integration/targets/win_hostname/tasks/test.yml
+---
+- name: fail to set hostname to an invalid name
+  win_hostname:
+    name: invalid/name
+  register: fail_hostname
+  failed_when: '"Failed to rename computer to ''invalid/name''" not in fail_hostname.msg'
+
+- name: change the hostname (check)
+  win_hostname:
+    name: '{{test_win_hostname_name}}'
+  register: change_hostname_check
+  check_mode: yes
+
+- name: get actual hostname
+  win_shell: $env:COMPUTERNAME
+  register: change_hostname_actual_check
+
+- name: assert change the hostname (check)
+  assert:
+    that:
+    - change_hostname_check is changed
+    - change_hostname_check.old_name|upper != test_win_hostname_name|upper
+    - change_hostname_check.reboot_required
+    - change_hostname_actual_check.stdout_lines[0]|upper != test_win_hostname_name|upper
+
+- name: change the hostname
+  win_hostname:
+    name: '{{test_win_hostname_name}}'
+  register: change_hostname
+
+- name: reboot after changing the hostname
+  win_reboot:
+
+- name: get actual hostname
+  win_shell: $env:COMPUTERNAME
+  register: change_hostname_actual
+
+- name: assert change the hostname
+  assert:
+    that:
+    - change_hostname is changed
+    - change_hostname.old_name|upper == change_hostname_check.old_name|upper
+    - change_hostname.reboot_required
+    - change_hostname_actual.stdout_lines[0]|upper == test_win_hostname_name|upper
+
+- name: change the hostname (idempotent)
+  win_hostname:
+    name: '{{test_win_hostname_name}}'
+  register: change_hostname_again
+
+- name: assert change the hostname (idempotent)
+  assert:
+    that:
+    - not change_hostname_again is changed
+    - change_hostname_again.old_name|upper == test_win_hostname_name|upper
+    - not change_hostname_again.reboot_required
+# FILE: test/integration/targets/xattr/tasks/test.yml
+- name: Set attributes
+  xattr:
+    path: "{{ test_file }}"
+    key: user.foo
+    value: bar
+  register: xattr_set_result
+
+- name: Get attributes
+  xattr:
+    path: "{{ test_file }}"
+  register: xattr_get_all_result
+
+- name: Get specific attribute
+  xattr:
+    path: "{{ test_file }}"
+    key: foo
+  register: xattr_get_specific_result
+
+- assert:
+    that:
+    - "xattr_set_result.changed"
+    - "xattr_get_all_result['xattr']['user.foo'] == 'bar'"
+    - "not xattr_get_all_result.changed"
+    - "xattr_get_specific_result['xattr']['user.foo'] == 'bar'"
+    - "not xattr_get_specific_result.changed"
+
+- name: Set attribute again
+  xattr:
+    path: "{{ test_file }}"
+    namespace: user
+    key: foo
+    value: bar
+  register: xattr_set_again_result
+
+- assert:
+    that:
+    - "not xattr_set_again_result.changed"
+
+- name: Unset attribute
+  xattr:
+    path: "{{ test_file }}"
+    key: foo
+    state: absent
+  register: xattr_unset_result
+
+- name: Get attributes
+  xattr:
+    path: "{{ test_file }}"
+  register: xattr_get_after_unset_result
+
+- assert:
+    that:
+    - "xattr_unset_result.changed"
+    - "xattr_get_after_unset_result['xattr'] == {}"
+    - "not xattr_get_after_unset_result.changed"
+
+- name: Unset attribute again
+  xattr:
+    path: "{{ test_file }}"
+    namespace: user
+    key: foo
+    state: absent
+  register: xattr_unset_result
+
+- assert:
+    that:
+    - "not xattr_set_again_result.changed"
+# FILE: test/integration/targets/lookup_lmdb_kv/test.yml
+---
+- hosts: localhost
+  tasks:
+    - debug:
+        msg: "{{ query('lmdb_kv', 'nl', 'be', 'lu', db='jp.mdb') }}"
+
+    - debug:
+        var: item.1
+      loop: "{{ query('lmdb_kv', db='jp.mdb') }}"
+
+    - assert:
+        that:
+          - query('lmdb_kv', 'nl', 'be', 'lu', db='jp.mdb') == ['Netherlands', 'Belgium', 'Luxembourg']
+          - query('lmdb_kv', db='jp.mdb')|length == 5
+
+    - assert:
+        that:
+          - item.0 == 'nl'
+          - item.1 == 'Netherlands'
+      vars:
+        - lmdb_kv_db: jp.mdb
+      with_lmdb_kv:
+        - "n*"
+
+    - assert:
+        that:
+          - item == 'Belgium'
+      vars:
+        - lmdb_kv_db: jp.mdb
+      with_lmdb_kv:
+        - be
+# FILE: test/integration/targets/callback_default/test.yml
+---
+- hosts: testhost
+  gather_facts: no
+  vars:
+    foo: foo bar
+  tasks:
+    - name: Changed task
+      command: echo foo
+      changed_when: true
+      notify: test handlers
+
+    - name: Ok task
+      command: echo foo
+      changed_when: false
+
+    - name: Failed task
+      fail:
+        msg: no reason
+      ignore_errors: yes
+
+    - name: Skipped task
+      command: echo foo
+      when: false
+
+    - name: Task with var in name ({{ foo }})
+      command: echo foo
+
+    - name: Loop task
+      command: echo foo
+      loop:
+        - 1
+        - 2
+        - 3
+      loop_control:
+        label: foo-{{ item }}
+
+    # detect "changed" debug tasks being hidden with display_ok_tasks=false
+    - name: debug loop
+      debug:
+        msg: debug-{{ item }}
+      changed_when: item == 1
+      failed_when: item == 2
+      when: item != 4
+      ignore_errors: yes
+      loop:
+        - 1
+        - 2
+        - 3
+        - 4
+      loop_control:
+        label: debug-{{ item }}
+
+    - block:
+        - name: EXPECTED FAILURE Failed task to be rescued
+          fail:
+      rescue:
+        - name: Rescue task
+          command: echo rescued
+
+  handlers:
+    - name: Test handler 1
+      command: echo foo
+      listen: test handlers
+
+    - name: Test handler 2
+      command: echo foo
+      changed_when: false
+      listen: test handlers
+
+    - name: Test handler 3
+      command: echo foo
+      listen: test handlers
+
+# An issue was found previously for tasks in a play using strategy 'free' after
+# a non-'free' play in the same playbook, so we protect against a regression.
+- hosts: testhost
+  gather_facts: no
+  strategy: free
+  tasks:
+    - name: First free task
+      command: echo foo
+
+    - name: Second free task
+      command: echo foo
+# FILE: test/integration/targets/win_pester/tasks/test.yml
+---
+- name: Run Pester test(s) specifying a fake test file
+  win_pester:
+    path: '{{test_win_pester_path}}\fakefile.ps1'
+  register: fake_file
+  failed_when: '"Cannot find file or directory: ''" + test_win_pester_path + "\\fakefile.ps1'' as it does not exist" not in fake_file.msg'
+
+- name: Run Pester test(s) specifying a fake folder
+  win_pester:
+    path: '{{test_win_pester_path }}\fakedir'
+  register: fake_folder
+  failed_when: '"Cannot find file or directory: ''" + test_win_pester_path + "\\fakedir'' as it does not exist" not in fake_folder.msg'
+
+- name: Run Pester test(s) specifying a test file and a higher pester version
+  win_pester:
+    path: '{{test_win_pester_path}}\test01.test.ps1'
+    minimum_version: '6.0.0'
+  register: invalid_version
+  failed_when: '"Pester version is not greater or equal to 6.0.0" not in invalid_version.msg'
+
+- name: Run Pester test(s) specifying a test file
+  win_pester:
+    path: '{{test_win_pester_path}}\test01.test.ps1'
+  register: file_result
+
+- name: assert Run Pester test(s) specify a test file
+  assert:
+    that:
+    - file_result.changed
+    - not file_result.failed
+    - file_result.output.TotalCount == 1
+
+- name: Run Pester test(s) specifying a test file and with a minimum mandatory Pester version
+  win_pester:
+    path: '{{test_win_pester_path}}\test01.test.ps1'
+    minimum_version: 3.0.0
+  register: file_result_with_version
+
+- name: assert Run Pester test(s) specifying a test file and a minimum mandatory Pester version
+  assert:
+    that:
+    - file_result_with_version.changed
+    - not file_result_with_version.failed
+    - file_result_with_version.output.TotalCount == 1
+
+- name: Run Pester test(s) located in a folder. Folder path end with '\'
+  win_pester:
+    path: '{{test_win_pester_path}}\'
+  register: dir_with_ending_slash
+
+- name: assert Run Pester test(s) located in a folder. Folder path end with '\'
+  assert:
+    that:
+    - dir_with_ending_slash.changed
+    - not dir_with_ending_slash.failed
+    - dir_with_ending_slash.output.TotalCount == 6
+
+- name: Run Pester test(s) located in a folder. Folder path does not end with '\'
+  win_pester:
+    path: '{{test_win_pester_path}}'
+  register: dir_without_ending_slash
+
+- name: assert Run Pester test(s) located in a folder. Folder does not end with '\'
+  assert:
+    that:
+    - dir_without_ending_slash.changed
+    - not dir_without_ending_slash.failed
+    - dir_without_ending_slash.output.TotalCount == 6
+
+- name: Run Pester test(s) located in a folder and with a minimum mandatory Pester version
+  win_pester:
+    path: '{{test_win_pester_path}}'
+    minimum_version: 3.0.0
+  register: dir_with_version
+
+- name: assert Run Pester test(s) located in a folder and with a minimum mandatory Pester version
+  assert:
+    that:
+    - dir_with_version.changed
+    - not dir_with_version.failed
+    - dir_with_version.output.TotalCount == 6
+
+- name: Run Pester test(s) specifying a test file without specifying tag
+  win_pester:
+    path: '{{test_win_pester_path}}\test03.test.ps1'
+  register: test_no_tag
+
+- name: assert Run Pester test(s) specifying a test file and all tests executed
+  assert:
+    that:
+    - test_no_tag.changed
+    - test_no_tag.output.TotalCount == 2
+
+- name: Run Pester test(s) specifying a test file with tag
+  win_pester:
+    path: '{{test_win_pester_path}}\test03.test.ps1'
+    tags: tag1
+  register: test_with_tag
+
+- name: Run Pester test(s) specifying a test file and only test with sepecified tag executed
+  assert:
+    that:
+    - test_with_tag.changed
+    - test_with_tag.output.TotalCount == 1
+
+- name: Run Pester test(s) specifying a test file with parameters
+  win_pester:
+    path: '{{test_win_pester_path}}\test04.test.ps1'
+    test_parameters:
+      Process: lsass
+      Service: bits
+  register: test_with_parameter
+
+- name: Run Pester test(s) specifying a test file with parameters
+  assert:
+    that:
+    - test_with_parameter.changed
+    - test_with_parameter.output.PassedCount == 2
+    - test_with_parameter.output.TotalCount == 2
+# FILE: test/integration/targets/script/files/test.sh
+#!/usr/bin/env bash
+
+echo -n "win"
+# FILE: test/integration/targets/script/files/space path/test.sh
+#!/usr/bin/env bash
+
+echo -n "Script with space in path"
+# FILE: test/integration/targets/zypper_repository/tasks/test.yml
+- name: collect repo configuration before test
+  shell: "grep . /etc/zypp/repos.d/*"
+  register: before
+
+- name: ensure zypper ref works
+  command: zypper -n ref
+
+- block:
+    - include: 'zypper_repository.yml'
+  always:
+    - name: remove repositories added during test
+      zypper_repository:
+        name: "{{item}}"
+        state: absent
+      with_items:
+        - chrome1
+        - chrome2
+        - test
+        - testrefresh
+        - testprio
+        - Apache_Modules
+
+    - name: collect repo configuration after test
+      shell: "grep . /etc/zypp/repos.d/*"
+      register: after
+
+    - name: verify repo configuration has been restored
+      assert:
+        that:
+          - before.stdout == after.stdout
+
+    - name: ensure zypper ref still works
+      command: zypper -n ref
+# FILE: test/integration/targets/run_modules/library/test.py
+#!/usr/bin/python
+
+from ansible.module_utils.basic import AnsibleModule
+
+module = AnsibleModule(argument_spec=dict())
+
+module.exit_json(**{'tempdir': module._remote_tmp})
+# FILE: test/integration/targets/nxos_config/templates/defaults/test.j2
+interface Ethernet2/5
+   description this is a test
+   shutdown
+# FILE: test/integration/targets/connection/test.sh
+#!/usr/bin/env bash
+
+set -eux
+
+[ -f "${INVENTORY}" ]
+
+# Run connection tests with both the default and C locale.
+
+                ansible-playbook test_connection.yml -i "${INVENTORY}" "$@"
+LC_ALL=C LANG=C ansible-playbook test_connection.yml -i "${INVENTORY}" "$@"
+# FILE: test/integration/targets/win_lineinfile/files/test.txt
+This is line 1
+This is line 2
+REF this is a line for backrefs REF
+This is line 4
+This is line 5
+# FILE: test/integration/targets/alternatives/tasks/test.yml
+- debug:
+    msg: ' with_alternatives: {{ with_alternatives }}, mode: {{ mode }}'
+
+- block:
+  - name: set alternative (using link parameter)
+    alternatives:
+      name: dummy
+      path: '/usr/bin/dummy{{ item }}'
+      link: '/usr/bin/dummy'
+    register: alternative
+
+  - name: check expected command was executed
+    assert:
+      that:
+        - 'alternative is successful'
+        - 'alternative is changed'
+  when: with_link
+
+- block:
+  - name: set alternative (without link parameter)
+    alternatives:
+      name: dummy
+      path: '/usr/bin/dummy{{ item }}'
+    register: alternative
+
+  - name: check expected command was executed
+    assert:
+      that:
+        - 'alternative is successful'
+        - 'alternative is changed'
+  when: not with_link
+
+- name: execute dummy command
+  shell: dummy
+  register: cmd
+
+- name: check expected command was executed
+  assert:
+    that:
+      - 'cmd.stdout == "dummy" ~ item'
+
+- name: 'check mode (manual: alternatives file existed, it has been updated)'
+  shell: 'head -n1 {{ alternatives_dir }}/dummy | grep "^manual$"'
+  when: ansible_os_family != 'RedHat' or with_alternatives or item != 1
+
+- name: 'check mode (auto: alternatives file didn''t exist, it has been created)'
+  shell: 'head -n1 {{ alternatives_dir }}/dummy | grep "^auto$"'
+  when: ansible_os_family == 'RedHat' and not with_alternatives and item == 1
+
+- name: check that alternative has been updated
+  command: "grep -Pzq '/bin/dummy{{ item }}\\n' '{{ alternatives_dir }}/dummy'"
+  # priority doesn't seem updated
+  #command: "grep -Pzq '/bin/dummy{{ item }}\\n50' '{{ alternatives_dir }}/dummy'"
+# FILE: test/integration/targets/flatpak/tasks/test.yml
+# state=present
+
+- name: Test addition - {{ method }}
+  flatpak:
+    name: org.gnome.Characters
+    remote: flathub
+    state: present
+    method: "{{ method }}"
+  register: addition_result
+
+- name: Verify addition test result - {{ method }}
+  assert:
+    that:
+      - "addition_result.changed == true"
+    msg: "state=preset shall add flatpak when absent"
+
+- name: Test idempotency of addition - {{ method }}
+  flatpak:
+    name: org.gnome.Characters
+    remote: flathub
+    state: present
+    method: "{{ method }}"
+  register: double_addition_result
+
+- name: Verify idempotency of addition test result - {{ method }}
+  assert:
+    that:
+      - "double_addition_result.changed == false"
+    msg: "state=present shall not do anything when flatpak is already present"
+
+# state=absent
+
+- name: Test removal - {{ method }}
+  flatpak:
+    name: org.gnome.Characters
+    state: absent
+    method: "{{ method }}"
+  register: removal_result
+
+- name: Verify removal test result - {{ method }}
+  assert:
+    that:
+      - "removal_result.changed == true"
+    msg: "state=absent shall remove flatpak when present"
+
+- name: Test idempotency of removal - {{ method }}
+  flatpak:
+    name: org.gnome.Characters
+    state: absent
+    method: "{{ method }}"
+  register: double_removal_result
+
+- name: Verify idempotency of removal test result - {{ method }}
+  assert:
+    that:
+      - "double_removal_result.changed == false"
+    msg: "state=absent shall not do anything when flatpak is not present"
+
+# state=present with url as name
+
+- name: Test addition with url - {{ method }}
+  flatpak:
+    name: https://flathub.org/repo/appstream/org.gnome.Characters.flatpakref
+    remote: flathub
+    state: present
+    method: "{{ method }}"
+  register: url_addition_result
+
+- name: Verify addition test result - {{ method }}
+  assert:
+    that:
+      - "url_addition_result.changed == true"
+    msg: "state=preset with url as name shall add flatpak when absent"
+
+- name: Test idempotency of addition with url - {{ method }}
+  flatpak:
+    name: https://flathub.org/repo/appstream/org.gnome.Characters.flatpakref
+    remote: flathub
+    state: present
+    method: "{{ method }}"
+  register: double_url_addition_result
+
+- name: Verify idempotency of addition with url test result - {{ method }}
+  assert:
+    that:
+      - "double_url_addition_result.changed == false"
+    msg: "state=present with url as name shall not do anything when flatpak is already present"
+
+# state=absent with url as name
+
+- name: Test removal with url - {{ method }}
+  flatpak:
+    name: https://flathub.org/repo/appstream/org.gnome.Characters.flatpakref
+    state: absent
+    method: "{{ method }}"
+  register: url_removal_result
+
+- name: Verify removal test result - {{ method }}
+  assert:
+    that:
+      - "url_removal_result.changed == true"
+    msg: "state=absent with url as name shall remove flatpak when present"
+
+- name: Test idempotency of removal with url - {{ method }}
+  flatpak:
+    name: https://flathub.org/repo/appstream/org.gnome.Characters.flatpakref
+    state: absent
+    method: "{{ method }}"
+  register: double_url_removal_result
+
+- name: Verify idempotency of removal with url test result - {{ method }}
+  assert:
+    that:
+      - "double_url_removal_result.changed == false"
+    msg: "state=absent with url as name shall not do anything when flatpak is not present"
+# FILE: test/integration/targets/ansible-doc/test.yml
+- hosts: localhost
+  gather_facts: no
+  environment:
+    ANSIBLE_LIBRARY: "{{ playbook_dir }}/library"
+  tasks:
+    - name: non-existent module
+      command: ansible-doc test_does_not_exist
+      register: result
+    - assert:
+        that:
+          - '"[WARNING]: module test_does_not_exist not found in:" in result.stderr'
+
+    - name: documented module
+      command: ansible-doc test_docs
+      register: result
+    - assert:
+        that:
+          - '"WARNING" not in result.stderr'
+          - '"TEST_DOCS " in result.stdout'
+          - '"AUTHOR: Ansible Core Team" in result.stdout'
+
+    - name: documented module without metadata
+      command: ansible-doc test_docs_no_metadata
+      register: result
+    - assert:
+        that:
+          - '"WARNING" not in result.stderr'
+          - '"TEST_DOCS_NO_METADATA " in result.stdout'
+          - '"AUTHOR: Ansible Core Team" in result.stdout'
+
+    - name: documented module with no status in metadata
+      command: ansible-doc test_docs_no_status
+      register: result
+    - assert:
+        that:
+          - '"WARNING" not in result.stderr'
+          - '"TEST_DOCS_NO_STATUS " in result.stdout'
+          - '"AUTHOR: Ansible Core Team" in result.stdout'
+
+    - name: documented module with non-iterable status in metadata
+      command: ansible-doc test_docs_non_iterable_status
+      register: result
+    - assert:
+        that:
+          - '"WARNING" not in result.stderr'
+          - '"TEST_DOCS_NON_ITERABLE_STATUS " in result.stdout'
+          - '"AUTHOR: Ansible Core Team" in result.stdout'
+
+    - name: documented module with removed status
+      command: ansible-doc test_docs_removed_status
+      register: result
+    - assert:
+        that:
+          - '"WARNING" not in result.stderr'
+          - '"TEST_DOCS_REMOVED_STATUS " in result.stdout'
+          - '"AUTHOR: Ansible Core Team" in result.stdout'
+
+    - name: empty module
+      command: ansible-doc test_empty
+      register: result
+    - assert:
+        that:
+          - 'result.stdout == ""'
+          - 'result.stderr == ""'
+
+    - name: module with no documentation
+      command: ansible-doc test_no_docs
+      register: result
+    - assert:
+        that:
+          - 'result.stdout == ""'
+          - 'result.stderr == ""'
+
+    - name: module with no documentation and no metadata
+      command: ansible-doc test_no_docs_no_metadata
+      register: result
+    - assert:
+        that:
+          - 'result.stdout == ""'
+          - 'result.stderr == ""'
+
+    - name: module with no documentation and no status in metadata
+      command: ansible-doc test_no_docs_no_status
+      ignore_errors: yes
+      register: result
+    - assert:
+        that:
+          - 'result is failed'
+          - '"ERROR! module test_no_docs_no_status missing documentation (or could not parse documentation): test_no_docs_no_status did not contain a DOCUMENTATION attribute" in result.stderr'
+
+    - name: module with no documentation and non-iterable status in metadata
+      command: ansible-doc test_no_docs_non_iterable_status
+      ignore_errors: yes
+      register: result
+    - assert:
+        that:
+          - 'result is failed'
+          - '"ERROR! module test_no_docs_non_iterable_status missing documentation (or could not parse documentation): test_no_docs_non_iterable_status did not contain a DOCUMENTATION attribute" in result.stderr'
+
+    - name: module with no documentation and removed status
+      command: ansible-doc test_no_docs_removed_status
+      register: result
+    - assert:
+        that:
+          - '"[WARNING]: module test_no_docs_removed_status has been removed" in result.stderr'
+# FILE: test/integration/targets/inventory_aws_rds/test.aws_rds.yml
+
+# FILE: test/legacy/roles/test_gcp_glb/tasks/test.yml
+# GCP Cross Region Load Balancer integration test
+# https://cloud.google.com/compute/docs/load-balancing/http/cross-region-example
+######
+# ============================================================
+- name: Create Instance template
+# ============================================================
+  gce_instance_template:
+    service_account_email: "{{ service_account_email }}"
+    credentials_file: "{{ credentials_file }}"
+    project_id: "{{ project_id }}"
+    name: "{{ instance_template }}"
+    image: rhel-7-v20170426
+    state: "present"
+    tags:
+      - http-server
+    metadata: 
+      startup-script: |
+        #!/bin/bash
+        yum install -y httpd curl
+        systemctl start httpd
+        zone=$(curl -sv -H "Metadata-flavor: Google" http://metadata/computeMetadata/v1/instance/zone)
+        host=$(curl -sv -H "Metadata-flavor: Google" http://metadata/computeMetadata/v1/instance/name)
+        echo "${host}-${zone}" > /var/www/html/index.html
+# ============================================================
+- name: Create MIG one
+# ============================================================
+  gce_mig:
+    service_account_email: "{{ service_account_email }}"
+    credentials_file: "{{ credentials_file }}"
+    project_id: "{{ project_id }}"
+    name: "{{ mig_one }}"
+    zone: "{{ mig_one_zone }}"
+    state: "present"
+    size: 1
+    autoscaling:
+      enabled: yes
+      name: "{{ mig_one }}"
+      policy:
+        min_instances: 1
+        max_instances: 3
+        cool_down_period: 60
+        cpu_utilization:
+          target: 0.6
+    template: "{{ instance_template }}"
+    named_ports:
+      - name: "{{ http_port_name }}"
+        port: "{{ http_port }}"
+# ============================================================
+- name: Create MIG two
+# ============================================================
+  gce_mig:
+    service_account_email: "{{ service_account_email }}"
+    credentials_file: "{{ credentials_file }}"
+    project_id: "{{ project_id }}"
+    name: "{{ mig_two }}"
+    zone: "{{ mig_two_zone }}"
+    state: "present"
+    size: 1
+    autoscaling:
+      enabled: yes
+      name: "{{ mig_two }}"
+      policy:
+        min_instances: 1
+        max_instances: 3
+        cool_down_period: 60
+        cpu_utilization:
+          target: 0.6
+    template: "{{ instance_template }}"
+    named_ports:
+      - name: "{{ http_port_name }}"
+        port: "{{ http_port }}"
+# ============================================================
+- name: Create Healthcheck
+# ============================================================
+  gcp_healthcheck:
+    service_account_email: "{{ service_account_email }}"
+    credentials_file: "{{ credentials_file }}"
+    project_id: "{{ project_id }}"
+    healthcheck_name: "{{ bes_healthcheck }}"
+    healthcheck_type: "HTTP"
+    state: "present"
+# ============================================================
+- name: Create Backend Service
+# ============================================================
+  gcp_backend_service:
+    service_account_email: "{{ service_account_email }}"
+    credentials_file: "{{ credentials_file }}"
+    project_id: "{{ project_id }}"
+    backend_service_name: "{{ bes }}"
+    backends:
+      - instance_group: "{{ mig_one }}"
+        balancing_mode: RATE
+        max_rate_per_instance: 10.00
+      - instance_group: "{{ mig_two }}"
+    healthchecks:
+      - "{{ bes_healthcheck }}"
+    port_name: "{{ http_port_name }}"
+    protocol: HTTP
+    timeout: 60
+    state: "present"
+  register: result
+- name: "assert backend service present"
+  assert:
+    that:
+      - 'result.state == "present"'
+# ============================================================
+- name: Create URLMap
+# ============================================================
+  gcp_url_map:
+    service_account_email: "{{ service_account_email }}"
+    credentials_file: "{{ credentials_file }}"
+    project_id: "{{ project_id }}"
+    url_map_name: "{{ urlmap }}"
+    default_service: "{{ bes }}"
+    state: "present"
+  register: result
+- name: "assert urlmap present"
+  assert:
+    that:
+      - 'result.state == "present"'
+- pause: seconds=10
+# ============================================================
+- name: Create TargetHTTPProxy
+# ============================================================
+  gcp_target_proxy:
+    service_account_email: "{{ service_account_email }}"
+    credentials_file: "{{ credentials_file }}"
+    project_id: "{{ project_id }}"
+    target_proxy_name: "{{ targethttpproxy }}"
+    target_proxy_type: "HTTP"
+    url_map_name: "{{ urlmap }}"
+    state: "present"
+  register: result
+- name: "assert targethttpproxy present"
+  assert:
+    that:
+      - 'result.state == "present"'
+
+# ============================================================
+- name: Create Static Address
+# ============================================================
+  gce_eip:
+    service_account_email: "{{ service_account_email }}"
+    credentials_file: "{{ credentials_file }}"
+    project_id: "{{ project_id }}"
+    name: "{{ external_address_name }}"
+    region: global
+    state: "present"
+  register: result
+- name: "assert static address present"
+  assert:
+    that:
+      - 'result.state == "present"'
+
+# ============================================================
+- name: Create Global Forwarding Rule
+# ============================================================
+  gcp_forwarding_rule:
+    service_account_email: "{{ service_account_email }}"
+    credentials_file: "{{ credentials_file }}"
+    project_id: "{{ project_id }}"
+    forwarding_rule_name: "{{ gfr }}"
+    region: global
+    target: "{{ targethttpproxy }}"
+    address: "{{ external_address_name }}"
+    port_range: 80
+    state: "present"
+  register: result
+- name: "assert gfr present"
+  assert:
+    that:
+      - 'result.state == "present"'
+# FILE: test/legacy/roles/test_rax_scaling_group/files/test.txt
+this is a test file
+# FILE: test/legacy/roles/test_gce_tag/tasks/test.yml
+# GCE Tag Integration Tests.
+
+## Parameter checking tests ##
+# ============================================================
+- name: "test missing param: instance_name or instance_pattern"
+  gce_tag:
+    service_account_email: "{{ service_account_email }}"
+    pem_file: "{{ pem_file }}"
+    project_id: "{{ project_id }}"
+    tags: foo,bar
+  register: result
+  ignore_errors: true
+  tags:
+    - param-check
+
+- name: "assert failure when param: instance_name missing"
+  assert:
+    that:
+       - 'result.failed'
+       - 'result.msg == "one of the following is required: instance_name,instance_pattern"'
+
+
+# ============================================================
+- name: "test missing param: tags"
+  gce_tag:
+    service_account_email: "{{ service_account_email }}"
+    pem_file: "{{ pem_file }}"
+    project_id: "{{ project_id }}"
+    zone: "{{ zone }}"
+    instance_name: "{{ instance_name }}"
+  register: result
+  ignore_errors: true
+  tags:
+    - param-check
+
+- name: "assert failure when param: tags missing"
+  assert:
+    that:
+       - 'result.failed'
+       - 'result.msg == "missing required arguments: tags"'
+
+# ============================================================
+- name: "test bad regex: instance_pattern"
+  gce_tag:
+    service_account_email: "{{ service_account_email }}"
+    pem_file: "{{ pem_file }}"
+    project_id: "{{ project_id }}"
+    zone: "{{ zone }}"
+    tags: foo,bar
+    instance_pattern: "&23424--["
+  register: result
+  ignore_errors: true
+  tags:
+    - param-check
+
+- name: "assert failure when instance_pattern is invalid"
+  assert:
+    that:
+       - 'result.failed'
+       - 'result.msg == "Regex error for pattern &23424--[: unexpected end of regular expression"'
+
+## Non-existent instance tests ##
+# # ============================================================
+- name: "test tag non-existent instance (state==present)"
+  gce_tag:
+    service_account_email: "{{ service_account_email }}"
+    pem_file: "{{ pem_file }}"
+    project_id: "{{ project_id }}"
+    instance_name: "blahblahblah123"
+    zone: "{{ zone }}"
+    state: present
+    tags: foo,bar
+  register: result
+  ignore_errors: true
+
+- name: "assert tag failed"
+  assert:
+    that:
+       - 'result.failed'
+
+# # ============================================================
+- name: "test tag non-existent instance (state==absent)"
+  gce_tag:
+    service_account_email: "{{ service_account_email }}"
+    pem_file: "{{ pem_file }}"
+    project_id: "{{ project_id }}"
+    instance_name: "blahblahblah123"
+    zone: "{{ zone }}"
+    state: absent
+    tags: foo,bar
+  register: result
+  ignore_errors: true
+
+- name: "assert tag failed"
+  assert:
+    that:
+       - 'result.failed'
+       
+## tagging tests ##
+# # ============================================================
+- name: "test tags added (state==present)"
+  gce_tag:
+    service_account_email: "{{ service_account_email }}"
+    pem_file: "{{ pem_file }}"
+    project_id: "{{ project_id }}"
+    instance_name: "{{ instance_name }}"
+    zone: "{{ zone }}"
+    tags: foo,bar
+    state: present
+  register: result
+
+- name: "assert tag successful"
+  assert:
+    that:
+       - 'result.changed'
+       - 'result.tags|length == 2'
+       - 'result.tags == ["foo", "bar"]'
+       
+# # ============================================================
+- name: "add existing tags, no change (state==present)"
+  gce_tag:
+    service_account_email: "{{ service_account_email }}"
+    pem_file: "{{ pem_file }}"
+    project_id: "{{ project_id }}"
+    instance_name: "{{ instance_name }}"
+    zone: "{{ zone }}"
+    tags: foo,bar
+    state: present
+  register: result
+
+- name: "assert tag successful"
+  assert:
+    that:
+       - 'result.changed == False'
+       - 'result.tags == None'
+
+# # ============================================================
+- name: "add tags using pattern (state==present)"
+  gce_tag:
+    service_account_email: "{{ service_account_email }}"
+    pem_file: "{{ pem_file }}"
+    project_id: "{{ project_id }}"
+    instance_pattern: "{{ instance_name }}"
+    zone: "{{ zone }}"
+    tags: instance-pattern-test
+    state: present
+  register: result
+
+- name: "assert tag using pattern successful"
+  assert:
+    that:
+       - 'result.changed == True'
+       - 'result.tags == ["instance-pattern-test"]'
+       - 'result.instances_updated[0].instance_name == "{{ instance_name }}"'
+       - 'result.instances_updated[0].tags_changed[0] == "instance-pattern-test"'
+
+# # ============================================================
+- name: "add existing tags with pattern, no change (state==present)"
+  gce_tag:
+    service_account_email: "{{ service_account_email }}"
+    pem_file: "{{ pem_file }}"
+    project_id: "{{ project_id }}"
+    instance_pattern: "{{ instance_name }}"
+    zone: "{{ zone }}"
+    tags: instance-pattern-test
+    state: present
+  register: result
+
+- name: "assert tag with pattern no change"
+  assert:
+    that:
+       - 'result.changed == False'
+       - 'result.tags == None'
+       - 'result.instances_updated|length == 0'
+
+# # ============================================================
+- name: "test tags removed from instance (state==absent)"
+  gce_tag:
+    service_account_email: "{{ service_account_email }}"
+    pem_file: "{{ pem_file }}"
+    project_id: "{{ project_id }}"
+    instance_name: "{{ instance_name }}"
+    zone: "{{ zone }}"
+    tags: foo,bar
+    state: absent
+  register: result
+
+- name: "assert tags removed"
+  assert:
+    that:
+       - 'result.changed'
+       - 'result.tags == ["foo", "bar"]'
+
+
+# # ============================================================
+- name: "test tags removed with instance_pattern (state==absent)"
+  gce_tag:
+    service_account_email: "{{ service_account_email }}"
+    pem_file: "{{ pem_file }}"
+    project_id: "{{ project_id }}"
+    instance_pattern: "{{ instance_name }}"
+    zone: "{{ zone }}"
+    tags: instance-pattern-test
+    state: absent
+  register: result
+
+- name: "assert tags removed with instance_pattern"
+  assert:
+    that:
+       - 'result.changed'
+       - 'result.tags == ["instance-pattern-test"]'
+       - 'result.instances_updated[0].instance_name == "{{ instance_name }}"'
+       - 'result.instances_updated[0].tags_changed[0] == "instance-pattern-test"'
+# FILE: test/legacy/roles/test_gce_labels/tasks/test.yml
+# GCE Labels Integration Tests.
+
+## Parameter checking tests ##
+# ============================================================
+- name: "test unknown resource_type"
+  gce_labels:
+    service_account_email: "{{ service_account_email }}"
+    pem_file: "{{ pem_file }}"
+    project_id: "{{ project_id }}"
+    resource_type: doggie
+    resource_location: Kansas
+    resource_name: Toto
+    labels:
+      environment: dev
+      experiment: kennedy
+  register: result
+  ignore_errors: true
+  tags:
+    - param-check
+
+- name: "assert failure when param: unknown resource_type"
+  assert:
+    that:
+       - 'result.failed'
+       - 'result.msg == "Unsupported resource_type: doggie"'
+
+
+# TODO(erjohnso): write more tests
+# FILE: test/lib/ansible_test/_internal/test.py
+"""Classes for storing and processing test results."""
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
+import datetime
+import os
+import re
+
+from . import types as t
+
+from .util import (
+    display,
+    get_ansible_version,
+)
+
+from .util_common import (
+    write_text_test_results,
+    write_json_test_results,
+    ResultType,
+)
+
+from .config import (
+    TestConfig,
+)
+
+
+def calculate_best_confidence(choices, metadata):
+    """
+    :type choices: tuple[tuple[str, int]]
+    :type metadata: Metadata
+    :rtype: int
+    """
+    best_confidence = 0
+
+    for path, line in choices:
+        confidence = calculate_confidence(path, line, metadata)
+        best_confidence = max(confidence, best_confidence)
+
+    return best_confidence
+
+
+def calculate_confidence(path, line, metadata):
+    """
+    :type path: str
+    :type line: int
+    :type metadata: Metadata
+    :rtype: int
+    """
+    ranges = metadata.changes.get(path)
+
+    # no changes were made to the file
+    if not ranges:
+        return 0
+
+    # changes were made to the same file and line
+    if any(r[0] <= line <= r[1] in r for r in ranges):
+        return 100
+
+    # changes were made to the same file and the line number is unknown
+    if line == 0:
+        return 75
+
+    # changes were made to the same file and the line number is different
+    return 50
+
+
+class TestResult:
+    """Base class for test results."""
+    def __init__(self, command, test, python_version=None):
+        """
+        :type command: str
+        :type test: str
+        :type python_version: str
+        """
+        self.command = command
+        self.test = test
+        self.python_version = python_version
+        self.name = self.test or self.command
+
+        if self.python_version:
+            self.name += '-python-%s' % self.python_version
+
+        try:
+            import junit_xml
+        except ImportError:
+            junit_xml = None
+
+        self.junit = junit_xml
+
+    def write(self, args):
+        """
+        :type args: TestConfig
+        """
+        self.write_console()
+        self.write_bot(args)
+
+        if args.lint:
+            self.write_lint()
+
+        if args.junit:
+            if self.junit:
+                self.write_junit(args)
+            else:
+                display.warning('Skipping junit xml output because the `junit-xml` python package was not found.', unique=True)
+
+    def write_console(self):
+        """Write results to console."""
+
+    def write_lint(self):
+        """Write lint results to stdout."""
+
+    def write_bot(self, args):
+        """
+        :type args: TestConfig
+        """
+
+    def write_junit(self, args):
+        """
+        :type args: TestConfig
+        """
+
+    def create_result_name(self, extension):
+        """
+        :type extension: str
+        :rtype: str
+        """
+        name = 'ansible-test-%s' % self.command
+
+        if self.test:
+            name += '-%s' % self.test
+
+        if self.python_version:
+            name += '-python-%s' % self.python_version
+
+        name += extension
+
+        return name
+
+    def save_junit(self, args, test_case, properties=None):
+        """
+        :type args: TestConfig
+        :type test_case: junit_xml.TestCase
+        :type properties: dict[str, str] | None
+        :rtype: str | None
+        """
+        test_suites = [
+            self.junit.TestSuite(
+                name='ansible-test',
+                test_cases=[test_case],
+                timestamp=datetime.datetime.utcnow().replace(microsecond=0).isoformat(),
+                properties=properties,
+            ),
+        ]
+
+        report = self.junit.TestSuite.to_xml_string(test_suites=test_suites, prettyprint=True, encoding='utf-8')
+
+        if args.explain:
+            return
+
+        write_text_test_results(ResultType.JUNIT, self.create_result_name('.xml'), report)
+
+
+class TestTimeout(TestResult):
+    """Test timeout."""
+    def __init__(self, timeout_duration):
+        """
+        :type timeout_duration: int
+        """
+        super(TestTimeout, self).__init__(command='timeout', test='')
+
+        self.timeout_duration = timeout_duration
+
+    def write(self, args):
+        """
+        :type args: TestConfig
+        """
+        message = 'Tests were aborted after exceeding the %d minute time limit.' % self.timeout_duration
+
+        # Include a leading newline to improve readability on Shippable "Tests" tab.
+        # Without this, the first line becomes indented.
+        output = '''
+One or more of the following situations may be responsible:
+
+- Code changes have resulted in tests that hang or run for an excessive amount of time.
+- Tests have been added which exceed the time limit when combined with existing tests.
+- Test infrastructure and/or external dependencies are operating slower than normal.'''
+
+        if args.coverage:
+            output += '\n- Additional overhead from collecting code coverage has resulted in tests exceeding the time limit.'
+
+        output += '\n\nConsult the console log for additional details on where the timeout occurred.'
+
+        timestamp = datetime.datetime.utcnow().replace(microsecond=0).isoformat()
+
+        # hack to avoid requiring junit-xml, which isn't pre-installed on Shippable outside our test containers
+        xml = '''
+<?xml version="1.0" encoding="utf-8"?>
+<testsuites disabled="0" errors="1" failures="0" tests="1" time="0.0">
+\t<testsuite disabled="0" errors="1" failures="0" file="None" log="None" name="ansible-test" skipped="0" tests="1" time="0" timestamp="%s" url="None">
+\t\t<testcase classname="timeout" name="timeout">
+\t\t\t<error message="%s" type="error">%s</error>
+\t\t</testcase>
+\t</testsuite>
+</testsuites>
+''' % (timestamp, message, output)
+
+        write_text_test_results(ResultType.JUNIT, self.create_result_name('.xml'), xml.lstrip())
+
+
+class TestSuccess(TestResult):
+    """Test success."""
+    def write_junit(self, args):
+        """
+        :type args: TestConfig
+        """
+        test_case = self.junit.TestCase(classname=self.command, name=self.name)
+
+        self.save_junit(args, test_case)
+
+
+class TestSkipped(TestResult):
+    """Test skipped."""
+    def write_console(self):
+        """Write results to console."""
+        display.info('No tests applicable.', verbosity=1)
+
+    def write_junit(self, args):
+        """
+        :type args: TestConfig
+        """
+        test_case = self.junit.TestCase(classname=self.command, name=self.name)
+        test_case.add_skipped_info('No tests applicable.')
+
+        self.save_junit(args, test_case)
+
+
+class TestFailure(TestResult):
+    """Test failure."""
+    def __init__(self, command, test, python_version=None, messages=None, summary=None):
+        """
+        :type command: str
+        :type test: str
+        :type python_version: str | None
+        :type messages: list[TestMessage] | None
+        :type summary: unicode | None
+        """
+        super(TestFailure, self).__init__(command, test, python_version)
+
+        if messages:
+            messages = sorted(messages)
+        else:
+            messages = []
+
+        self.messages = messages
+        self.summary = summary
+
+    def write(self, args):
+        """
+        :type args: TestConfig
+        """
+        if args.metadata.changes:
+            self.populate_confidence(args.metadata)
+
+        super(TestFailure, self).write(args)
+
+    def write_console(self):
+        """Write results to console."""
+        if self.summary:
+            display.error(self.summary)
+        else:
+            if self.python_version:
+                specifier = ' on python %s' % self.python_version
+            else:
+                specifier = ''
+
+            display.error('Found %d %s issue(s)%s which need to be resolved:' % (len(self.messages), self.test or self.command, specifier))
+
+            for message in self.messages:
+                display.error(message.format(show_confidence=True))
+
+            doc_url = self.find_docs()
+            if doc_url:
+                display.info('See documentation for help: %s' % doc_url)
+
+    def write_lint(self):
+        """Write lint results to stdout."""
+        if self.summary:
+            command = self.format_command()
+            message = 'The test `%s` failed. See stderr output for details.' % command
+            path = ''
+            message = TestMessage(message, path)
+            print(message)
+        else:
+            for message in self.messages:
+                print(message)
+
+    def write_junit(self, args):
+        """
+        :type args: TestConfig
+        """
+        title = self.format_title()
+        output = self.format_block()
+
+        test_case = self.junit.TestCase(classname=self.command, name=self.name)
+
+        # Include a leading newline to improve readability on Shippable "Tests" tab.
+        # Without this, the first line becomes indented.
+        test_case.add_failure_info(message=title, output='\n%s' % output)
+
+        self.save_junit(args, test_case)
+
+    def write_bot(self, args):
+        """
+        :type args: TestConfig
+        """
+        docs = self.find_docs()
+        message = self.format_title(help_link=docs)
+        output = self.format_block()
+
+        if self.messages:
+            verified = all((m.confidence or 0) >= 50 for m in self.messages)
+        else:
+            verified = False
+
+        bot_data = dict(
+            verified=verified,
+            docs=docs,
+            results=[
+                dict(
+                    message=message,
+                    output=output,
+                ),
+            ],
+        )
+
+        if args.explain:
+            return
+
+        write_json_test_results(ResultType.BOT, self.create_result_name('.json'), bot_data)
+
+    def populate_confidence(self, metadata):
+        """
+        :type metadata: Metadata
+        """
+        for message in self.messages:
+            if message.confidence is None:
+                message.confidence = calculate_confidence(message.path, message.line, metadata)
+
+    def format_command(self):
+        """
+        :rtype: str
+        """
+        command = 'ansible-test %s' % self.command
+
+        if self.test:
+            command += ' --test %s' % self.test
+
+        if self.python_version:
+            command += ' --python %s' % self.python_version
+
+        return command
+
+    def find_docs(self):
+        """
+        :rtype: str
+        """
+        if self.command != 'sanity':
+            return None  # only sanity tests have docs links
+
+        # Use the major.minor version for the URL only if this a release that
+        # matches the pattern 2.4.0, otherwise, use 'devel'
+        ansible_version = get_ansible_version()
+        url_version = 'devel'
+        if re.search(r'^[0-9.]+$', ansible_version):
+            url_version = '.'.join(ansible_version.split('.')[:2])
+
+        testing_docs_url = 'https://docs.ansible.com/ansible/%s/dev_guide/testing' % url_version
+
+        url = '%s/%s/' % (testing_docs_url, self.command)
+
+        if self.test:
+            url += '%s.html' % self.test
+
+        return url
+
+    def format_title(self, help_link=None):
+        """
+        :type help_link: str | None
+        :rtype: str
+        """
+        command = self.format_command()
+
+        if self.summary:
+            reason = 'the error'
+        else:
+            reason = '1 error' if len(self.messages) == 1 else '%d errors' % len(self.messages)
+
+        if help_link:
+            help_link_markup = ' [[explain](%s)]' % help_link
+        else:
+            help_link_markup = ''
+
+        title = 'The test `%s`%s failed with %s:' % (command, help_link_markup, reason)
+
+        return title
+
+    def format_block(self):
+        """
+        :rtype: str
+        """
+        if self.summary:
+            block = self.summary
+        else:
+            block = '\n'.join(m.format() for m in self.messages)
+
+        message = block.strip()
+
+        # Hack to remove ANSI color reset code from SubprocessError messages.
+        message = message.replace(display.clear, '')
+
+        return message
+
+
+class TestMessage:
+    """Single test message for one file."""
+    def __init__(self, message, path, line=0, column=0, level='error', code=None, confidence=None):
+        """
+        :type message: str
+        :type path: str
+        :type line: int
+        :type column: int
+        :type level: str
+        :type code: str | None
+        :type confidence: int | None
+        """
+        self.__path = path
+        self.__line = line
+        self.__column = column
+        self.__level = level
+        self.__code = code
+        self.__message = message
+
+        self.confidence = confidence
+
+    @property
+    def path(self):  # type: () -> str
+        """Return the path."""
+        return self.__path
+
+    @property
+    def line(self):  # type: () -> int
+        """Return the line number, or 0 if none is available."""
+        return self.__line
+
+    @property
+    def column(self):  # type: () -> int
+        """Return the column number, or 0 if none is available."""
+        return self.__column
+
+    @property
+    def level(self):  # type: () -> str
+        """Return the level."""
+        return self.__level
+
+    @property
+    def code(self):  # type: () -> t.Optional[str]
+        """Return the code, if any."""
+        return self.__code
+
+    @property
+    def message(self):  # type: () -> str
+        """Return the message."""
+        return self.__message
+
+    @property
+    def tuple(self):  # type: () -> t.Tuple[str, int, int, str, t.Optional[str], str]
+        """Return a tuple with all the immutable values of this test message."""
+        return self.__path, self.__line, self.__column, self.__level, self.__code, self.__message
+
+    def __lt__(self, other):
+        return self.tuple < other.tuple
+
+    def __le__(self, other):
+        return self.tuple <= other.tuple
+
+    def __eq__(self, other):
+        return self.tuple == other.tuple
+
+    def __ne__(self, other):
+        return self.tuple != other.tuple
+
+    def __gt__(self, other):
+        return self.tuple > other.tuple
+
+    def __ge__(self, other):
+        return self.tuple >= other.tuple
+
+    def __hash__(self):
+        return hash(self.tuple)
+
+    def __str__(self):
+        return self.format()
+
+    def format(self, show_confidence=False):
+        """
+        :type show_confidence: bool
+        :rtype: str
+        """
+        if self.__code:
+            msg = '%s: %s' % (self.__code, self.__message)
+        else:
+            msg = self.__message
+
+        if show_confidence and self.confidence is not None:
+            msg += ' (%d%%)' % self.confidence
+
+        return '%s:%s:%s: %s' % (self.__path, self.__line, self.__column, msg)
+# FILE: test/units/cli/test_data/role_skeleton/templates/test.conf.j2
+[defaults]
+test_key = {{ test_variable }}
+# FILE: test/units/cli/test_data/role_skeleton/templates/subfolder/test.conf.j2
+[defaults]
+test_key = {{ test_variable }}
+# FILE: test/units/cli/test_data/role_skeleton/tests/test.yml.j2
+---
+- hosts: localhost
+  remote_user: root
+  roles:
+    - {{ role_name }}
+# FILE: test/units/cli/test_data/collection_skeleton/playbooks/templates/test.conf.j2
+[defaults]
+test_key = {{ test_variable }}
+# FILE: test/units/cli/test_data/collection_skeleton/playbooks/templates/subfolder/test.conf.j2
+[defaults]
+test_key = {{ test_variable }}
+# FILE: test/units/cli/test_data/collection_skeleton/roles/common/templates/test.conf.j2
+[defaults]
+test_key = {{ test_variable }}
+# FILE: test/units/cli/test_data/collection_skeleton/roles/common/templates/subfolder/test.conf.j2
+[defaults]
+test_key = {{ test_variable }}
+# FILE: test/units/config/test.cfg
+[defaults]
+inikey=fromini
+matterless=lessfromini
+mattermore=morefromini
+# FILE: test/units/config/test.yml
+# mock config defs with diff use cases
+config_entry: &entry
+    name: test config
+    default: DEFAULT
+    description:
+      - This does nothing, its for testing
+    env:
+      - name: ENVVAR
+    ini:
+      - section: defaults
+        key: inikey
+    type: string
+config_entry_multi: &entry_multi
+    name: has more than one entry per config source
+    default: DEFAULT
+    description:
+      - This does nothing, its for testing
+    env:
+      - name: MATTERLESS
+      - name: MATTERMORE
+    ini:
+      - section: defaults
+        key: matterless
+      - section: defaults
+        key: mattermore
+    type: string
+config_entry_bool:
+    <<: *entry
+    type: bool
+    default: False
+config_entry_list:
+    <<: *entry
+    type: list
+    default: [DEFAULT]
+config_entry_deprecated:
+    <<: *entry
+    deprecated: &dep
+        why: 'cause i wanna'
+        version: 9.2
+        alternative: 'none whatso ever'
+config_entry_multi_deprecated:
+    <<: *entry_multi
+    deprecated: *dep
+config_entry_multi_deprecated_source:
+    <<: *entry_multi
+    env:
+      - name: MATTERLESS
+        deprecated: *dep
+      - name: MATTERMORE
+    ini:
+      - section: defaults
+        key: matterless
+        deprecated: *dep
+      - section: defaults
+        key: mattermore

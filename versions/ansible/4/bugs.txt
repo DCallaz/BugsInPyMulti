@@ -1,0 +1,4 @@
+1,test.units.galaxy.test_collection test_verify_collections_no_version
+2,test.units.utils.test_version test_alpha
+2,test.units.utils.test_version test_numeric
+4,test.units.playbook.test_collectionsearch test_collection_static_warning

@@ -1,0 +1,11 @@
+# CLASS: class SchedulerTest(unittest.TestCase):
+from helpers import unittest
+# BLOCK
+    def test_worker_prune_after_init(self):
+        worker = luigi.scheduler.Worker(123)
+
+        class TmpCfg:
+            def __init__(self):
+                self.worker_disconnect_delay = 10
+
+        worker.prune(TmpCfg())

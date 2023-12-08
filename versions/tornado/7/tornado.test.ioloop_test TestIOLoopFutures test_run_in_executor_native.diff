@@ -1,0 +1,39 @@
+# CLASS: class TestIOLoopFutures(AsyncTestCase):
+import threading
+# BLOCK
+import sys
+# BLOCK
+import functools
+# BLOCK
+from tornado.test.util import exec_test
+# BLOCK
+from tornado.ioloop import IOLoop, TimeoutError
+# BLOCK
+from tornado.testing import AsyncTestCase
+# BLOCK
+    @skipBefore35
+    @gen_test
+    def test_run_in_executor_native(self):
+        event1 = threading.Event()
+        event2 = threading.Event()
+
+        def sync_func(self_event, other_event):
+            self_event.set()
+            other_event.wait()
+            return self_event
+
+        # Go through an async wrapper to ensure that the result of
+        # run_in_executor works with await and not just gen.coroutine
+        # (simply passing the underlying concurrrent future would do that).
+        namespace = exec_test(globals(), locals(), """
+            async def async_wrapper(self_event, other_event):
+                return await IOLoop.current().run_in_executor(
+                    None, sync_func, self_event, other_event)
+        """)
+
+        res = yield [
+            namespace["async_wrapper"](event1, event2),
+            namespace["async_wrapper"](event2, event1)
+            ]
+
+        self.assertEqual([event1, event2], res)

@@ -1,0 +1,8 @@
+# CLASS: class SchedulerTest(unittest.TestCase):
+from helpers import unittest
+# BLOCK
+    @with_config({'scheduler': {'record_task_history': 'True'},
+                  'task_history': {'db_connection': 'sqlite:////none/existing/path/hist.db'}})
+    def test_local_scheduler_task_history_status(self):
+        ls = luigi.interface._WorkerSchedulerFactory().create_local_scheduler()
+        self.assertEqual(False, ls._config.record_task_history)

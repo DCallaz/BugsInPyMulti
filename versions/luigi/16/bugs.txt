@@ -1,0 +1,6 @@
+8,test.contrib.redshift_test TestS3CopyToSchemaTable test_s3_copy_to_table
+9,test.execution_summary_test ExecutionSummaryTest test_status_with_task_retry
+12,test.hdfs_client_test HdfsClientTest test_get_autoconfig_client_cached
+13,test.file_test FileSystemTest test_move_to_new_dir
+14,test.central_planner_test CentralPlannerTest test_no_crash_on_only_disable_hard_timeout
+16,test.central_planner_test CentralPlannerTest test_re_enable_failed_task_assistant

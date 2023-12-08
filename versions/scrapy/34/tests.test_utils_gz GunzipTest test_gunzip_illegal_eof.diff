@@ -1,0 +1,18 @@
+# CLASS: class GunzipTest(unittest.TestCase):
+from os.path import join
+# BLOCK
+from w3lib.encoding import html_to_unicode
+# BLOCK
+from scrapy.utils.gz import gunzip
+# BLOCK
+from tests import tests_datadir
+# BLOCK
+SAMPLEDIR = join(tests_datadir, 'compressed')
+# BLOCK
+    def test_gunzip_illegal_eof(self):
+        with open(join(SAMPLEDIR, 'unexpected-eof.gz'), 'rb') as f:
+            text = html_to_unicode('charset=cp1252', gunzip(f.read()))[1]
+            with open(join(SAMPLEDIR, 'unexpected-eof-output.txt'), 'rb') as o:
+                expected_text = o.read().decode("utf-8")
+                self.assertEqual(len(text), len(expected_text))
+                self.assertEqual(text, expected_text)

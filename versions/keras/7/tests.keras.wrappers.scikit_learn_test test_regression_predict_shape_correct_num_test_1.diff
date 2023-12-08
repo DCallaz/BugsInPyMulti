@@ -1,0 +1,42 @@
+import pytest
+# BLOCK
+from keras.wrappers.scikit_learn import KerasRegressor
+# BLOCK
+from keras.models import Sequential
+# BLOCK
+from keras.layers.core import Dense, Activation
+# BLOCK
+input_dim = 5
+hidden_dims = 5
+num_train = 100
+num_test = 50
+num_classes = 3
+batch_size = 32
+epochs = 1
+verbosity = 0
+optim = 'adam'
+loss = 'categorical_crossentropy'
+# BLOCK
+def build_fn_reg(hidden_dims=50):
+    model = Sequential()
+    model.add(Dense(input_dim, input_shape=(input_dim,)))
+    model.add(Activation('relu'))
+    model.add(Dense(hidden_dims))
+    model.add(Activation('relu'))
+    model.add(Dense(1))
+    model.add(Activation('linear'))
+    model.compile(optimizer='sgd', loss='mean_absolute_error',
+                  metrics=['accuracy'])
+    return model
+# BLOCK
+def assert_regression_predict_shape_correct(num_test):
+    reg = KerasRegressor(
+        build_fn=build_fn_reg, hidden_dims=hidden_dims,
+        batch_size=batch_size, epochs=epochs)
+    reg.fit(X_train, y_train, batch_size=batch_size, epochs=epochs)
+
+    preds = reg.predict(X_test[:num_test], batch_size=batch_size)
+    assert preds.shape == (num_test, )
+# BLOCK
+def test_regression_predict_shape_correct_num_test_1():
+    assert_regression_predict_shape_correct(num_test=1)

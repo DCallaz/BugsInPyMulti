@@ -1,0 +1,19 @@
+from thefuck.rules.git_fix_stash import match
+# BLOCK
+from tests.utils import Command
+# BLOCK
+import pytest
+# BLOCK
+git_stash_err = '''
+usage: git stash list [<options>]
+   or: git stash show [<stash>]
+   or: git stash drop [-q|--quiet] [<stash>]
+   or: git stash ( pop | apply ) [--index] [-q|--quiet] [<stash>]
+   or: git stash branch <branchname> [<stash>]
+   or: git stash [save [--patch] [-k|--[no-]keep-index] [-q|--quiet]
+\t\t       [-u|--include-untracked] [-a|--all] [<message>]]
+   or: git stash clear
+'''
+# BLOCK
+def test_not_match():
+    assert not match(Command("git", stderr=git_stash_err))

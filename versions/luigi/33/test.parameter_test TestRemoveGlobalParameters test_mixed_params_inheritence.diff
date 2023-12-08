@@ -1,0 +1,27 @@
+# CLASS: class TestRemoveGlobalParameters(unittest.TestCase):
+import luigi
+# BLOCK
+import unittest
+# BLOCK
+    def test_mixed_params_inheritence(self):
+        """ A slightly more real-world like test case """
+        class TaskWithOneGlobalParam(luigi.Task):
+            non_positional_param = luigi.Parameter(default='y', is_global=True)
+
+        class TaskWithOnePositionalParam(TaskWithOneGlobalParam):
+            """ Try to mess with positional parameters by subclassing """
+            only_positional_param = luigi.Parameter()
+
+            def complete(self):
+                return True
+
+        class PositionalParamsRequirer(luigi.Task):
+
+            def requires(self):
+                return TaskWithOnePositionalParam('only_positional_value')
+
+            def run(self):
+                pass
+
+        self.run_and_check(['PositionalParamsRequirer'])
+        self.run_and_check(['PositionalParamsRequirer', '--non-positional-param', 'z'])

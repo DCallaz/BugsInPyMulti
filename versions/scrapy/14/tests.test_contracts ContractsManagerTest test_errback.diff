@@ -1,0 +1,100 @@
+# CLASS: class ContractsManagerTest(unittest.TestCase):
+from scrapy.spidermiddlewares.httperror import HttpError
+# BLOCK
+from twisted.python import failure
+# BLOCK
+from scrapy.spiders import Spider
+# BLOCK
+class ResponseMock(object):
+    url = 'http://scrapy.org'
+# BLOCK
+class TestSpider(Spider):
+    name = 'demo_spider'
+
+    def returns_request(self, response):
+        """ method which returns request
+        @url http://scrapy.org
+        @returns requests 1
+        """
+        return Request('http://scrapy.org', callback=self.returns_item)
+
+    def returns_item(self, response):
+        """ method which returns item
+        @url http://scrapy.org
+        @returns items 1 1
+        """
+        return TestItem(url=response.url)
+
+    def returns_dict_item(self, response):
+        """ method which returns item
+        @url http://scrapy.org
+        @returns items 1 1
+        """
+        return {"url": response.url}
+
+    def returns_fail(self, response):
+        """ method which returns item
+        @url http://scrapy.org
+        @returns items 0 0
+        """
+        return TestItem(url=response.url)
+
+    def returns_dict_fail(self, response):
+        """ method which returns item
+        @url http://scrapy.org
+        @returns items 0 0
+        """
+        return {'url': response.url}
+
+    def scrapes_item_ok(self, response):
+        """ returns item with name and url
+        @url http://scrapy.org
+        @returns items 1 1
+        @scrapes name url
+        """
+        return TestItem(name='test', url=response.url)
+
+    def scrapes_dict_item_ok(self, response):
+        """ returns item with name and url
+        @url http://scrapy.org
+        @returns items 1 1
+        @scrapes name url
+        """
+        return {'name': 'test', 'url': response.url}
+
+    def scrapes_item_fail(self, response):
+        """ returns item with no name
+        @url http://scrapy.org
+        @returns items 1 1
+        @scrapes name url
+        """
+        return TestItem(url=response.url)
+
+    def scrapes_dict_item_fail(self, response):
+        """ returns item with no name
+        @url http://scrapy.org
+        @returns items 1 1
+        @scrapes name url
+        """
+        return {'url': response.url}
+
+    def parse_no_url(self, response):
+        """ method with no url
+        @returns items 1 1
+        """
+        pass
+# BLOCK
+    def test_errback(self):
+        spider = TestSpider()
+        response = ResponseMock()
+
+        try:
+            raise HttpError(response, 'Ignoring non-200 response')
+        except HttpError:
+            failure_mock = failure.Failure()
+
+        request = self.conman.from_method(spider.returns_request, self.results)
+        request.errback(failure_mock)
+
+        self.assertFalse(self.results.failures)
+        self.assertTrue(self.results.errors)

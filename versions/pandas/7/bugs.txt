@@ -1,0 +1,8 @@
+1,pandas.tests.indexing.test_scalar test_at_with_tuple_index_get
+1,pandas.tests.indexing.test_scalar test_at_with_tuple_index_set
+1,pandas.tests.indexing.test_scalar test_multiindex_at_get
+1,pandas.tests.indexing.test_scalar test_multiindex_at_set
+2,pandas.tests.dtypes.test_dtypes TestCategoricalDtype test_not_string
+3,pandas.tests.series.methods.test_to_period TestToPeriod test_to_period_raises
+3,pandas.tests.series.methods.test_to_timestamp TestToTimestamp test_to_timestamp_raises
+7,pandas.tests.frame.methods.test_replace TestDataFrameReplace test_replace_no_replacement_dtypes

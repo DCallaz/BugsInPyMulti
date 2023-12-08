@@ -1,0 +1,422 @@
+# CLASS: class TestInfoExtractor(unittest.TestCase):
+import io
+# BLOCK
+from youtube_dl.compat import compat_etree_fromstring
+# BLOCK
+from test.helper import expect_value
+# BLOCK
+    def test_parse_mpd_formats(self):
+        _TEST_CASES = [
+            (
+                # https://github.com/rg3/youtube-dl/issues/13919
+                # Also tests duplicate representation ids, see
+                # https://github.com/rg3/youtube-dl/issues/15111
+                'float_duration',
+                'http://unknown/manifest.mpd',
+                [{
+                    'manifest_url': 'http://unknown/manifest.mpd',
+                    'ext': 'm4a',
+                    'format_id': '318597',
+                    'format_note': 'DASH audio',
+                    'protocol': 'http_dash_segments',
+                    'acodec': 'mp4a.40.2',
+                    'vcodec': 'none',
+                    'tbr': 61.587,
+                }, {
+                    'manifest_url': 'http://unknown/manifest.mpd',
+                    'ext': 'mp4',
+                    'format_id': '318597',
+                    'format_note': 'DASH video',
+                    'protocol': 'http_dash_segments',
+                    'acodec': 'none',
+                    'vcodec': 'avc1.42001f',
+                    'tbr': 318.597,
+                    'width': 340,
+                    'height': 192,
+                }, {
+                    'manifest_url': 'http://unknown/manifest.mpd',
+                    'ext': 'mp4',
+                    'format_id': '638590',
+                    'format_note': 'DASH video',
+                    'protocol': 'http_dash_segments',
+                    'acodec': 'none',
+                    'vcodec': 'avc1.42001f',
+                    'tbr': 638.59,
+                    'width': 512,
+                    'height': 288,
+                }, {
+                    'manifest_url': 'http://unknown/manifest.mpd',
+                    'ext': 'mp4',
+                    'format_id': '1022565',
+                    'format_note': 'DASH video',
+                    'protocol': 'http_dash_segments',
+                    'acodec': 'none',
+                    'vcodec': 'avc1.4d001f',
+                    'tbr': 1022.565,
+                    'width': 688,
+                    'height': 384,
+                }, {
+                    'manifest_url': 'http://unknown/manifest.mpd',
+                    'ext': 'mp4',
+                    'format_id': '2046506',
+                    'format_note': 'DASH video',
+                    'protocol': 'http_dash_segments',
+                    'acodec': 'none',
+                    'vcodec': 'avc1.4d001f',
+                    'tbr': 2046.506,
+                    'width': 1024,
+                    'height': 576,
+                }, {
+                    'manifest_url': 'http://unknown/manifest.mpd',
+                    'ext': 'mp4',
+                    'format_id': '3998017',
+                    'format_note': 'DASH video',
+                    'protocol': 'http_dash_segments',
+                    'acodec': 'none',
+                    'vcodec': 'avc1.640029',
+                    'tbr': 3998.017,
+                    'width': 1280,
+                    'height': 720,
+                }, {
+                    'manifest_url': 'http://unknown/manifest.mpd',
+                    'ext': 'mp4',
+                    'format_id': '5997485',
+                    'format_note': 'DASH video',
+                    'protocol': 'http_dash_segments',
+                    'acodec': 'none',
+                    'vcodec': 'avc1.640032',
+                    'tbr': 5997.485,
+                    'width': 1920,
+                    'height': 1080,
+                }]
+            ), (
+                # https://github.com/rg3/youtube-dl/pull/14844
+                'urls_only',
+                'http://unknown/manifest.mpd',
+                [{
+                    'manifest_url': 'http://unknown/manifest.mpd',
+                    'ext': 'mp4',
+                    'format_id': 'h264_aac_144p_m4s',
+                    'format_note': 'DASH video',
+                    'protocol': 'http_dash_segments',
+                    'acodec': 'mp4a.40.2',
+                    'vcodec': 'avc3.42c01e',
+                    'tbr': 200,
+                    'width': 256,
+                    'height': 144,
+                }, {
+                    'manifest_url': 'http://unknown/manifest.mpd',
+                    'ext': 'mp4',
+                    'format_id': 'h264_aac_240p_m4s',
+                    'format_note': 'DASH video',
+                    'protocol': 'http_dash_segments',
+                    'acodec': 'mp4a.40.2',
+                    'vcodec': 'avc3.42c01e',
+                    'tbr': 400,
+                    'width': 424,
+                    'height': 240,
+                }, {
+                    'manifest_url': 'http://unknown/manifest.mpd',
+                    'ext': 'mp4',
+                    'format_id': 'h264_aac_360p_m4s',
+                    'format_note': 'DASH video',
+                    'protocol': 'http_dash_segments',
+                    'acodec': 'mp4a.40.2',
+                    'vcodec': 'avc3.42c01e',
+                    'tbr': 800,
+                    'width': 640,
+                    'height': 360,
+                }, {
+                    'manifest_url': 'http://unknown/manifest.mpd',
+                    'ext': 'mp4',
+                    'format_id': 'h264_aac_480p_m4s',
+                    'format_note': 'DASH video',
+                    'protocol': 'http_dash_segments',
+                    'acodec': 'mp4a.40.2',
+                    'vcodec': 'avc3.42c01e',
+                    'tbr': 1200,
+                    'width': 856,
+                    'height': 480,
+                }, {
+                    'manifest_url': 'http://unknown/manifest.mpd',
+                    'ext': 'mp4',
+                    'format_id': 'h264_aac_576p_m4s',
+                    'format_note': 'DASH video',
+                    'protocol': 'http_dash_segments',
+                    'acodec': 'mp4a.40.2',
+                    'vcodec': 'avc3.42c01e',
+                    'tbr': 1600,
+                    'width': 1024,
+                    'height': 576,
+                }, {
+                    'manifest_url': 'http://unknown/manifest.mpd',
+                    'ext': 'mp4',
+                    'format_id': 'h264_aac_720p_m4s',
+                    'format_note': 'DASH video',
+                    'protocol': 'http_dash_segments',
+                    'acodec': 'mp4a.40.2',
+                    'vcodec': 'avc3.42c01e',
+                    'tbr': 2400,
+                    'width': 1280,
+                    'height': 720,
+                }, {
+                    'manifest_url': 'http://unknown/manifest.mpd',
+                    'ext': 'mp4',
+                    'format_id': 'h264_aac_1080p_m4s',
+                    'format_note': 'DASH video',
+                    'protocol': 'http_dash_segments',
+                    'acodec': 'mp4a.40.2',
+                    'vcodec': 'avc3.42c01e',
+                    'tbr': 4400,
+                    'width': 1920,
+                    'height': 1080,
+                }]
+            )
+        ]
+
+        for mpd_file, mpd_url, expected_formats in _TEST_CASES:
+            with io.open('./test/testdata/mpd/%s.mpd' % mpd_file,
+                         mode='r', encoding='utf-8') as f:
+                formats = self.ie._parse_mpd_formats(
+                    compat_etree_fromstring(f.read().encode('utf-8')),
+                    mpd_url=mpd_url)
+                self.ie._sort_formats(formats)
+                expect_value(self, formats, expected_formats, None)
+# FILE: test/testdata/mpd/float_duration.mpd
+<?xml version="1.0" encoding="UTF-8"?>
+<MPD xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:mpeg:dash:schema:mpd:2011" type="static" minBufferTime="PT2S" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" mediaPresentationDuration="PT6014S">
+	<Period bitstreamSwitching="true">
+		<AdaptationSet mimeType="audio/mp4" codecs="mp4a.40.2" startWithSAP="1" segmentAlignment="true">
+			<SegmentTemplate timescale="1000000" presentationTimeOffset="0" initialization="ai_$RepresentationID$.mp4d" media="a_$RepresentationID$_$Number$.mp4d" duration="2000000.0" startNumber="0"></SegmentTemplate>
+			<Representation id="318597" bandwidth="61587"></Representation>
+		</AdaptationSet>
+		<AdaptationSet mimeType="video/mp4" startWithSAP="1" segmentAlignment="true">
+			<SegmentTemplate timescale="1000000" presentationTimeOffset="0" initialization="vi_$RepresentationID$.mp4d" media="v_$RepresentationID$_$Number$.mp4d" duration="2000000.0" startNumber="0"></SegmentTemplate>
+			<Representation id="318597" codecs="avc1.42001f" width="340" height="192" bandwidth="318597"></Representation>
+			<Representation id="638590" codecs="avc1.42001f" width="512" height="288" bandwidth="638590"></Representation>
+			<Representation id="1022565" codecs="avc1.4d001f" width="688" height="384" bandwidth="1022565"></Representation>
+			<Representation id="2046506" codecs="avc1.4d001f" width="1024" height="576" bandwidth="2046506"></Representation>
+			<Representation id="3998017" codecs="avc1.640029" width="1280" height="720" bandwidth="3998017"></Representation>
+			<Representation id="5997485" codecs="avc1.640032" width="1920" height="1080" bandwidth="5997485"></Representation>
+		</AdaptationSet>
+	</Period>
+</MPD>
+# FILE: test/testdata/mpd/urls_only.mpd
+<?xml version="1.0" ?>
+<MPD maxSegmentDuration="PT0H0M10.000S" mediaPresentationDuration="PT0H4M1.728S" minBufferTime="PT1.500S" profiles="urn:mpeg:dash:profile:isoff-main:2011" type="static" xmlns="urn:mpeg:dash:schema:mpd:2011">
+  <Period duration="PT0H4M1.728S">
+    <AdaptationSet bitstreamSwitching="true" lang="und" maxHeight="1080" maxWidth="1920" par="16:9" segmentAlignment="true">
+      <ContentComponent contentType="video" id="1"/>
+      <Representation audioSamplingRate="44100" bandwidth="200000" codecs="avc3.42c01e,mp4a.40.2" frameRate="25" height="144" id="h264_aac_144p_m4s" mimeType="video/mp4" sar="1:1" startWithSAP="1" width="256">
+        <SegmentList duration="10000" timescale="1000">
+          <Initialization sourceURL="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/init/432f65a0.mp4"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/0/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/1/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/2/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/3/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/4/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/5/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/6/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/7/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/8/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/9/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/10/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/11/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/12/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/13/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/14/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/15/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/16/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/17/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/18/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/19/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/20/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/21/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/22/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/23/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_144p_m4s/24/432f65a0.m4s"/>
+        </SegmentList>
+      </Representation>
+      <Representation audioSamplingRate="44100" bandwidth="400000" codecs="avc3.42c01e,mp4a.40.2" frameRate="25" height="240" id="h264_aac_240p_m4s" mimeType="video/mp4" sar="160:159" startWithSAP="1" width="424">
+        <SegmentList duration="10000" timescale="1000">
+          <Initialization sourceURL="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/init/432f65a0.mp4"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/0/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/1/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/2/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/3/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/4/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/5/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/6/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/7/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/8/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/9/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/10/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/11/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/12/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/13/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/14/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/15/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/16/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/17/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/18/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/19/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/20/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/21/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/22/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/23/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_240p_m4s/24/432f65a0.m4s"/>
+        </SegmentList>
+      </Representation>
+      <Representation audioSamplingRate="44100" bandwidth="800000" codecs="avc3.42c01e,mp4a.40.2" frameRate="25" height="360" id="h264_aac_360p_m4s" mimeType="video/mp4" sar="1:1" startWithSAP="1" width="640">
+        <SegmentList duration="10000" timescale="1000">
+          <Initialization sourceURL="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/init/432f65a0.mp4"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/0/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/1/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/2/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/3/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/4/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/5/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/6/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/7/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/8/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/9/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/10/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/11/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/12/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/13/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/14/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/15/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/16/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/17/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/18/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/19/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/20/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/21/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/22/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/23/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_360p_m4s/24/432f65a0.m4s"/>
+        </SegmentList>
+      </Representation>
+      <Representation audioSamplingRate="44100" bandwidth="1200000" codecs="avc3.42c01e,mp4a.40.2" frameRate="25" height="480" id="h264_aac_480p_m4s" mimeType="video/mp4" sar="320:321" startWithSAP="1" width="856">
+        <SegmentList duration="10000" timescale="1000">
+          <Initialization sourceURL="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/init/432f65a0.mp4"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/0/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/1/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/2/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/3/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/4/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/5/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/6/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/7/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/8/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/9/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/10/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/11/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/12/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/13/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/14/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/15/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/16/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/17/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/18/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/19/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/20/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/21/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/22/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/23/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_480p_m4s/24/432f65a0.m4s"/>
+        </SegmentList>
+      </Representation>
+      <Representation audioSamplingRate="44100" bandwidth="1600000" codecs="avc3.42c01e,mp4a.40.2" frameRate="25" height="576" id="h264_aac_576p_m4s" mimeType="video/mp4" sar="1:1" startWithSAP="1" width="1024">
+        <SegmentList duration="10000" timescale="1000">
+          <Initialization sourceURL="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/init/432f65a0.mp4"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/0/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/1/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/2/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/3/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/4/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/5/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/6/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/7/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/8/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/9/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/10/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/11/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/12/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/13/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/14/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/15/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/16/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/17/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/18/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/19/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/20/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/21/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/22/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/23/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_576p_m4s/24/432f65a0.m4s"/>
+        </SegmentList>
+      </Representation>
+      <Representation audioSamplingRate="44100" bandwidth="2400000" codecs="avc3.42c01e,mp4a.40.2" frameRate="25" height="720" id="h264_aac_720p_m4s" mimeType="video/mp4" sar="1:1" startWithSAP="1" width="1280">
+        <SegmentList duration="10000" timescale="1000">
+          <Initialization sourceURL="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/init/432f65a0.mp4"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/0/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/1/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/2/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/3/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/4/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/5/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/6/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/7/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/8/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/9/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/10/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/11/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/12/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/13/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/14/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/15/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/16/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/17/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/18/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/19/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/20/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/21/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/22/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/23/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_720p_m4s/24/432f65a0.m4s"/>
+        </SegmentList>
+      </Representation>
+      <Representation audioSamplingRate="44100" bandwidth="4400000" codecs="avc3.42c01e,mp4a.40.2" frameRate="25" height="1080" id="h264_aac_1080p_m4s" mimeType="video/mp4" sar="1:1" startWithSAP="1" width="1920">
+        <SegmentList duration="10000" timescale="1000">
+          <Initialization sourceURL="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/init/432f65a0.mp4"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/0/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/1/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/2/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/3/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/4/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/5/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/6/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/7/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/8/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/9/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/10/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/11/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/12/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/13/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/14/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/15/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/16/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/17/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/18/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/19/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/20/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/21/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/22/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/23/432f65a0.m4s"/>
+          <SegmentURL media="../vd_5999c902ea707c67d8e267a9_1503250723/h264_aac_1080p_m4s/24/432f65a0.m4s"/>
+        </SegmentList>
+      </Representation>
+    </AdaptationSet>
+  </Period>
+</MPD>

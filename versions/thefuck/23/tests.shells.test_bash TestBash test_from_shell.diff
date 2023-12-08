@@ -1,0 +1,15 @@
+import pytest
+# BLOCK
+from thefuck.shells import Bash
+# BLOCK
+    @pytest.fixture
+    def shell(self):
+        return Bash()
+# BLOCK
+    @pytest.mark.parametrize('before, after', [
+        ('pwd', 'pwd'),
+        ('fuck', 'eval $(thefuck $(fc -ln -1))'),
+        ('awk', 'awk'),
+        ('ll', 'ls -alF')])
+    def test_from_shell(self, before, after, shell):
+        assert shell.from_shell(before) == after

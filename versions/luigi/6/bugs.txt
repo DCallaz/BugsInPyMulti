@@ -1,0 +1,3 @@
+3,test.parameter_test TestSerializeTupleParameter testSerialize
+6,test.parameter_test TestParametersHashability test_list_dict
+6,test.parameter_test TestParametersHashability test_tuple_dict

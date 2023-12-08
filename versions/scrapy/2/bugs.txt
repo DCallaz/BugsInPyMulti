@@ -1,0 +1,3 @@
+1,tests.test_utils_misc.__init__ UtilsMiscTestCase test_create_instance
+2,tests.test_spidermiddleware_offsite TestOffsiteMiddleware4 _get_spiderargs
+2,tests.test_spidermiddleware_offsite TestOffsiteMiddleware4 test_process_spider_output

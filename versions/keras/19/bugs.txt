@@ -1,0 +1,5 @@
+16,tests.keras.test_sequential_model test_sequential
+16,tests.keras.test_sequential_model test_sequential_deferred_build
+18,tests.keras.backend.backend_test TestBackend test_function_tf_run_options_with_run_metadata
+19,tests.keras.layers.recurrent_test test_inconsistent_output_state_size
+19,tests.keras.layers.recurrent_test test_minimal_rnn_cell_non_layer_multiple_states

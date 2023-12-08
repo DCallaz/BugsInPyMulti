@@ -1,0 +1,13 @@
+# CLASS: class TestUtil(unittest.TestCase):
+from youtube_dl.utils import strip_jsonp
+# BLOCK
+import json
+# BLOCK
+    def test_strip_jsonp(self):
+        stripped = strip_jsonp('cb ([ {"id":"532cb",\n\n\n"x":\n3}\n]\n);')
+        d = json.loads(stripped)
+        self.assertEqual(d, [{"id": "532cb", "x": 3}])
+
+        stripped = strip_jsonp('parseMetadata({"STATUS":"OK"})\n\n\n//epc')
+        d = json.loads(stripped)
+        self.assertEqual(d, {'STATUS': 'OK'})

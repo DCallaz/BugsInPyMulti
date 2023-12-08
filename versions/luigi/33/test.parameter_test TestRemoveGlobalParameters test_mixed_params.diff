@@ -1,0 +1,13 @@
+# CLASS: class TestRemoveGlobalParameters(unittest.TestCase):
+import luigi
+# BLOCK
+import unittest
+# BLOCK
+    def test_mixed_params(self):
+        """ Essentially for what broke in a78338c and was reported in #738 """
+        class MyTask(luigi.Task):
+            # This could typically be "--num-threads=True"
+            x_g3 = luigi.Parameter(default='y', is_global=True)
+            local_param = luigi.Parameter()
+
+        MyTask('setting_local_param')

@@ -1,0 +1,6 @@
+1,lib.matplotlib.tests.test_bbox_tight test_noop_tight_bbox
+2,lib.matplotlib.tests.test_axes TestScatter test_scatter_unfilled
+3,lib.matplotlib.tests.test_marker test_marker_fillstyle
+5,lib.matplotlib.tests.test_axes TestScatter test_scatter_linewidths
+8,lib.matplotlib.tests.test_axes test_unautoscalex
+9,lib.matplotlib.tests.test_axes test_offset_text_visible

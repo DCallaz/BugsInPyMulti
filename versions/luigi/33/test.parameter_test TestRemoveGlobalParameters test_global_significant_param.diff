@@ -1,0 +1,13 @@
+# CLASS: class TestRemoveGlobalParameters(unittest.TestCase):
+import luigi
+# BLOCK
+import unittest
+# BLOCK
+    def test_global_significant_param(self):
+        """ We don't want any kind of global param to be positional """
+        class MyTask(luigi.Task):
+            # This could typically be called "--test-dry-run"
+            x_g1 = luigi.Parameter(default='y', is_global=True, significant=True)
+
+        self.assertRaises(luigi.parameter.UnknownParameterException,
+                          lambda: MyTask('arg'))

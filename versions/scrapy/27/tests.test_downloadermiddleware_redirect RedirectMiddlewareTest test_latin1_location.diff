@@ -1,0 +1,10 @@
+# CLASS: class RedirectMiddlewareTest(unittest.TestCase):
+from scrapy.http import Request, Response
+# BLOCK
+    def test_latin1_location(self):
+        req = Request('http://scrapytest.org/first')
+        latin1_location = u'/ação'.encode('latin1')  # HTTP historically supports latin1
+        resp = Response('http://scrapytest.org/first', headers={'Location': latin1_location}, status=302)
+        req_result = self.mw.process_response(req, resp, self.spider)
+        perc_encoded_utf8_url = 'http://scrapytest.org/a%E7%E3o'
+        self.assertEquals(perc_encoded_utf8_url, req_result.url)

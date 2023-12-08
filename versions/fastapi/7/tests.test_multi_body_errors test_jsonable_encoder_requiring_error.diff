@@ -1,0 +1,23 @@
+from starlette.testclient import TestClient
+# BLOCK
+from fastapi import FastAPI
+# BLOCK
+app = FastAPI()
+# BLOCK
+single_error = {
+    "detail": [
+        {
+            "ctx": {"limit_value": 0.0},
+            "loc": ["body", "item", 0, "age"],
+            "msg": "ensure this value is greater than 0",
+            "type": "value_error.number.not_gt",
+        }
+    ]
+}
+# BLOCK
+client = TestClient(app)
+# BLOCK
+def test_jsonable_encoder_requiring_error():
+    response = client.post("/items/", json=[{"name": "Foo", "age": -1.0}])
+    assert response.status_code == 422
+    assert response.json() == single_error

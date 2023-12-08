@@ -1,0 +1,59 @@
+from starlette.testclient import TestClient
+# BLOCK
+from fastapi import FastAPI, APIRouter
+# BLOCK
+app = FastAPI()
+router = APIRouter()
+# BLOCK
+openapi_schema = {
+    "openapi": "3.0.2",
+    "info": {"title": "Fast API", "version": "0.1.0"},
+    "paths": {
+        "/a": {
+            "get": {
+                "responses": {
+                    "501": {"description": "Error 1"},
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {"application/json": {"schema": {}}},
+                    },
+                },
+                "summary": "A Get",
+                "operationId": "a_a_get",
+            }
+        },
+        "/b": {
+            "get": {
+                "responses": {
+                    "502": {"description": "Error 2"},
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {"application/json": {"schema": {}}},
+                    },
+                },
+                "summary": "B Get",
+                "operationId": "b_b_get",
+            }
+        },
+        "/c": {
+            "get": {
+                "responses": {
+                    "501": {"description": "Error 3"},
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {"application/json": {"schema": {}}},
+                    },
+                },
+                "summary": "C Get",
+                "operationId": "c_c_get",
+            }
+        },
+    },
+}
+# BLOCK
+client = TestClient(app)
+# BLOCK
+def test_openapi_schema():
+    response = client.get("/openapi.json")
+    assert response.status_code == 200
+    assert response.json() == openapi_schema

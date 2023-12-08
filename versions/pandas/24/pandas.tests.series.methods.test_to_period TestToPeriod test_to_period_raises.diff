@@ -1,0 +1,12 @@
+from pandas import Series, DatetimeIndex
+# BLOCK
+import pytest
+# BLOCK
+    def test_to_period_raises(self, indices):
+        # https://github.com/pandas-dev/pandas/issues/33327
+        index = indices
+        ser = Series(index=index, dtype=object)
+        if not isinstance(index, DatetimeIndex):
+            msg = f"unsupported Type {type(index).__name__}"
+            with pytest.raises(TypeError, match=msg):
+                ser.to_period()

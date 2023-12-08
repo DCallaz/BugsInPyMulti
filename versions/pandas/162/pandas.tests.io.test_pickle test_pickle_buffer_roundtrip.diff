@@ -1,0 +1,14 @@
+import pandas._testing as tm
+# BLOCK
+import pandas as pd
+# BLOCK
+import pytest
+# BLOCK
+def test_pickle_buffer_roundtrip():
+    with tm.ensure_clean() as path:
+        df = tm.makeDataFrame()
+        with open(path, "wb") as fh:
+            df.to_pickle(fh)
+        with open(path, "rb") as fh:
+            result = pd.read_pickle(fh)
+        tm.assert_frame_equal(df, result)

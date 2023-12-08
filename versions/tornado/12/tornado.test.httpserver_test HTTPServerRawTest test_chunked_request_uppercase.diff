@@ -1,0 +1,44 @@
+# CLASS: class HTTPServerRawTest(AsyncHTTPTestCase):
+from tornado.escape import json_decode
+# BLOCK
+from tornado.testing import AsyncHTTPTestCase
+# BLOCK
+from tornado.httputil import HTTPMessageDelegate
+# BLOCK
+from tornado.http1connection import HTTP1Connection
+# BLOCK
+def read_stream_body(stream, callback):
+    """Reads an HTTP response from `stream` and runs callback with its
+    headers and body."""
+    chunks = []
+
+    class Delegate(HTTPMessageDelegate):
+        def headers_received(self, start_line, headers):
+            self.headers = headers
+
+        def data_received(self, chunk):
+            chunks.append(chunk)
+
+        def finish(self):
+            callback((self.headers, b''.join(chunks)))
+    conn = HTTP1Connection(stream, True)
+    conn.read_response(Delegate())
+# BLOCK
+    def test_chunked_request_uppercase(self):
+        # As per RFC 2616 section 3.6, "Transfer-Encoding" header's value is
+        # case-insensitive.
+        self.stream.write(b"""\
+POST /echo HTTP/1.1
+Transfer-Encoding: Chunked
+Content-Type: application/x-www-form-urlencoded
+
+4
+foo=
+3
+bar
+0
+
+""".replace(b"\n", b"\r\n"))
+        read_stream_body(self.stream, self.stop)
+        headers, response = self.wait()
+        self.assertEqual(json_decode(response), {u'foo': [u'bar']})

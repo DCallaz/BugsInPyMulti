@@ -1,0 +1,24 @@
+from pandas import Series
+# BLOCK
+import pandas as pd
+# BLOCK
+import pytest
+# BLOCK
+    @pytest.mark.parametrize("method", ["mean", "median", "std", "var"])
+    def test_ops_consistency_on_empty(self, method):
+
+        # GH#7869
+        # consistency on empty
+
+        # float
+        result = getattr(Series(dtype=float), method)()
+        assert pd.isna(result)
+
+        # timedelta64[ns]
+        tdser = Series([], dtype="m8[ns]")
+        if method == "var":
+            with pytest.raises(TypeError, match="operation 'var' not allowed"):
+                getattr(tdser, method)()
+        else:
+            result = getattr(tdser, method)()
+            assert result is pd.NaT

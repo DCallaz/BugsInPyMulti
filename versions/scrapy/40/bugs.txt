@@ -1,0 +1,9 @@
+3,tests.test_utils_datatypes LocalCacheTest test_cache_without_limit
+5,tests.test_http_request RequestTest test_url_no_scheme
+13,tests.test_mail MailSenderTest test_send_single_values_to_and_cc
+15,tests.test_utils_gz GunzipTest test_gunzip_illegal_eof
+18,tests.test_utils_gz GunzipTest test_is_gzipped_case_insensitive
+18,tests.test_utils_gz GunzipTest test_is_gzipped_with_charset
+20,tests.test_utils_url CanonicalizeUrlTest test_canonicalize_urlparsed
+32,tests.test_downloadermiddleware_redirect RedirectMiddlewareTest test_request_meta_handling
+40,tests.test_crawler CrawlerRunnerTestCase test_spidermanager_deprecation

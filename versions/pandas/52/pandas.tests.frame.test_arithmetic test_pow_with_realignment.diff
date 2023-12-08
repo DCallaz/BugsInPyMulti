@@ -1,0 +1,16 @@
+import pandas as pd
+# BLOCK
+import numpy as np
+# BLOCK
+import pandas._testing as tm
+# BLOCK
+import pytest
+# BLOCK
+def test_pow_with_realignment():
+    # GH#32685 pow has special semantics for operating with null values
+    left = pd.DataFrame({"A": [0, 1, 2]})
+    right = pd.DataFrame(index=[0, 1, 2])
+
+    result = left ** right
+    expected = pd.DataFrame({"A": [np.nan, 1.0, np.nan]})
+    tm.assert_frame_equal(result, expected)

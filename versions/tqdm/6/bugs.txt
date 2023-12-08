@@ -1,0 +1,3 @@
+3,tqdm.tests.tests_tqdm test_bool
+4,tqdm.tests.tests_tqdm test_nototal
+6,tqdm.tests.tests_synchronisation test_imap

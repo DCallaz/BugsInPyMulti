@@ -1,0 +1,4 @@
+# CLASS: class WrappedRequestTest(TestCase):
+    def test_get_full_url(self):
+        self.assertEqual(self.wrapped.get_full_url(), self.request.url)
+        self.assertEqual(self.wrapped.full_url, self.request.url)

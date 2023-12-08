@@ -1,0 +1,56 @@
+    @patch("black.dump_to_file", dump_to_stderr)
+    def test_python37(self) -> None:
+        source_path = (THIS_DIR / "data" / "python37.py").resolve()
+        source, expected = read_data("python37")
+        actual = fs(source)
+        self.assertFormatEqual(expected, actual)
+        major, minor = sys.version_info[:2]
+        if major > 3 or (major == 3 and minor >= 7):
+            black.assert_equivalent(source, actual)
+        black.assert_stable(source, actual, black.FileMode())
+        # ensure black can parse this when the target is 3.7
+        self.invokeBlack([str(source_path), "--target-version", "py37"])
+        # but not on 3.6, because we use async as a reserved keyword
+        self.invokeBlack([str(source_path), "--target-version", "py36"], exit_code=123)
+# FILE: tests/data/python37.py
+#!/usr/bin/env python3.7
+
+def f():
+    return (i*2 async for i in arange(42))
+
+def g():
+    return (something_long * something_long async for something_long in async_generator(with_an_argument))
+
+async def func():
+    if test:
+        out_batched = [
+            i
+            async for i in aitertools._async_map(
+                self.async_inc, arange(8), batch_size=3
+            )
+        ]
+# output
+
+
+#!/usr/bin/env python3.7
+
+
+def f():
+    return (i * 2 async for i in arange(42))
+
+
+def g():
+    return (
+        something_long * something_long
+        async for something_long in async_generator(with_an_argument)
+    )
+
+
+async def func():
+    if test:
+        out_batched = [
+            i
+            async for i in aitertools._async_map(
+                self.async_inc, arange(8), batch_size=3
+            )
+        ]

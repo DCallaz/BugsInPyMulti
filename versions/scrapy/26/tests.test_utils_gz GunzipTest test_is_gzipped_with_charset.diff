@@ -1,0 +1,9 @@
+# CLASS: class GunzipTest(unittest.TestCase):
+from scrapy.http import Headers, Response
+# BLOCK
+from scrapy.utils.gz import is_gzipped
+# BLOCK
+    def test_is_gzipped_with_charset(self):
+        hdrs = Headers({"Content-Type": "application/x-gzip;charset=utf-8"})
+        r1 = Response("http://www.example.com", headers=hdrs)
+        self.assertTrue(is_gzipped(r1))

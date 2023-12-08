@@ -1,0 +1,11 @@
+# CLASS: class TestYoutubeChapters(unittest.TestCase):
+from youtube_dl.extractor import YoutubeIE
+# BLOCK
+from test.helper import expect_value
+# BLOCK
+    def test_youtube_chapters(self):
+        for description, duration, expected_chapters in self._TEST_CASES:
+            ie = YoutubeIE()
+            expect_value(
+                self, ie._extract_chapters_from_description(description, duration),
+                expected_chapters, None)

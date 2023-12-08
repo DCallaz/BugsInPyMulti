@@ -1,0 +1,14 @@
+import pytest
+# BLOCK
+from thefuck.shells import Bash
+# BLOCK
+    @pytest.fixture
+    def shell(self):
+        return Bash()
+# BLOCK
+    def test_app_alias_variables_correctly_set(self, shell):
+        alias = shell.app_alias('fuck')
+        assert "alias fuck='TF_CMD=$(TF_ALIAS" in alias
+        assert '$(TF_ALIAS=fuck PYTHONIOENCODING' in alias
+        assert 'PYTHONIOENCODING=utf-8 TF_SHELL_ALIASES' in alias
+        assert 'ALIASES=$(alias) thefuck' in alias

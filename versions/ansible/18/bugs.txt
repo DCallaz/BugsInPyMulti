@@ -1,0 +1,10 @@
+4,test.units.playbook.test_collectionsearch test_collection_static_warning
+5,test.units.module_utils.common.validation.test_check_required_arguments test_check_required_arguments_missing_multiple
+6,test.units.galaxy.test_collection_install test_add_collection_requirement_to_unknown_installed_version
+8,test.units.plugins.shell.test_powershell test_join_path_unc
+10,test.units.modules.system.test_pamd PamdServiceTestCase test_remove_last_rule
+12,test.units.plugins.lookup.test_env test_env_var_value
+12,test.units.plugins.lookup.test_env test_utf8_env_var_value
+15,test.units.modules.network.eos.test_eos_eapi TestEosEapiModule test_eos_eapi_vrf
+17,test.units.module_utils.facts.test_facts TestFactsLinuxHardwareGetMountFacts test_get_mount_facts
+18,test.units.cli.test_galaxy test_collection_default

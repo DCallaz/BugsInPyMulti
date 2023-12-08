@@ -1,0 +1,13 @@
+# CLASS: class HadoopJarJobTaskTest(unittest.TestCase):
+from luigi.contrib.hadoop_jar import HadoopJarJobError, HadoopJarJobTask
+# BLOCK
+from helpers import unittest
+# BLOCK
+class TestMissingJarJob(HadoopJarJobTask):
+    pass
+# BLOCK
+    @patch('luigi.contrib.hadoop.run_and_track_hadoop_job')
+    def test_missing_jar(self, mock_job):
+        mock_job.return_value = None
+        task = TestMissingJarJob()
+        self.assertRaises(HadoopJarJobError, task.run)

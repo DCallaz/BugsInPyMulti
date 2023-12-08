@@ -1,0 +1,42 @@
+from contextlib import closing
+# BLOCK
+from tqdm import tqdm
+# BLOCK
+from nose import with_setup
+# BLOCK
+import sys
+# BLOCK
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+# BLOCK
+def posttest():
+    if getattr(tqdm, "_instances", False):
+        n = len(tqdm._instances)
+        if n:
+            tqdm._instances.clear()
+            raise EnvironmentError(
+                "{0} `tqdm` instances still in existence POST-test".format(n))
+# BLOCK
+def pretest():
+    # setcheckinterval is deprecated
+    getattr(sys, 'setswitchinterval', getattr(sys, 'setcheckinterval'))(100)
+
+    if getattr(tqdm, "_instances", False):
+        n = len(tqdm._instances)
+        if n:
+            tqdm._instances.clear()
+            raise EnvironmentError(
+                "{0} `tqdm` instances still in existence PRE-test".format(n))
+# BLOCK
+    def closing(arg):
+        return arg
+# BLOCK
+@with_setup(pretest, posttest)
+def test_nototal():
+    """Test unknown total length"""
+    with closing(StringIO()) as our_file:
+        for i in tqdm((i for i in range(10)), file=our_file, unit_scale=10):
+            pass
+        assert "100it" in our_file.getvalue()

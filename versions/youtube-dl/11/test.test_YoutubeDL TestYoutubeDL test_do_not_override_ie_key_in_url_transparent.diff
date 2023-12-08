@@ -1,0 +1,60 @@
+# CLASS: class TestYoutubeDL(unittest.TestCase):
+from youtube_dl.extractor.common import InfoExtractor
+# BLOCK
+from test.helper import FakeYDL
+# BLOCK
+TEST_URL = 'http://localhost/sample.mp4'
+# BLOCK
+class YDL(FakeYDL):
+    def __init__(self, *args, **kwargs):
+        super(YDL, self).__init__(*args, **kwargs)
+        self.downloaded_info_dicts = []
+        self.msgs = []
+
+    def process_info(self, info_dict):
+        self.downloaded_info_dicts.append(info_dict)
+
+    def to_screen(self, msg):
+        self.msgs.append(msg)
+# BLOCK
+    def test_do_not_override_ie_key_in_url_transparent(self):
+        ydl = YDL()
+
+        class Foo1IE(InfoExtractor):
+            _VALID_URL = r'foo1:'
+
+            def _real_extract(self, url):
+                return {
+                    '_type': 'url_transparent',
+                    'url': 'foo2:',
+                    'ie_key': 'Foo2',
+                    'title': 'foo1 title',
+                    'id': 'foo1_id',
+                }
+
+        class Foo2IE(InfoExtractor):
+            _VALID_URL = r'foo2:'
+
+            def _real_extract(self, url):
+                return {
+                    '_type': 'url',
+                    'url': 'foo3:',
+                    'ie_key': 'Foo3',
+                }
+
+        class Foo3IE(InfoExtractor):
+            _VALID_URL = r'foo3:'
+
+            def _real_extract(self, url):
+                return _make_result([{'url': TEST_URL}], title='foo3 title')
+
+        ydl.add_info_extractor(Foo1IE(ydl))
+        ydl.add_info_extractor(Foo2IE(ydl))
+        ydl.add_info_extractor(Foo3IE(ydl))
+        ydl.extract_info('foo1:')
+        downloaded = ydl.downloaded_info_dicts[0]
+        self.assertEqual(downloaded['url'], TEST_URL)
+        self.assertEqual(downloaded['title'], 'foo1 title')
+        self.assertEqual(downloaded['id'], 'testid')
+        self.assertEqual(downloaded['extractor'], 'testex')
+        self.assertEqual(downloaded['extractor_key'], 'TestEx')

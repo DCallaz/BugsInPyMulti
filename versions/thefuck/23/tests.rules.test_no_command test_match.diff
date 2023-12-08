@@ -1,0 +1,15 @@
+from thefuck.rules.no_command import match
+# BLOCK
+from tests.utils import Command
+# BLOCK
+import pytest
+# BLOCK
+@pytest.mark.usefixtures('no_memoize')
+@pytest.mark.parametrize('script, stderr', [
+    ('vom file.py', 'vom: not found'),
+    ('fucck', 'fucck: not found'),
+    ('got commit', 'got: command not found')])
+def test_match(mocker, script, stderr):
+    mocker.patch('thefuck.rules.no_command.which', return_value=None)
+
+    assert match(Command(script, stderr=stderr))

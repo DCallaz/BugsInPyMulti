@@ -1,0 +1,21 @@
+# CLASS: class WaitIteratorTest(AsyncTestCase):
+from tornado import gen, stack_context
+# BLOCK
+import datetime
+# BLOCK
+import sys
+# BLOCK
+import functools
+# BLOCK
+from tornado.ioloop import IOLoop
+# BLOCK
+from tornado.testing import AsyncTestCase
+# BLOCK
+    @gen_test
+    def test_no_ref(self):
+        # In this usage, there is no direct hard reference to the
+        # WaitIterator itself, only the Future it returns. Since
+        # WaitIterator uses weak references internally to improve GC
+        # performance, this used to cause problems.
+        yield gen.with_timeout(datetime.timedelta(seconds=0.1),
+                               gen.WaitIterator(gen.sleep(0)).next())

@@ -1,0 +1,18 @@
+import pandas as pd
+# BLOCK
+import numpy as np
+# BLOCK
+import pandas._testing as tm
+# BLOCK
+import pytest
+# BLOCK
+    @pytest.mark.parametrize(
+        "other_column", [pd.array([1, 2, 3]), np.array([1.0, 2.0, 3.0])]
+    )
+    def test_cov_nullable_integer(self, other_column):
+        # https://github.com/pandas-dev/pandas/issues/33803
+        data = pd.DataFrame({"a": pd.array([1, 2, None]), "b": other_column})
+        result = data.cov()
+        arr = np.array([[0.5, 0.5], [0.5, 1.0]])
+        expected = pd.DataFrame(arr, columns=["a", "b"], index=["a", "b"])
+        tm.assert_frame_equal(result, expected)

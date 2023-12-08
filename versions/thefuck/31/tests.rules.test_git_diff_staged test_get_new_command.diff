@@ -1,0 +1,9 @@
+from thefuck.rules.git_diff_staged import get_new_command
+# BLOCK
+import pytest
+# BLOCK
+@pytest.mark.parametrize('command, new_command', [
+    (Command('git diff'), 'git diff --staged'),
+    (Command('git diff foo'), 'git diff --staged foo')])
+def test_get_new_command(command, new_command):
+    assert get_new_command(command, None) == new_command

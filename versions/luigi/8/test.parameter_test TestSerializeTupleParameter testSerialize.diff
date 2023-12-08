@@ -1,0 +1,9 @@
+# CLASS: class TestSerializeTupleParameter(LuigiTestCase):
+import luigi
+# BLOCK
+from helpers import LuigiTestCase
+# BLOCK
+    def testSerialize(self):
+        the_tuple = (1, 2, 3)
+
+        self.assertEqual(luigi.TupleParameter().parse(luigi.TupleParameter().serialize(the_tuple)), the_tuple)

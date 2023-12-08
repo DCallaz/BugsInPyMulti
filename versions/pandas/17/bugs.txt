@@ -1,0 +1,20 @@
+1,pandas.tests.indexing.test_scalar test_at_with_tuple_index_get
+1,pandas.tests.indexing.test_scalar test_at_with_tuple_index_set
+1,pandas.tests.indexing.test_scalar test_multiindex_at_get
+1,pandas.tests.indexing.test_scalar test_multiindex_at_set
+2,pandas.tests.dtypes.test_dtypes TestCategoricalDtype test_not_string
+3,pandas.tests.series.methods.test_to_period TestToPeriod test_to_period_raises
+3,pandas.tests.series.methods.test_to_timestamp TestToTimestamp test_to_timestamp_raises
+7,pandas.tests.frame.methods.test_replace TestDataFrameReplace test_replace_no_replacement_dtypes
+8,pandas.tests.indexes.categorical.test_indexing TestContains test_contains_na_dtype
+9,pandas.tests.series.methods.test_update TestUpdate test_update_extension_array_series
+10,pandas.tests.reshape.test_concat test_duplicate_keys
+11,pandas.tests.frame.methods.test_cov_corr TestDataFrameCov test_cov_nullable_integer
+12,pandas.tests.arrays.categorical.test_missing TestCategoricalMissing test_use_inf_as_na
+12,pandas.tests.arrays.categorical.test_missing TestCategoricalMissing test_use_inf_as_na_outside_context
+13,pandas.tests.arithmetic.test_datetime64 TestDatetime64DateOffsetArithmetic test_dt64arr_add_sub_offset_array
+13,pandas.tests.arithmetic.test_timedelta64 TestTimedeltaArraylikeAddSubOps test_td64arr_add_offset_index
+14,pandas.tests.indexes.datetimes.test_datetime TestDatetimeIndex test_pickle_after_set_freq
+15,pandas.tests.arithmetic.test_period TestPeriodIndexSeriesMethods test_pi_sub_period
+16,pandas.tests.indexes.datetimes.test_insert TestInsert test_insert_mismatched_types_raises
+17,pandas.tests.window.test_base_indexer test_rolling_forward_skewness

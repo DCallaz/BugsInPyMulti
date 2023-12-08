@@ -1,0 +1,6 @@
+1,tests.rules.test_pip_unknown_command test_get_new_command
+2,tests.test_utils test_get_all_executables_pathsep
+5,tests.rules.test_git_push test_match_bitbucket
+6,tests.rules.test_git_branch_exists test_get_new_command
+8,tests.rules.test_dnf_no_such_command test_get_new_command
+8,tests.rules.test_dnf_no_such_command test_get_operations

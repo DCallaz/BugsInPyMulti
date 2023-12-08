@@ -1,0 +1,13 @@
+2,tests.test_utils test_get_all_executables_pathsep
+8,tests.rules.test_dnf_no_such_command test_get_new_command
+12,tests.rules.test_no_command test_not_match
+12,tests.rules.test_no_command test_match
+14,tests.shells.test_fish TestFish test_get_overridden_aliases
+16,tests.shells.test_bash TestBash test_app_alias_variables_correctly_set
+17,tests.shells.test_bash TestBash test_get_aliases
+17,tests.shells.test_bash TestBash test_from_shell
+24,tests.test_types TestCorrectedCommand test_equality
+24,tests.test_types TestCorrectedCommand test_hashable
+25,tests.rules.test_mkdir_p test_get_new_command
+27,tests.rules.test_open test_get_new_command
+28,tests.rules.test_fix_file test_get_new_command_with_settings

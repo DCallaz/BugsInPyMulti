@@ -1,0 +1,46 @@
+import pytest
+# BLOCK
+import six
+# BLOCK
+    @pytest.fixture
+    def key(self):
+        if six.PY3:
+            return 'tests.test_utils.<function TestCache.fn.<locals>.fn '
+        else:
+            return 'tests.test_utils.<function fn '
+# BLOCK
+    @pytest.fixture
+    def fn(self):
+        @cache('~/.bashrc')
+        def fn():
+            return 'test'
+
+        return fn
+# BLOCK
+    @pytest.fixture
+    def shelve(self, mocker):
+        value = {}
+
+        class _Shelve(object):
+            def __init__(self, path):
+                pass
+
+            def __setitem__(self, k, v):
+                value[k] = v
+
+            def __getitem__(self, k):
+                return value[k]
+
+            def get(self, k, v=None):
+                return value.get(k, v)
+
+            def close(self):
+                return
+
+        mocker.patch('thefuck.utils.shelve.open', new_callable=lambda: _Shelve)
+        return value
+# BLOCK
+    def test_when_etag_changed(self, shelve, fn, key):
+        shelve.update({key: {'etag': '-1', 'value': 'old-value'}})
+        assert fn() == 'test'
+        assert shelve == {key: {'etag': '0', 'value': 'test'}}

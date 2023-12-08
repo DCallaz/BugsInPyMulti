@@ -1,0 +1,10 @@
+# CLASS: class TaskTest(unittest.TestCase):
+from luigi.task_register import load_task
+# BLOCK
+import luigi
+# BLOCK
+from helpers import unittest
+# BLOCK
+    def test_external_tasks_loadable(self):
+        task = load_task("luigi", "ExternalTask", {})
+        assert(isinstance(task, luigi.ExternalTask))

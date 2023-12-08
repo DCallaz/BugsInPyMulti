@@ -1,0 +1,24 @@
+import pandas as pd
+# BLOCK
+import pandas._testing as tm
+# BLOCK
+import pytest
+# BLOCK
+import numpy as np
+# BLOCK
+from pandas.io.sas.sasreader import read_sas
+# BLOCK
+def numeric_as_float(data):
+    for v in data.columns:
+        if data[v].dtype is np.dtype("int64"):
+            data[v] = data[v].astype(np.float64)
+# BLOCK
+    def test2_binary(self):
+        # Test with SSHSV1_A.xpt, read as a binary file
+
+        # Compare to this
+        data_csv = pd.read_csv(self.file02.replace(".xpt", ".csv"))
+        numeric_as_float(data_csv)
+
+        data = read_sas(self.file02b, format="xport")
+        tm.assert_frame_equal(data, data_csv)
