@@ -2,7 +2,16 @@
 A multifault version of the [BugsInPy](https://github.com/soarsmu/BugsInPy) dataset.
 ## Description
 This repository includes all the necessary scripts and files needed to create a
-multi-fault dataset from the original BugsInPy single-fault dataset.
+multi-fault dataset from the original BugsInPy single-fault dataset. This is
+done using a test case transplantation and fault location translation process
+for bug exposure and identification respectively.
+
+The test case transplantation process is based on the ideas from [An et.
+al.](https://github.com/coinse/Defects4J-multifault), and is included in this
+repository (see [version search replication](#replication-of-version-searching).
+For details on the for the fault location translation process, see the
+[bug-backtracker](https://github.com/DCallaz/bug-backtracker).
+
 ## Setup
 This repository contains a standalone clone of the BugsInPy dataset. In order to
 set up this dataset, simply run the following line:
@@ -67,3 +76,17 @@ done:
   bugsinpy-identify
   ```
   A TCM file called `coverage.tcm` will then be available for this version.
+## Replication of version searching
+In order to replicate the experiments and verify which bugs are exposable in
+each version, the `version_search.sh` script has been provided. The script can
+be run as follows:
+```
+./version_search [-l <log dir>] <project>
+```
+which will generate the versions that each bug is found to be exposable in, and
+store these in the `log dir` (default `versions/`).
+
+To ensure maximum reproducibility, ensure that you have the dependencies described
+in `dependencies.txt` before running the version search. All other dependencies
+are downloaded automatically, including necessary python versions, which are
+stored in the automatically created `python_versions` directory.
