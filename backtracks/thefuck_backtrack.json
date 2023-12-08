@@ -32,7 +32,6 @@
 ,"30": {"1": {"rules/pip_unknown_command.py": [12]}}
 ,"31": {"1": {"rules/pip_unknown_command.py": [11]}}
 ,"32": {"1": {"rules/pip_unknown_command.py": [11]}}
-,"af2bfe7c582c588db7f2a148d46e1cf588938165": "failed"
 }
 ,
 {
@@ -58,13 +57,13 @@
 ,"21": {"2": {"utils.py": [105]}}
 ,"22": {"2": {"utils.py": [98]}}
 ,"23": {"2": {"utils.py": [97]}}
-,"24": {"2": {"utils.py": [95]}}
+,"24": {"2": {"utils.py": [94]}}
 ,"25": {"2": {"utils.py": [149]}}
 ,"26": {"2": {"utils.py": [149]}}
 ,"27": {"2": {"utils.py": [149]}}
 ,"28": {"2": {"utils.py": [149]}}
 ,"29": {"2": {"utils.py": [149]}}
-,"30": {"2": {"utils.py": [149]}}
+,"30": {"2": {"utils.py": [147]}}
 ,"31": {"2": {"utils.py": [139]}}
 ,"dee018e79279592d2eef38302ac113125b5953f3": "failed"
 }
@@ -109,7 +108,6 @@
 {
 "bug": {"9": {"rules/git_push.py": [27]}}
 ,"10": {"9": {"rules/git_push.py": [27]}}
-,"11": {"9": {"rules/git_push.py": [27]}}
 ,"aa6b18d0ce64b1e9f902a617eb7b88b1b88877d0": "failed"
 }
 ,
@@ -129,7 +127,7 @@
 ,
 {
 "bug": {"11": {}}
-,"d05eb0a6dc0902793adff3bbf182729c95513e5a": "failed"
+,"aa6b18d0ce64b1e9f902a617eb7b88b1b88877d0": "failed"
 }
 ,
 {
@@ -177,7 +175,6 @@
 ,"30": {"15": {"rules/git_add.py": [7, 8, 14]}}
 ,"31": {"15": {"rules/git_add.py": [9, 15]}}
 ,"32": {"15": {"rules/git_add.py": [8, 13]}}
-,"9380eb1f56fda20547c88afd7a5b82f82fa120d9": "failed"
 }
 ,
 {
@@ -207,7 +204,6 @@
 ,"30": {"18": {"rules/sudo.py": [22]}}
 ,"31": {"18": {"rules/sudo.py": [21]}}
 ,"32": {"18": {"rules/sudo.py": [20]}}
-,"b0d353c699df50c0a40d21d1d0a708046af6bb9c": "failed"
 }
 ,
 {
@@ -216,14 +212,6 @@
 ,"21": {"19": {"rules/git_push_force.py": [15]}}
 ,"22": {"19": {"rules/git_push_force.py": [15]}}
 ,"23": {"19": {"rules/git_push_force.py": [15]}}
-,"24": {"19": {"rules/git_push_force.py": [15]}}
-,"25": {"19": {"rules/git_push_force.py": [16]}}
-,"26": {"19": {"rules/git_push_force.py": [16]}}
-,"27": {"19": {"rules/git_push_force.py": [16]}}
-,"28": {"19": {"rules/git_push_force.py": [16]}}
-,"29": {"19": {"rules/git_push_force.py": [16]}}
-,"30": {"19": {"rules/git_push_force.py": [16]}}
-,"31": {"19": {"rules/git_push_force.py": [16]}}
 ,"c67560864adcd43828a099afa9be7bf264623f0a": "failed"
 }
 ,
@@ -275,10 +263,9 @@
 ,"27": {"24": {"types.py": [6, 7, 12]}}
 ,"28": {"24": {"types.py": [6, 7, 12]}}
 ,"29": {"24": {"types.py": [6, 7, 12]}}
-,"30": {"24": {"types.py": [6, 7, 12]}}
+,"30": {"24": {"types.py": [10]}}
 ,"31": {"24": {"types.py": [10]}}
 ,"32": {"24": {"types.py": [10]}}
-,"d3d1f992328dfaf245ef268090cf54bb492815b7": "failed"
 }
 ,
 {
@@ -290,7 +277,6 @@
 ,"30": {"25": {"rules/mkdir_p.py": [13]}}
 ,"31": {"25": {"rules/mkdir_p.py": [13]}}
 ,"32": {"25": {"rules/mkdir_p.py": [13]}}
-,"c0c584b13a0d6f5e177e25f48d5de918f1bef7e2": "failed"
 }
 ,
 {
@@ -304,8 +290,6 @@
 ,"29": {"27": {"rules/open.py": [26]}}
 ,"30": {"27": {"rules/open.py": [26]}}
 ,"31": {"27": {"rules/open.py": [26]}}
-,"32": {"27": {"rules/open.py": [26]}}
-,"01ce65047a1cd2e21b36fa0b2cee0b7be676ebe3": "failed"
 }
 ,
 {
@@ -317,10 +301,9 @@
 ,
 {
 "bug": {"29": {"types.py": [26, 27, 28]}}
-,"30": {"29": {"types.py": [26, 27, 28]}}
+,"30": {"29": {"types.py": [24, 25, 26]}}
 ,"31": {"29": {"types.py": [24, 25, 26]}}
 ,"32": {"29": {"types.py": [24, 25, 26]}}
-,"d3d1f992328dfaf245ef268090cf54bb492815b7": "failed"
 }
 ,
 {
@@ -331,11 +314,9 @@
 {
 "bug": {"31": {"rules/git_diff_staged.py": [13]}}
 ,"32": {"31": {"rules/git_diff_staged.py": [6]}}
-,"15e13d7c1a3b5733c84139e89b09d105bb70de93": "failed"
 }
 ,
 {
 "bug": {"32": {"rules/ls_lah.py": [2]}}
-,"419878f526c35a9caf5f4665693d9170b638081e": "failed"
 }
 ]

@@ -1,54 +1,55 @@
 [
 {
 "bug": {"1": {"backend/tensorflow_backend.py": [17, 1206, 1220, 1234, 2883, 2902, 2903], "backend/theano_backend.py": [1381, 1382], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218, 254]}}
-,"2": {"1": {"backend/tensorflow_backend.py": [17, 1206, 1220, 1234, 2861, 2880, 2881], "backend/theano_backend.py": [1402, 1403], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218, 254]}}
-,"3": {"1": {"backend/tensorflow_backend.py": [2654, 2690, 2691], "backend/theano_backend.py": [1402, 1403], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"4": {"1": {"backend/tensorflow_backend.py": [2650, 2686, 2687], "backend/theano_backend.py": [1402, 1403], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"5": {"1": {"backend/tensorflow_backend.py": [2650, 2686, 2687], "backend/theano_backend.py": [1402, 1403], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"6": {"1": {"backend/tensorflow_backend.py": [2626, 2662, 2663], "backend/theano_backend.py": [1402, 1403], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"7": {"1": {"backend/tensorflow_backend.py": [2626, 2662, 2663], "backend/theano_backend.py": [1402, 1403], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"8": {"1": {"backend/tensorflow_backend.py": [2626, 2662, 2663], "backend/theano_backend.py": [1402, 1403], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"9": {"1": {"backend/tensorflow_backend.py": [2624, 2660, 2661], "backend/theano_backend.py": [1402, 1403], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"10": {"1": {"backend/tensorflow_backend.py": [2622, 2658, 2659], "backend/theano_backend.py": [1402, 1403], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"11": {"1": {"backend/tensorflow_backend.py": [2448, 2484, 2485], "backend/theano_backend.py": [1402, 1403], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"12": {"1": {"backend/tensorflow_backend.py": [2446, 2482, 2483], "backend/theano_backend.py": [1383, 1384], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"13": {"1": {"backend/tensorflow_backend.py": [2446, 2482, 2483], "backend/theano_backend.py": [1383, 1384], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"14": {"1": {"backend/tensorflow_backend.py": [2446, 2482, 2483], "backend/theano_backend.py": [1383, 1384], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"15": {"1": {"backend/tensorflow_backend.py": [2446, 2482, 2483], "backend/theano_backend.py": [1383, 1384], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"16": {"1": {"backend/tensorflow_backend.py": [2446, 2482, 2483], "backend/theano_backend.py": [1383, 1384], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"17": {"1": {"backend/tensorflow_backend.py": [2446, 2482, 2483], "backend/theano_backend.py": [1395, 1396], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"18": {"1": {"backend/tensorflow_backend.py": [2426, 2462, 2463], "backend/theano_backend.py": [1395, 1396], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"19": {"1": {"backend/tensorflow_backend.py": [2426, 2462, 2463], "backend/theano_backend.py": [1395, 1396], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"20": {"1": {"backend/tensorflow_backend.py": [2426, 2462, 2463], "backend/theano_backend.py": [1395, 1396], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"21": {"1": {"backend/tensorflow_backend.py": [2406, 2442, 2443], "backend/theano_backend.py": [1327, 1328], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"22": {"1": {"backend/tensorflow_backend.py": [2416, 2452, 2453], "backend/theano_backend.py": [1268, 1269], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"23": {"1": {"backend/tensorflow_backend.py": [2411, 2447, 2448], "backend/theano_backend.py": [1272, 1273], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"24": {"1": {"backend/tensorflow_backend.py": [2362, 2398, 2399], "backend/theano_backend.py": [1244, 1245], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
-,"25": {"1": {"backend/tensorflow_backend.py": [2362, 2398, 2399], "backend/theano_backend.py": [1244, 1245], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
-,"26": {"1": {"backend/tensorflow_backend.py": [2362, 2398, 2399], "backend/theano_backend.py": [1244, 1245], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
-,"27": {"1": {"backend/tensorflow_backend.py": [2353, 2389, 2390], "backend/theano_backend.py": [1234, 1235], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
-,"28": {"1": {"backend/tensorflow_backend.py": [2353, 2389, 2390], "backend/theano_backend.py": [1234, 1235], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
-,"29": {"1": {"backend/tensorflow_backend.py": [2353, 2389, 2390], "backend/theano_backend.py": [1234, 1235], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
-,"30": {"1": {"backend/tensorflow_backend.py": [2350, 2386, 2387], "backend/theano_backend.py": [1222, 1223], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
-,"31": {"1": {"backend/tensorflow_backend.py": [2350, 2386, 2387], "backend/theano_backend.py": [1222, 1223], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
-,"32": {"1": {"backend/tensorflow_backend.py": [2350, 2386, 2387], "backend/theano_backend.py": [1222, 1223], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
-,"33": {"1": {"backend/tensorflow_backend.py": [2349, 2385, 2386], "backend/theano_backend.py": [1222, 1223], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
-,"34": {"1": {"backend/tensorflow_backend.py": [2349, 2385, 2386], "backend/theano_backend.py": [1222, 1223], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
-,"35": {"1": {"backend/tensorflow_backend.py": [2349, 2385, 2386], "backend/theano_backend.py": [1222, 1223], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
-,"36": {"1": {"backend/tensorflow_backend.py": [2346, 2382, 2383], "backend/theano_backend.py": [1222, 1223], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
-,"37": {"1": {"backend/tensorflow_backend.py": [2346, 2382, 2383], "backend/theano_backend.py": [1222, 1223], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
-,"38": {"1": {"backend/tensorflow_backend.py": [2346, 2382, 2383], "backend/theano_backend.py": [1222, 1223], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
-,"39": {"1": {"backend/tensorflow_backend.py": [2346, 2382, 2383], "backend/theano_backend.py": [1222, 1223], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
-,"40": {"1": {"backend/tensorflow_backend.py": [2331, 2367, 2368], "backend/theano_backend.py": [1219, 1220], "initializers.py": [78, 79, 106, 107, 139, 140, 207, 208, 211, 212]}}
-,"41": {"1": {"backend/tensorflow_backend.py": [2228, 2264, 2265], "backend/theano_backend.py": [1219, 1220], "initializers.py": [78, 79, 106, 107, 139, 140, 207, 208, 211, 212]}}
-,"42": {"1": {"backend/tensorflow_backend.py": [2223, 2259, 2260], "backend/theano_backend.py": [1218, 1219], "initializers.py": [78, 79, 106, 107, 139, 140, 207, 208, 211, 212]}}
-,"43": {"1": {"backend/tensorflow_backend.py": [2223, 2259, 2260], "backend/theano_backend.py": [1218, 1219], "initializers.py": [78, 79, 106, 107, 139, 140, 207, 208, 211, 212]}}
-,"44": {"1": {"backend/tensorflow_backend.py": [2219, 2255, 2256], "backend/theano_backend.py": [1218, 1219], "initializers.py": [78, 79, 106, 107, 139, 140, 207, 208, 211, 212]}}
-,"45": {"1": {"backend/tensorflow_backend.py": [2219, 2255, 2256], "backend/theano_backend.py": [1218, 1219], "initializers.py": [78, 79, 106, 107, 139, 140, 207, 208, 211, 212]}}
+,"3": {"1": {"backend/tensorflow_backend.py": [2693, 2712], "backend/theano_backend.py": [1381, 1382], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"4": {"1": {"backend/tensorflow_backend.py": [2689, 2708], "backend/theano_backend.py": [1381, 1382], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"5": {"1": {"backend/tensorflow_backend.py": [2689, 2708], "backend/theano_backend.py": [1381, 1382], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"6": {"1": {"backend/tensorflow_backend.py": [2665, 2684], "backend/theano_backend.py": [1381, 1382], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"7": {"1": {"backend/tensorflow_backend.py": [2665, 2684], "backend/theano_backend.py": [1381, 1382], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"8": {"1": {"backend/tensorflow_backend.py": [2665, 2684], "backend/theano_backend.py": [1381, 1382], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"9": {"1": {"backend/tensorflow_backend.py": [2663, 2682], "backend/theano_backend.py": [1381, 1382], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"10": {"1": {"backend/tensorflow_backend.py": [2661, 2680], "backend/theano_backend.py": [1381, 1382], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"11": {"1": {"backend/tensorflow_backend.py": [2487, 2506], "backend/theano_backend.py": [1381, 1382], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"12": {"1": {"backend/tensorflow_backend.py": [2485, 2504], "backend/theano_backend.py": [1362, 1363], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"13": {"1": {"backend/tensorflow_backend.py": [2485, 2504], "backend/theano_backend.py": [1362, 1363], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"14": {"1": {"backend/tensorflow_backend.py": [2485, 2504], "backend/theano_backend.py": [1362, 1363], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"15": {"1": {"backend/tensorflow_backend.py": [2485, 2504], "backend/theano_backend.py": [1362, 1363], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"16": {"1": {"backend/tensorflow_backend.py": [2485, 2504], "backend/theano_backend.py": [1362, 1363], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"17": {"1": {"backend/tensorflow_backend.py": [2485, 2504], "backend/theano_backend.py": [1374, 1375], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"18": {"1": {"backend/tensorflow_backend.py": [2465, 2484], "backend/theano_backend.py": [1374, 1375], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"19": {"1": {"backend/tensorflow_backend.py": [2465, 2484], "backend/theano_backend.py": [1374, 1375], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"20": {"1": {"backend/tensorflow_backend.py": [2465, 2484], "backend/theano_backend.py": [1374, 1375], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"21": {"1": {"backend/tensorflow_backend.py": [2445, 2464], "backend/theano_backend.py": [1306, 1307], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"22": {"1": {"backend/tensorflow_backend.py": [2455, 2474], "backend/theano_backend.py": [1247, 1248], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"23": {"1": {"backend/tensorflow_backend.py": [2450, 2469], "backend/theano_backend.py": [1251, 1252], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"24": {"1": {"backend/tensorflow_backend.py": [2401, 2420], "backend/theano_backend.py": [1223, 1224], "initializers.py": [83, 84, 111, 112, 144, 145, 213, 214, 217, 218]}}
+,"25": {"1": {"backend/tensorflow_backend.py": [2401, 2420], "backend/theano_backend.py": [1223, 1224], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"26": {"1": {"backend/tensorflow_backend.py": [2401, 2420], "backend/theano_backend.py": [1223, 1224], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"27": {"1": {"backend/tensorflow_backend.py": [2392, 2411], "backend/theano_backend.py": [1213, 1214], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"28": {"1": {"backend/tensorflow_backend.py": [2392, 2411], "backend/theano_backend.py": [1213, 1214], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"29": {"1": {"backend/tensorflow_backend.py": [2392, 2411], "backend/theano_backend.py": [1213, 1214], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"30": {"1": {"backend/tensorflow_backend.py": [2389, 2408], "backend/theano_backend.py": [1201, 1202], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"31": {"1": {"backend/tensorflow_backend.py": [2389, 2408], "backend/theano_backend.py": [1201, 1202], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"32": {"1": {"backend/tensorflow_backend.py": [2389, 2408], "backend/theano_backend.py": [1201, 1202], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"33": {"1": {"backend/tensorflow_backend.py": [2388, 2407], "backend/theano_backend.py": [1201, 1202], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"34": {"1": {"backend/tensorflow_backend.py": [2388, 2407], "backend/theano_backend.py": [1201, 1202], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"35": {"1": {"backend/tensorflow_backend.py": [2388, 2407], "backend/theano_backend.py": [1201, 1202], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"36": {"1": {"backend/tensorflow_backend.py": [2385, 2404], "backend/theano_backend.py": [1201, 1202], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"37": {"1": {"backend/tensorflow_backend.py": [2385, 2404], "backend/theano_backend.py": [1201, 1202], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"38": {"1": {"backend/tensorflow_backend.py": [2385, 2404], "backend/theano_backend.py": [1201, 1202], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"39": {"1": {"backend/tensorflow_backend.py": [2385, 2404], "backend/theano_backend.py": [1201, 1202], "initializers.py": [83, 84, 111, 112, 144, 145, 212, 213, 216, 217]}}
+,"40": {"1": {"backend/tensorflow_backend.py": [2370, 2389], "backend/theano_backend.py": [1198, 1199], "initializers.py": [78, 79, 106, 107, 139, 140, 207, 208, 211, 212]}}
+,"41": {"1": {"backend/tensorflow_backend.py": [2267, 2286], "backend/theano_backend.py": [1198, 1199], "initializers.py": [78, 79, 106, 107, 139, 140, 207, 208, 211, 212]}}
+,"42": {"1": {"backend/tensorflow_backend.py": [2262, 2281], "backend/theano_backend.py": [1197, 1198], "initializers.py": [78, 79, 106, 107, 139, 140, 207, 208, 211, 212]}}
+,"43": {"1": {"backend/tensorflow_backend.py": [2262, 2281], "backend/theano_backend.py": [1197, 1198], "initializers.py": [78, 79, 106, 107, 139, 140, 207, 208, 211, 212]}}
+,"44": {"1": {"backend/tensorflow_backend.py": [2258, 2277], "backend/theano_backend.py": [1197, 1198], "initializers.py": [78, 79, 106, 107, 139, 140, 207, 208, 211, 212]}}
+,"45": {"1": {"backend/tensorflow_backend.py": [2258, 2277], "backend/theano_backend.py": [1197, 1198], "initializers.py": [78, 79, 106, 107, 139, 140, 207, 208, 211, 212]}}
+,"d3c75e1d342a6d11c7bf21b55eb9a664ed1e3e14": "failed"
 }
 ,
 {
 "bug": {"2": {"backend/numpy_backend.py": [319]}}
+,"1": {"2": {"backend/numpy_backend.py": [319]}}
 ,"3": {"2": {"backend/numpy_backend.py": [319]}}
 ,"4": {"2": {"backend/numpy_backend.py": [319]}}
 ,"5": {"2": {"backend/numpy_backend.py": [319]}}
@@ -57,41 +58,6 @@
 ,"8": {"2": {"backend/numpy_backend.py": [319]}}
 ,"9": {"2": {"backend/numpy_backend.py": [315]}}
 ,"10": {"2": {"backend/numpy_backend.py": [315]}}
-,"11": {"2": {"backend/reference_operations.py": [307]}}
-,"12": {"2": {"backend/reference_operations.py": [307]}}
-,"13": {"2": {"backend/reference_operations.py": [307]}}
-,"14": {"2": {"backend/reference_operations.py": [307]}}
-,"15": {"2": {"backend/reference_operations.py": [307]}}
-,"16": {"2": {"backend/reference_operations.py": [307]}}
-,"17": {"2": {"backend/reference_operations.py": [307]}}
-,"18": {"2": {"backend/reference_operations.py": [307]}}
-,"19": {"2": {"backend/reference_operations.py": [307]}}
-,"20": {"2": {"backend/reference_operations.py": [307]}}
-,"21": {"2": {"backend/reference_operations.py": [307]}}
-,"22": {"2": {"backend/reference_operations.py": [307]}}
-,"23": {"2": {"backend/reference_operations.py": [307]}}
-,"24": {"2": {"backend/reference_operations.py": [307]}}
-,"25": {"2": {"backend/reference_operations.py": [307]}}
-,"26": {"2": {"backend/reference_operations.py": [307]}}
-,"27": {"2": {"backend/reference_operations.py": [307]}}
-,"28": {"2": {"backend/reference_operations.py": [307]}}
-,"29": {"2": {"backend/reference_operations.py": [307]}}
-,"30": {"2": {"backend/reference_operations.py": [307]}}
-,"31": {"2": {"backend/reference_operations.py": [307]}}
-,"32": {"2": {"backend/reference_operations.py": [307]}}
-,"33": {"2": {"backend/reference_operations.py": [307]}}
-,"34": {"2": {"backend/reference_operations.py": [307]}}
-,"35": {"2": {"backend/reference_operations.py": [307]}}
-,"36": {"2": {"backend/reference_operations.py": [307]}}
-,"37": {"2": {"backend/reference_operations.py": [307]}}
-,"38": {"2": {"backend/reference_operations.py": [307]}}
-,"39": {"2": {"backend/reference_operations.py": [307]}}
-,"40": {"2": {"backend/reference_operations.py": [307]}}
-,"41": {"2": {"backend/reference_operations.py": [307]}}
-,"42": {"2": {"backend/reference_operations.py": [307]}}
-,"43": {"2": {"backend/reference_operations.py": [307]}}
-,"44": {"2": {"backend/reference_operations.py": [307]}}
-,"45": {"2": {"backend/reference_operations.py": [307]}}
 }
 ,
 {
@@ -138,6 +104,7 @@
 ,"43": {"3": {"models.py": [1515, 1516, 1528, 1529]}}
 ,"44": {"3": {"models.py": [1448, 1449, 1461, 1462]}}
 ,"45": {"3": {"models.py": [1448, 1449, 1461, 1462]}}
+,"e27b8b9343da4558b98570d6d45599bd0e365723": "failed"
 }
 ,
 {
@@ -183,6 +150,7 @@
 ,"43": {"4": {"optimizers.py": [627]}}
 ,"44": {"4": {"optimizers.py": [627]}}
 ,"45": {"4": {"optimizers.py": [627]}}
+,"650c2c8cf9d711d35ab0ca7d1653ef53cbedaab3": "failed"
 }
 ,
 {
@@ -335,6 +303,7 @@
 ,"43": {"10": {"wrappers/scikit_learn.py": [312]}}
 ,"44": {"10": {"wrappers/scikit_learn.py": [312]}}
 ,"45": {"10": {"wrappers/scikit_learn.py": [312]}}
+,"9120a7251d3ac13048d212b424cb92841ffd7cd4": "failed"
 }
 ,
 {
@@ -373,6 +342,7 @@
 ,"43": {"11": {"utils/data_utils.py": [342]}}
 ,"44": {"11": {"utils/data_utils.py": [342]}}
 ,"45": {"11": {"utils/data_utils.py": [342]}}
+,"ab6b82c2dbcf5ede7d2950eca1efe815f5c0df75": "failed"
 }
 ,
 {
@@ -410,6 +380,7 @@
 ,"43": {"12": {"metrics.py": [32, 33]}}
 ,"44": {"12": {"metrics.py": [32, 33]}}
 ,"45": {"12": {"metrics.py": [32, 33]}}
+,"3f45fa02ba23cfad3f2132dd1dd31f01e365cd6e": "failed"
 }
 ,
 {
@@ -461,6 +432,7 @@
 ,"43": {"15": {"callbacks.py": [12, 943, 951, 953, 976, 978]}}
 ,"44": {"15": {"callbacks.py": [12, 943, 951, 953, 976, 978]}}
 ,"45": {"15": {"callbacks.py": [12, 943, 951, 953, 976, 978]}}
+,"ec8f7f00173599016e0fea01f081f465d91b1813": "failed"
 }
 ,
 {
@@ -509,6 +481,7 @@
 ,"43": {"17": {"metrics.py": [31]}}
 ,"44": {"17": {"metrics.py": [31]}}
 ,"45": {"17": {"metrics.py": [31]}}
+,"3f45fa02ba23cfad3f2132dd1dd31f01e365cd6e": "failed"
 }
 ,
 {
@@ -540,6 +513,7 @@
 ,"43": {"18": {"backend/tensorflow_backend.py": [2336]}}
 ,"44": {"18": {"backend/tensorflow_backend.py": [2332]}}
 ,"45": {"18": {"backend/tensorflow_backend.py": [2316]}}
+,"e74a37438b5389ae19eb61b431859f9789100874": "failed"
 }
 ,
 {
@@ -570,6 +544,7 @@
 ,"43": {"19": {"backend/cntk_backend.py": [1396], "layers/recurrent.py": [52, 56, 57, 58, 59, 60, 61, 63, 64, 74, 81, 91, 92, 93, 94, 100, 210, 211, 212, 839, 1223, 1707]}}
 ,"44": {"19": {"backend/cntk_backend.py": [1396], "layers/recurrent.py": [52, 56, 57, 58, 59, 60, 61, 63, 64, 74, 81, 91, 92, 93, 94, 100, 210, 211, 212, 835, 1214, 1688]}}
 ,"45": {"19": {"backend/cntk_backend.py": [1396], "layers/recurrent.py": [52, 56, 57, 58, 59, 60, 61, 63, 64, 74, 81, 91, 92, 93, 94, 100, 210, 211, 212, 839, 1221, 1698]}}
+,"75d9415c82b3bbba82095b11ac6c313b40de6066": "failed"
 }
 ,
 {
@@ -599,6 +574,7 @@
 ,"43": {"20": {"backend/cntk_backend.py": [2102, 2130], "backend/tensorflow_backend.py": [3048, 3054, 3062, 3197, 3209, 3223, 3240, 3241, 3242], "backend/theano_backend.py": [1919, 1929, 1967], "layers/convolutional.py": [684, 700, 774, 805]}}
 ,"44": {"20": {"backend/cntk_backend.py": [2102, 2130], "backend/tensorflow_backend.py": [3041, 3047, 3055, 3190, 3202, 3216, 3233, 3234, 3235], "backend/theano_backend.py": [1919, 1929, 1967], "layers/convolutional.py": [684, 700, 774, 805]}}
 ,"45": {"20": {"backend/cntk_backend.py": [2102, 2130], "backend/tensorflow_backend.py": [3044, 3050, 3058, 3193, 3205, 3219, 3236, 3237, 3238], "backend/theano_backend.py": [1919, 1929, 1967], "layers/convolutional.py": [684, 700, 774, 805]}}
+,"ee8ff00a2a8a307c952fb8e7bef241188c7fb12b": "failed"
 }
 ,
 {
@@ -627,6 +603,7 @@
 ,"43": {"21": {"callbacks.py": [447, 459, 499, 504]}}
 ,"44": {"21": {"callbacks.py": [447, 459, 499, 504]}}
 ,"45": {"21": {"callbacks.py": [447, 459, 499, 504]}}
+,"ccbe381dcdf2d43b2d88d33ba3dcf4680fe116a8": "failed"
 }
 ,
 {
@@ -671,6 +648,7 @@
 ,"43": {"24": {"callbacks.py": [703, 704]}}
 ,"44": {"24": {"callbacks.py": [703, 704]}}
 ,"45": {"24": {"callbacks.py": [703, 704]}}
+,"f623b2ab57d2dc18a7f12d8d7cd0158207cdb939": "failed"
 }
 ,
 {
@@ -695,6 +673,7 @@
 ,"43": {"25": {"applications/imagenet_utils.py": [32]}}
 ,"44": {"25": {"applications/imagenet_utils.py": [32]}}
 ,"45": {"25": {"applications/imagenet_utils.py": [32]}}
+,"0b3dc16b603a549a20f4a92447c79042fecd0c0b": "failed"
 }
 ,
 {
@@ -718,6 +697,7 @@
 ,"43": {"26": {"backend/tensorflow_backend.py": [2609]}}
 ,"44": {"26": {"backend/tensorflow_backend.py": [2602]}}
 ,"45": {"26": {"backend/tensorflow_backend.py": [2586]}}
+,"875bc59ecfd0c2e53de0fd136f8f705f700d49d1": "failed"
 }
 ,
 {
@@ -740,6 +720,7 @@
 ,"43": {"27": {"layers/wrappers.py": [351, 357]}}
 ,"44": {"27": {"layers/wrappers.py": [354, 360]}}
 ,"45": {"27": {"layers/wrappers.py": [354, 360]}}
+,"f25e894558d9ef11d89645049e01142ef971dcc7": "failed"
 }
 ,
 {
@@ -770,6 +751,7 @@
 ,"43": {"29": {"engine/training.py": [892]}}
 ,"44": {"29": {"engine/training.py": [892]}}
 ,"45": {"29": {"engine/training.py": [892]}}
+,"2afe0b0054694045aff3dd7e263b5c44f04c323a": "failed"
 }
 ,
 {
@@ -789,6 +771,7 @@
 ,"43": {"30": {"engine/training.py": [2084, 2235]}}
 ,"44": {"30": {"engine/training.py": [2067, 2218]}}
 ,"45": {"30": {"engine/training.py": [2065, 2213]}}
+,"57429d1567b94955ac95afe87792411a420ff0ba": "failed"
 }
 ,
 {
@@ -807,6 +790,7 @@
 ,"43": {"31": {"backend/tensorflow_backend.py": [3741, 3742]}}
 ,"44": {"31": {"backend/tensorflow_backend.py": [3734, 3735]}}
 ,"45": {"31": {"backend/tensorflow_backend.py": [3737, 3738]}}
+,"e8190a8d8d4a59359f93bc9b366d04b9c72cc2ed": "failed"
 }
 ,
 {
@@ -824,6 +808,7 @@
 ,"43": {"32": {"callbacks.py": [831, 839, 846, 848, 869, 872, 901, 911]}}
 ,"44": {"32": {"callbacks.py": [831, 839, 846, 848, 869, 872, 901, 911]}}
 ,"45": {"32": {"callbacks.py": [831, 839, 846, 848, 869, 872, 901, 911]}}
+,"4c01c0c4d77348416fff70e00ed6c25955c33ef6": "failed"
 }
 ,
 {
@@ -840,6 +825,7 @@
 ,"43": {"33": {"preprocessing/text.py": [42, 43, 45, 47]}}
 ,"44": {"33": {"preprocessing/text.py": [42, 43, 45, 47]}}
 ,"45": {"33": {"preprocessing/text.py": [42, 43, 45, 47]}}
+,"71bfb00788ec6e899abc8d2de1a67a281879bccd": "failed"
 }
 ,
 {
@@ -855,6 +841,7 @@
 ,"43": {"34": {"utils/data_utils.py": [368]}}
 ,"44": {"34": {"utils/data_utils.py": [368]}}
 ,"45": {"34": {"utils/data_utils.py": [368]}}
+,"78f26df8fb2b8aa5c6262aef44a494a8335a9c6e": "failed"
 }
 ,
 {
@@ -869,6 +856,7 @@
 ,"43": {"35": {"preprocessing/image.py": [523, 524, 872, 1097]}}
 ,"44": {"35": {"preprocessing/image.py": [523, 524, 872, 1097]}}
 ,"45": {"35": {"preprocessing/image.py": [523, 524, 872, 1097]}}
+,"887576b1139b5f21dfa4656410ebdbf986bc6fb3": "failed"
 }
 ,
 {
@@ -889,6 +877,7 @@
 ,"43": {"37": {"layers/recurrent.py": [504, 506, 509]}}
 ,"44": {"37": {"layers/recurrent.py": [504, 506, 509]}}
 ,"45": {"37": {"layers/recurrent.py": [505, 507, 510]}}
+,"365f621b24631a03f995e3b30e1800d327e42fc1": "failed"
 }
 ,
 {
@@ -900,6 +889,7 @@
 ,"43": {"38": {"layers/recurrent.py": [104]}}
 ,"44": {"38": {"layers/recurrent.py": [104]}}
 ,"45": {"38": {"layers/recurrent.py": [104]}}
+,"a5103909bb43f6e9d655587949b54cbd95abbb18": "failed"
 }
 ,
 {
@@ -910,6 +900,7 @@
 ,"43": {"39": {"utils/generic_utils.py": [298]}}
 ,"44": {"39": {"utils/generic_utils.py": [297]}}
 ,"45": {"39": {"utils/generic_utils.py": [295]}}
+,"2f266c3345ec65c721d4599a685fde6611fb8609": "failed"
 }
 ,
 {
@@ -919,6 +910,7 @@
 ,"43": {"40": {"layers/recurrent.py": [398, 400, 408]}}
 ,"44": {"40": {"layers/recurrent.py": [398, 400, 408]}}
 ,"45": {"40": {"layers/recurrent.py": [399, 401, 409]}}
+,"a5103909bb43f6e9d655587949b54cbd95abbb18": "failed"
 }
 ,
 {
@@ -927,6 +919,7 @@
 ,"43": {"41": {"utils/data_utils.py": [14, 553, 614, 631, 636, 638, 642, 686, 687, 688, 704, 705, 706, 713]}}
 ,"44": {"41": {"utils/data_utils.py": [14, 553, 614, 631, 636, 638, 642, 686, 687, 688, 704, 705, 706, 713]}}
 ,"45": {"41": {"utils/data_utils.py": [14, 518, 563, 580, 585, 587, 591, 635, 636, 637, 653, 654, 655, 662]}}
+,"ab6b82c2dbcf5ede7d2950eca1efe815f5c0df75": "failed"
 }
 ,
 {
@@ -934,6 +927,7 @@
 ,"43": {"42": {"engine/training.py": [1884, 1921, 1932, 1982, 1987, 1988, 1989, 1990, 2036, 2037, 2038, 2039, 2040, 2041, 2042, 2043, 2044, 2149, 2166, 2201, 2202, 2264, 2281, 2313, 2314], "models.py": [1119, 1151, 1168, 1226, 1239, 1266, 1278]}}
 ,"44": {"42": {"engine/training.py": [1867, 1904, 1915, 1965, 1970, 1971, 1972, 1973, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2132, 2149, 2184, 2185, 2247, 2264, 2296, 2297], "models.py": [1052, 1084, 1101, 1159, 1172, 1199, 1211]}}
 ,"45": {"42": {"engine/training.py": [1867, 1915, 1965, 1970, 1971, 1972, 1973, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2130, 2242], "models.py": [1052, 1084, 1101, 1159, 1172, 1199, 1211]}}
+,"295bfe4e3ae7e98655b3630a9f83b2df4a82234f": "failed"
 }
 ,
 {
@@ -944,9 +938,11 @@
 {
 "bug": {"44": {"layers/recurrent.py": [734, 741]}}
 ,"45": {"44": {"layers/recurrent.py": [735, 742]}}
+,"a5103909bb43f6e9d655587949b54cbd95abbb18": "failed"
 }
 ,
 {
 "bug": {"45": {"layers/recurrent.py": [1806, 1807, 1808, 1809]}}
+,"a5103909bb43f6e9d655587949b54cbd95abbb18": "failed"
 }
 ]
