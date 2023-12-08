@@ -14,9 +14,11 @@ while getopts ":hl:" opt; do
       ;;
     h )
       echo "$USAGE"
+      exit 0
       ;;
     \? )
       echo "$USAGE"
+      exit 0
       ;;
   esac
 done
