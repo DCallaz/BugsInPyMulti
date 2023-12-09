@@ -1,6 +1,7 @@
 #!/bin/bash
 USAGE="USAGE: bugsinpy-multi-checkout -p <project> -i <version> [-w <work dir>, -b <backtrack dir> -V <versions dir>]"
 BACK_STR="Bug not found: failed to apply backtrack"
+green=`tput setaf 2`
 yellow=`tput setaf 3`
 reset=`tput sgr0`
 
@@ -81,27 +82,33 @@ if [ -d "$work_dir/$project-$v" ]; then
   rm -rf "$work_dir/$project-$v"
 fi
 # Checkout the project using base bugsinpy
+echo "Checking out project..."
 bugsinpy-checkout -p "$project" -i "$v" -v "0" -w "$work_dir" &> "$verbose"
+#cp "$home/.coveragerc" "$work_dir/$project"
 cd "$work_dir/$project"
 # Compile the project before transplanting (needed for some projects)
+echo "Compiling project..."
 bugsinpy-compile &> "$verbose"
 echo "$project,$v" > bugsinpy_version.info
 echo -n "available bugs:" >> bugsinpy_version.info
 # Loop over all tests and transplant
+echo "Transplanting bugs..."
 while read -u 10 -r bug; do
   if [ $unchecked -eq 0 ]; then
     bt="$(python3 "$home/framework/bin/backtrack.py" "$back_dir" "$project" "$bug" "$v")"
   fi
-  if [ "$bug" != "$v" ] && [ "$bt" != "$BACK_STR" ]; then
+  if [ "$bt" != "$BACK_STR" ]; then
     echo "Transplanting $bug" > "$verbose"
     echo -n " $bug" >> bugsinpy_version.info
-    echo "$bt" > "bugsinpy_bug_$bug.info"
-    while read -u 11 -r line; do
-      test_pts="$(echo "$line" | cut -d ',' -f 2)"
-      echo "Doing test $test_pts" > "$verbose"
-      test_diff="$(cat "$home/versions/$project/$v/$test_pts.diff")"
-      echo "$test_diff" | bugsinpy-splice $test_pts
-    done 11< <(grep "^$bug," "$ver_dir/$project/$v/bugs.txt")
+    echo "$bt" > "bug.locations.$bug"
+    if [ "$bug" != "$v" ]; then
+      while read -u 11 -r line; do
+        test_pts="$(echo "$line" | cut -d ',' -f 2)"
+        echo "Doing test $test_pts" > "$verbose"
+        test_diff="$(cat "$home/versions/$project/$v/$test_pts.diff")"
+        echo "$test_diff" | bugsinpy-splice $test_pts
+      done 11< <(grep "^$bug," "$ver_dir/$project/$v/bugs.txt")
+    fi
   else
     echo "Could not transplant $bug into $v" > /dev/stderr
   fi
