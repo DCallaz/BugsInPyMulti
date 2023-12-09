@@ -110,7 +110,7 @@ while read -u 10 -r bug; do
       done 11< <(grep "^$bug," "$ver_dir/$project/$v/bugs.txt")
     fi
   else
-    echo "Could not transplant $bug into $v" > /dev/stderr
+    echo "Could not transplant $bug into $v" > "$verbose"
   fi
 done 10< <(cat "$ver_dir/$project/$v/bugs.txt" | cut -d ',' -f 1 | sort -n | uniq)
 echo "" >> bugsinpy_version.info

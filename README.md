@@ -16,6 +16,7 @@ For details on the for the fault location translation process, see the
 ### Requirements
 * python3 >= 3.8
 * virtualenv
+* The project specific dependencies contained in `dependencies.txt`
 ### Steps
 This repository contains a standalone clone of the BugsInPy dataset. In order to
 set up this dataset, simply run the following line:
@@ -69,7 +70,7 @@ done:
   ```
 4. Collect coverage for the version
   ```
-  bugsinpy-coverage
+  bugsinpy-coverage -a
   ```
 5. Generate the TCM for the version
   ```
