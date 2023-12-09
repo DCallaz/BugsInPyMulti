@@ -13,6 +13,10 @@ For details on the for the fault location translation process, see the
 [bug-backtracker](https://github.com/DCallaz/bug-backtracker).
 
 ## Setup
+### Requirements
+* python3 >= 3.8
+* virtualenv
+### Steps
 This repository contains a standalone clone of the BugsInPy dataset. In order to
 set up this dataset, simply run the following line:
 ```
