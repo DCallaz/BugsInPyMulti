@@ -155,7 +155,7 @@ for (( b=1; b<=$bugs; b++ )); do
       # Replace any occurence of this version in error string with the bug version
       test_error="${test_error//$project-$v/$project-$b}"
       #if [ "$test_error" != "$expected_error" ] || [ "$fail_or_error" == "" ]; then
-      if [ "$(java -cp "$home" lcs "$test_error" "$expected_error")" -lt 85 ] ||
+      if [ "$(python3 "$home"/lcs.py "$test_error" "$expected_error")" -lt 85 ] ||
          [ "$fail_or_error" == "" ]; then
         if [ "$fail_or_error" == "error" ]; then
           echo "${yellow}  failed to compile test case${reset}"
@@ -172,7 +172,7 @@ for (( b=1; b<=$bugs; b++ )); do
           echo "  $test_error"
           echo "  Expected:"
           echo "  $expected_error"
-          echo "  With score: $(java -cp "$home" lcs "$test_error" "$expected_error")"
+          echo "  With score: $(python3 "$home/lcs.py" "$test_error" "$expected_error")"
         else
           echo "${yellow}  test case passing${reset}"
           echo "${test_diffs[$t]}"

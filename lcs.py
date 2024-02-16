@@ -54,6 +54,7 @@ def huntSzymanski_lcs(stringA, stringB, m, n):
 if __name__ == "__main__":
     if (len(sys.argv) < 2):
         print("USAGE: python3 lcs <string 1> <string 2>")
+        exit(0)
     text1 = sys.argv[1]
     text2 = sys.argv[2]
     len1 = len(text1)
