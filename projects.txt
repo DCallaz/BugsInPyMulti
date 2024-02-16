@@ -1,0 +1,17 @@
+PySnooper
+ansible
+black
+cookiecutter
+fastapi
+httpie
+keras
+luigi
+matplotlib
+pandas
+sanic
+scrapy
+spacy
+thefuck
+tornado
+tqdm
+youtube-dl
