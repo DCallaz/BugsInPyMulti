@@ -153,7 +153,8 @@ fi
 
 elif [[ "$run_all" == "1" ]]; then
   if [[ "$pytest" == "1" ]]; then
-     coverage=$(coverage run -m pytest --continue-on-collection-errors -ra 2>&1)
+     pip install pytest-timeout
+     coverage=$(coverage run -m pytest --timeout=300 --continue-on-collection-errors -ra 2>&1)
      echo "$coverage"
      echo "coverage run -m pytest --continue-on-collection-errors -ra" &>>"$work_dir/coverage_alltest_bugsinpy.txt"
      echo "$coverage" &>>"$work_dir/coverage_alltest_bugsinpy.txt"
