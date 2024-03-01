@@ -1,3 +1,4 @@
+#!/bin/python3
 import json
 import sys
 import os
@@ -9,14 +10,9 @@ def powerset(s):
     for i in range(1 << x):
         yield [ss for mask, ss in zip(masks, s) if i & mask]
 
-if __name__ == "__main__":
-    if (len(sys.argv) < 2):
-        print("USAGE: python dump_versions.py <project> [all]")
-        quit()
-    project = sys.argv[1]
-    print_all = False
-    if (len(sys.argv) > 2 and sys.argv[2] == "all"):
-        print_all = True
+
+def get_versions(project, print_all=False):
+    vs = []
     if (not osp.isdir(osp.join("versions", project))):
         print("ERROR: project", project, "not found")
         quit()
@@ -34,9 +30,23 @@ if __name__ == "__main__":
         faults.append(version)
         faults = list(set(faults))
         faults.sort()
-        s = project
+        s = (project, [])
         for fault in faults:
             if (print_all or backtrack("backtracks", project, str(fault),
                 str(version)) is not None):
-                s += "-"+str(fault)
-        print(s)
+                s[1].append(fault)
+        vs.append(s)
+    return vs
+
+
+if __name__ == "__main__":
+    if (len(sys.argv) < 2):
+        print("USAGE: python dump_versions.py <project> [all]")
+        quit()
+    project = sys.argv[1]
+    print_all = False
+    if (len(sys.argv) > 2 and sys.argv[2] == "all"):
+        print_all = True
+    versions = get_versions(project, print_all)
+    for v in versions:
+        print(v[0], *v[1], sep="-")
