@@ -153,9 +153,9 @@ fi
 
 elif [[ "$run_all" == "1" ]]; then
   if [[ "$pytest" == "1" ]]; then
-     coverage=$(coverage run -m pytest -ra 2>&1)
+     coverage=$(coverage run -m pytest --continue-on-collection-errors -ra 2>&1)
      echo "$coverage"
-     echo "coverage run -m pytest -ra" &>>"$work_dir/coverage_alltest_bugsinpy.txt"
+     echo "coverage run -m pytest --continue-on-collection-errors -ra" &>>"$work_dir/coverage_alltest_bugsinpy.txt"
      echo "$coverage" &>>"$work_dir/coverage_alltest_bugsinpy.txt"
 
      coverage_report=$(coverage report -m 2>&1)
@@ -242,7 +242,7 @@ elif [ "$single_test" != "" ]; then
   fi
 fi
 
-coverage json --show-contexts --pretty-print
+coverage json -i --show-contexts --pretty-print
 
 ###Deactivate the environment
 deactivate

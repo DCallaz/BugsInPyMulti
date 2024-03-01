@@ -3,9 +3,12 @@ dynamic_context = test_function
 omit =
     # omit anything in a .local directory anywhere
     */.local/*
+    # omit anything in site-packages
+    */site-packages/*
     # omit anything in a python library
     /usr/*
     # omit config files
     */.config/*
     # omit test files
     */tests/*
+    */test/*

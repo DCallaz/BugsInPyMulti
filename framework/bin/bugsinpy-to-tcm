@@ -55,7 +55,7 @@ else:
     for i in range(len(failed)):
         failed[i] = str(failed[i]).split(' ')[1]
         failed[i] = failed[i].split('[')[0]
-        failed[i] = failed[i].replace(".py", "").replace("::()", "").replace("::", ".").replace("/", ".")
+        failed[i] = failed[i].replace("test/", "").replace(".py", "").replace("::()", "").replace("::", ".").replace("/", ".")
 tcm = open(tcm_file, 'w')
 print("#tests", file=tcm)
 for test in tests:
