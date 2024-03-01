@@ -1,5 +1,5 @@
 #!/bin/bash
-USAGE="USAGE: ./gen_one.sh -p <project> -i <version> -w [-w <work dir>]"
+USAGE="USAGE: ./gen_one.sh -p <project> -i <version> [-w <work dir>]"
 green=`tput setaf 2`
 yellow=`tput setaf 3`
 reset=`tput sgr0`
