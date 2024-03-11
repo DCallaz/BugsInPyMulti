@@ -71,7 +71,7 @@ else
 fi
 pip install coverage
 
-pytest="0"
+pytest="1"
 #read file run_test.sh
 run_command_all=""
 DONE=false
@@ -79,8 +79,8 @@ until $DONE ;do
 read || DONE=true
 if [ "$REPLY" != "" ]; then
    run_command_all+="$REPLY;"
-   if [[ "$REPLY" == *"pytest"* || "$REPLY" == *"py.test"* ]]; then
-       pytest="1"
+   if [[ "$REPLY" == *"unittest"* ]]; then
+       pytest="0"
    fi
 fi
 done < "$work_dir/bugsinpy_run_test.sh"
@@ -153,13 +153,26 @@ fi
 
 elif [[ "$run_all" == "1" ]]; then
   if [[ "$pytest" == "1" ]]; then
-     pip install pytest-timeout
-     coverage=$(coverage run -m pytest --timeout=300 --continue-on-collection-errors -ra 2>&1)
+     pytest_version="$(pytest --version 2>&1 |
+       sed -nr 's/This is pytest version ([0-9]+).*/\1/p')"
+     if [ "$pytest_version" -le "3" ]; then
+       timeout_version="==1.2.1"
+     elif [ "$pytest_version" -le "5" ]; then
+       timeout_version="==1.4.2"
+     elif [ "$pytest_version" -lt "7" ]; then
+       timeout_version="==2.2.0"
+     fi
+     if [ -f "requirements.txt" ]; then
+       pip install -c bugsinpy_requirements.txt -c requirements.txt pytest-timeout$timeout_version
+     else
+       pip install -c bugsinpy_requirements.txt pytest-timeout$timeout_version
+     fi
+     coverage=$(timeout 1h coverage run -m pytest --timeout=300 --continue-on-collection-errors -ra 2>&1)
      echo "$coverage"
      echo "coverage run -m pytest --continue-on-collection-errors -ra" &>>"$work_dir/coverage_alltest_bugsinpy.txt"
      echo "$coverage" &>>"$work_dir/coverage_alltest_bugsinpy.txt"
 
-     coverage_report=$(coverage report -m 2>&1)
+     coverage_report=$(coverage report -i -m 2>&1)
      echo "$coverage_report"
      printf "\nCoverage Report\n" &>>"$work_dir/coverage_alltest_bugsinpy.txt"
      echo "$coverage_report" &>>"$work_dir/coverage_alltest_bugsinpy.txt"
