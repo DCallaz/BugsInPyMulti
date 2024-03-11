@@ -50,15 +50,19 @@ if (subprocess.getoutput('grep unittest bugsinpy_run_test.sh')):
         if (match is not None):
             failed[i] = match.group(2) + "." + match.group(1)
 else:
-    all_failed = subprocess.getoutput('grep "^FAIL" coverage_alltest_bugsinpy.txt')
+    all_failed = subprocess.getoutput('grep "^\\(FAIL\\|ERROR\\)" coverage_alltest_bugsinpy.txt')
     failed = all_failed.splitlines()
     for i in range(len(failed)):
         failed[i] = str(failed[i]).split(' ')[1]
-        failed[i] = failed[i].split('[')[0]
-        failed[i] = failed[i].replace("test/", "").replace(".py", "").replace("::()", "").replace("::", ".").replace("/", ".")
+        failed[i] = re.split("\\[| -", failed[i])[0]
+        failed[i] = re.sub(".*tests?/", "", failed[i]).replace(".py", "")\
+                                                      .replace("::()", "")\
+                                                      .replace("::", ".")\
+                                                      .replace("/", ".")
 tcm = open(tcm_file, 'w')
 print("#tests", file=tcm)
 for test in tests:
+    test = re.sub("tests?\\.(?!([A-Z]|[^.] ))", "", test)
     status = "FAILED" if (test in failed) else "PASSED"
     print(test, status, file=tcm)
 print(file=tcm)
