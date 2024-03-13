@@ -4,3 +4,5 @@ apt-get install libbz2-dev
 apt-get install libffi-dev
 apt-get install libsqlite3-dev
 apt-get install libbz2-dev
+apt-get install default-libmysqlclient-dev
+apt-get install libkrb5-dev
