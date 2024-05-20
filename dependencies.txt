@@ -6,3 +6,6 @@ apt-get install libsqlite3-dev
 apt-get install libbz2-dev
 apt-get install default-libmysqlclient-dev
 apt-get install libkrb5-dev
+apt-get install zlib1g-dev
+apt-get install virtualenv
+apt-get install dos2unix

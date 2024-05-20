@@ -101,6 +101,7 @@ rm -r -f env/
 if [ ! -d "$home/python_versions/py-$python_version" ]; then
   echo "Downloading python version $python_version..."
   cur_dir="$(pwd)"
+  mkdir -p "$home/python_versions"
   cd "$home/python_versions"
   wget "https://www.python.org/ftp/python/$python_version/Python-$python_version.tgz" &&
   tar xzf "Python-$python_version.tgz" &&
@@ -143,14 +144,16 @@ fi
        echo $REPLY
     done < "$work_dir/bugsinpy_setup.sh"
   fi
-  
+
   IFS=';' read -r -a run_setup <<< "$run_setup_all"
 
 ###Run setup.sh
 #dos2unix $work_dir/bugsinpy_requirements.txt
 #pip install -r "$work_dir/bugsinpy_requirements.txt"
 if grep -q '[^[:space:]]' "$work_dir/bugsinpy_requirements.txt"; then
-    cat "$work_dir/bugsinpy_requirements.txt" | sed -e '/^\s*#.*$/d' -e '/^\s*$/d' | xargs -n 1 pip install -c "$work_dir/bugsinpy_requirements.txt"
+    cat "$work_dir/bugsinpy_requirements.txt" |
+      sed -e '/^\s*#.*$/d' -e '/^\s*$/d' |
+      xargs -n 1 pip install -c <(grep -E "(\\w|[_-])+==[0-9.]+" "$work_dir/bugsinpy_requirements.txt")
 fi
 
 for index in "${!run_setup[@]}"
@@ -163,7 +166,9 @@ done
 ###Install requirement
 #pip install -r "$work_dir/bugsinpy_requirements.txt"
 if grep -q '[^[:space:]]' "$work_dir/bugsinpy_requirements.txt"; then
-    cat "$work_dir/bugsinpy_requirements.txt" | sed -e '/^\s*#.*$/d' -e '/^\s*$/d' | xargs -n 1 pip install -c "$work_dir/bugsinpy_requirements.txt"
+    cat "$work_dir/bugsinpy_requirements.txt" |
+      sed -e '/^\s*#.*$/d' -e '/^\s*$/d' |
+      xargs -n 1 pip install -c <(grep -E "(\\w|[_-])+==[0-9.]+" "$work_dir/bugsinpy_requirements.txt")
 fi
 find env/ -exec dos2unix '{}' \;
 deactivate
