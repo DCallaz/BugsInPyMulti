@@ -110,7 +110,7 @@ if [ ! -d "$home/python_versions/py-$python_version" ]; then
   make &&
   make altinstall
   cd ../
-  rm -rf "Python-$python_version*"
+  rm -rf "Python-$python_version"*
   cd "$cur_dir"
   if [ ! -d "$home/python_versions/py-$python_version" ]; then
     echo "ERROR: could not install python version $python_version"
@@ -119,6 +119,11 @@ if [ ! -d "$home/python_versions/py-$python_version" ]; then
 fi
 ###Add environment
 virtualenv env -p "$home/python_versions/py-$python_version/bin/python${python_version%.*}"
+
+if [ $? -ne 0 ] || [ ! -d "env" ]; then
+  echo "Could not create virtual environment!"
+  exit 0
+fi
 
 ###Activate environment
 if [ -d "env/Scripts" ]; then
@@ -153,7 +158,7 @@ fi
 if grep -q '[^[:space:]]' "$work_dir/bugsinpy_requirements.txt"; then
     cat "$work_dir/bugsinpy_requirements.txt" |
       sed -e '/^\s*#.*$/d' -e '/^\s*$/d' |
-      xargs -n 1 pip install -c <(grep -E "(\\w|[_-])+==[0-9.]+" "$work_dir/bugsinpy_requirements.txt")
+      xargs -L 1 pip install -c <(grep -E "(\\w|[_-])+==[0-9.]+" "$work_dir/bugsinpy_requirements.txt")
 fi
 
 for index in "${!run_setup[@]}"
@@ -168,7 +173,7 @@ done
 if grep -q '[^[:space:]]' "$work_dir/bugsinpy_requirements.txt"; then
     cat "$work_dir/bugsinpy_requirements.txt" |
       sed -e '/^\s*#.*$/d' -e '/^\s*$/d' |
-      xargs -n 1 pip install -c <(grep -E "(\\w|[_-])+==[0-9.]+" "$work_dir/bugsinpy_requirements.txt")
+      xargs -L 1 pip install -c <(grep -E "(\\w|[_-])+==[0-9.]+" "$work_dir/bugsinpy_requirements.txt")
 fi
 find env/ -exec dos2unix '{}' \;
 deactivate
