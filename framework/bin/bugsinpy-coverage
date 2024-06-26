@@ -263,5 +263,7 @@ fi
 
 coverage json -i --show-contexts --pretty-print
 
+bugsinpy-to-tcm
+
 ###Deactivate the environment
 deactivate

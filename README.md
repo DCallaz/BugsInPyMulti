@@ -72,11 +72,7 @@ done:
   ```
   bugsinpy-coverage -a
   ```
-5. Generate the TCM for the version
-  ```
-  bugsinpy-to-tcm
-  ```
-6. Mark each of the identified faults in the TCM
+5. Mark each of the identified faults in the TCM
   ```
   bugsinpy-identify
   ```
