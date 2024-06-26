@@ -1,5 +1,17 @@
 #!/bin/bash
-USAGE="USAGE: bugsinpy-multi-checkout -p <project> -i <version> [-w <work dir>, -b <backtrack dir> -V <versions dir>]"
+USAGE="USAGE: bugsinpy-multi-checkout [-hvu] -p <project> -i <version> \
+[-w <work dir>, -b <backtrack dir> -V <versions dir>]
+  where:
+  -h                : Display this help messsage and exit
+  -v                : enable verbose logging
+  -u                : (unckecked) Do not check if a bug has been backtracked \
+before attempting to transplant it
+  -p <project>      : Specify the project to checkout
+  -i <version>      : Specify the version to checkout
+  -w <work dir>     : Specify the directory where the checked-out version will be placed
+  -b <backtrack dir>: Use an alternate backtrack directory (default backtracks/)
+  -V <versions dir> : Use an alternate versions directory (default versions/)
+  "
 BACK_STR="Bug not found: failed to apply backtrack"
 green=`tput setaf 2`
 yellow=`tput setaf 3`
@@ -105,7 +117,7 @@ while read -u 10 -r bug; do
       while read -u 11 -r line; do
         test_pts="$(echo "$line" | cut -d ',' -f 2)"
         echo "Doing test $test_pts" > "$verbose"
-        test_diff="$(cat "$home/versions/$project/$v/$test_pts.diff")"
+        test_diff="$(cat "$ver_dir/$project/$v/$test_pts.diff")"
         echo "$test_diff" | bugsinpy-splice $test_pts
       done 11< <(grep "^$bug," "$ver_dir/$project/$v/bugs.txt")
     fi
