@@ -66,7 +66,7 @@ for bug in $bugs; do
     lines=( $(echo "$full_line" | cut -d ',' --complement -f 1 | tr ',' ' ') )
     # Loop over each line in file for the bug
     for line in ${lines[@]}; do
-      l="$(grep -n "$file:$line$" coverage.tcm | cut -d ':' -f 1)"
+      l="$(grep -an "$file:$line$" coverage.tcm | cut -d ':' -f 1)"
       if [ "$l" ]; then
         sed -i "${l}s/$/ | ${bug}/" coverage.tcm
         found=1
