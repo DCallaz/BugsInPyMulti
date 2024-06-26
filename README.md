@@ -40,7 +40,7 @@ checkout	| Checkout buggy or fixed version project from dataset
 multi-checkout | Checkout a multi-fault version project from the dataset
 compile	| Compile sources from project that have been checkout
 test	| Run test case that relevant with bug, single-test case from input user, or all test cases from project
-coverage |	Run code coverage analysis from test case that relevant with bug, single-test case from input user, or all test cases
+coverage |	Run code coverage analysis from test case that relevant with bug, single-test case from input user, or all test cases. Also produces TCM file
 to-tcm | (Optional) Create or update a code coverage TCM from the collected coverage
 identify | Mark each of the faults identified in a multi-fault version in the created TCM
 mutation |	Run mutation analysis from input user or test case that relevant with bug
