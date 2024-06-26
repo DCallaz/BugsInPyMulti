@@ -1,75 +1,166 @@
 #!/bin/python3
+from tempfile import NamedTemporaryFile as mktemp
 import sys
 import json
 import subprocess
 import re
 import os
+import argparse
+from os.path import dirname
 
-usage = "USAGE: bugsinpy-to-tcm [<coverage.py json report> [<tcm output file>]]"
 
-cov_file = "coverage.json"
-tcm_file = "coverage.tcm"
-if (len(sys.argv) > 1):
-    cov_file = sys.argv[1]
-if (len(sys.argv) > 2):
-    tcm_file = sys.argv[2]
-if (not os.path.isfile(cov_file)):
-    print("Coverage not yet run. Please run:")
-    print(" bugsinpy-coverage -a")
-    print("to produce the coverage needed for this script.")
-    quit()
-js = json.load(open(cov_file))
-tests = []
-locs = []
-coverage = {}
-# Extract coverage from coverage.py's json file
-for file, content in js['files'].items():
-    for line, context in content['contexts'].items():
-        loc = str(file) + ":" + str(line)
-        if (loc in locs):
-            j = locs.index(loc)
-        else:
-            j = len(locs)
-            locs.append(loc)
-        for test in context:
-            if (test == ""):
-                continue
-            if (test in tests):
-                i = tests.index(test)
+def read_coverage(cov_file):
+    """
+    Extract coverage from coverage.py's json file
+    """
+    js = json.load(open(cov_file))
+    tests = set()
+    locs = []
+    coverage = {}
+    test_re = re.compile("^(.*).py::(.*?)(\\[.*?\\])?(\\|\\w+)?$")
+    rm_test_prefix_re = re.compile("tests?\\.(?!([A-Z]|[^.] ))")
+    for file, content in js['files'].items():
+        for line, context in content['contexts'].items():
+            loc = str(file) + ":" + str(line)
+            if (loc in locs):
+                j = locs.index(loc)
             else:
-                i = len(tests)
-                tests.append(test)
-            coverage.setdefault(i, []).append(j)
-# Extract pass/fail info from coverage.py's output
-if (subprocess.getoutput('grep unittest bugsinpy_run_test.sh')):
-    all_failed = subprocess.getoutput('grep "^\\(ERROR\\|FAIL\\):" coverage_alltest_bugsinpy.txt')
-    pat = "^(?:ERROR|FAIL): (\S+) \((.*)\)"
-    failed = all_failed.splitlines()
-    for i in range(len(failed)):
-        match = re.match(pat, failed[i])
-        if (match is not None):
-            failed[i] = match.group(2) + "." + match.group(1)
-else:
-    all_failed = subprocess.getoutput('grep "^\\(FAIL\\|ERROR\\)" coverage_alltest_bugsinpy.txt')
-    failed = all_failed.splitlines()
-    for i in range(len(failed)):
-        failed[i] = str(failed[i]).split(' ')[1]
-        failed[i] = re.split("\\[| -", failed[i])[0]
-        failed[i] = re.sub(".*tests?/", "", failed[i]).replace(".py", "")\
-                                                      .replace("::()", "")\
-                                                      .replace("::", ".")\
-                                                      .replace("/", ".")
-tcm = open(tcm_file, 'w')
-print("#tests", file=tcm)
-for test in tests:
-    test = re.sub("tests?\\.(?!([A-Z]|[^.] ))", "", test)
-    status = "FAILED" if any(fail in test or test in fail for fail in failed) else "PASSED"
-    print(test, status, file=tcm)
-print(file=tcm)
-print("#uuts", *locs, sep="\n", file=tcm)
-print(file=tcm)
-print("#matrix", file=tcm)
-for test in coverage:
-    for loc in coverage[test]:
-        print(loc, 1, end=" ", file=tcm)
+                j = len(locs)
+                locs.append(loc)
+            for test in context:
+                # Format test name
+                test = test.replace("\n", "\\n")
+                matchr = re.match(test_re, test)
+                if (matchr is not None):
+                    test = matchr.group(1).replace("/", ".") + "." + \
+                           matchr.group(2).replace("::()", "").replace("::", ".") + \
+                           str(matchr.group(3) or '')
+                test = re.sub(rm_test_prefix_re, "", test)
+                # Check for default context
+                if (test == ""):
+                    continue
+                # Add test if unique
+                tests.add(test)
+                coverage.setdefault(test, []).append(j)
+    return tests, locs, coverage
+
+
+def read_errs(err_file):
+    """
+    Extract pass/fail info from test framework's output
+    """
+    if (subprocess.getoutput('grep unittest {}'.format(err_file))):
+        all_failed = subprocess.getoutput('grep "^\\(ERROR\\|FAIL\\):" '
+                                          '{}'.format(err_file))
+        pat = "^(?:ERROR|FAIL): (\\S+) \\((.*)\\)"
+        failed = all_failed.splitlines()
+        for i in range(len(failed)):
+            match = re.match(pat, failed[i])
+            if (match is not None):
+                failed[i] = match.group(2) + "." + match.group(1)
+    else:
+        all_failed = subprocess.getoutput('grep "^\\(FAIL\\|FAILED\\|ERROR\\)'
+                                          '\\s\\+[^(]" {}'.format(err_file))
+        failed = []
+        raw_failed = all_failed.splitlines()
+        for raw_failure in raw_failed:
+            matchr = re.match("^(FAIL|FAILED|ERROR)\\s+(.*).py::(.*?)(\\[.*?\\])?( - |$)",
+                              raw_failure)
+            if (matchr is not None):
+                failure = re.sub("tests?\\.(?!([A-Z]|[^.] ))", "",
+                                 matchr.group(2).replace("/", ".")) + "." + \
+                        matchr.group(3).replace("::()", "").replace("::", ".") + \
+                        str(matchr.group(4) or '')
+                failed.append(failure)
+    return failed
+
+
+def get_status(test, failed):
+    return "FAILED" if any(fail.endswith(test) or test.endswith(fail)
+                           for fail in failed) else "PASSED"
+
+
+def print_tcm(tests, locs, coverage, failed, tcm_file):
+    """
+    Output the collected coverage in TCM format to the output file (tcm_file)
+    given
+    """
+    tcm = open(tcm_file, 'w')
+    print("#tests", file=tcm)
+    for test in sorted(tests):
+        status = get_status(test, failed)
+        print(test, status, file=tcm)
     print(file=tcm)
+    print("#uuts", *locs, sep="\n", file=tcm)
+    print(file=tcm)
+    print("#matrix", file=tcm)
+    for test in sorted(coverage):
+        for loc in coverage[test]:
+            print(loc, 1, end=" ", file=tcm)
+        print(file=tcm)
+
+
+def annotate_tcm(failed, tcm_file):
+    """
+    Read in the TCM file (tcm_file) given and annotate with the new failed
+    information given in failed
+    """
+    tmp_name = None
+    try:
+        with open(tcm_file) as tcm, mktemp(mode='wt', dir=dirname(tcm_file),
+                                           delete=False) as tmp:
+            tmp_name = tmp.name
+            tests = False
+            for l in tcm:
+                line = l.strip()
+                if (line == "#tests"):
+                    tests = True
+                elif (tests and line == "#uuts"):
+                    tests = False
+                elif (tests and
+                      (m := re.match("^(.*) (PASSED|FAILED)$", line))):
+                    test = m.group(1)
+                    status = get_status(test, failed)
+                    print(test, status, file=tmp)
+                else:
+                    print(line, file=tmp)
+    except OSError as err:
+        if (tmp_name and os.path.isfile(tmp_name)):
+            os.remove(tmp_name)
+        raise err
+    else:
+        os.replace(tmp_name, tcm_file)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Convert coverage.py coverage files into TCM format.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('-c', '--coverage-file', default='coverage.json',
+                        help='The coverage.py json file to process',
+                        dest='cov_file')
+    parser.add_argument('-o', '--output-file', default='coverage.tcm',
+                        help='The output file for storing the TCM',
+                        dest='tcm_file')
+    parser.add_argument('-e', '--test-result-file', dest='err_file',
+                        default='coverage_alltest_bugsinpy.txt',
+                        help='The output of the testing framework (pytest or \
+                        unittest) showing which tests failed')
+    parser.add_argument('-a', '--annotate-failed', action='store_true',
+                        dest='append', help='Re-annotate the TCM file already '
+                        'generated with the failure information contained in '
+                        'the test result file. NOTE: The output TCM file given'
+                        ' MUST already exist for this option')
+    args = parser.parse_args()
+    if (not os.path.isfile(args.cov_file)):
+        print("Coverage not yet run. Please run:")
+        print(" bugsinpy-coverage -a")
+        print("to produce the coverage needed for this script.")
+        quit()
+    if (args.append):  # Only append to the existing TCM file
+        failed = read_errs(args.err_file)
+        annotate_tcm(failed, args.tcm_file)
+    else:  # Generate a new TCM file
+        tests, locs, coverage = read_coverage(args.cov_file)
+        failed = read_errs(args.err_file)
+        print_tcm(tests, locs, coverage, failed, args.tcm_file)
