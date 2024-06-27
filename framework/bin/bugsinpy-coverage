@@ -157,6 +157,9 @@ elif [[ "$run_all" == "1" ]]; then
       rm "poetry.lock"
       ./poetry_env/bin/poetry install
     else
+      if [ ! -d ".venv" ]; then
+        ln -s env .venv
+      fi
       virtualenv poetry_env
       python_version="$(python --version | cut -d ' ' -f 2)"
       ./poetry_env/bin/pip install -U pip setuptools
