@@ -20,6 +20,7 @@
 22,pandas.tests.indexes.datetimes.test_setops TestBusinessDatetimeIndex test_intersection_bug
 22,pandas.tests.indexes.datetimes.test_setops TestCustomDatetimeIndex test_intersection_bug
 23,pandas.tests.indexes.datetimes.test_timezones test_tz_localize_invalidates_freq
+24,pandas.tests.indexes.datetimes.test_misc test_isocalendar_returns_correct_values_close_to_new_year_with_tz
 25,pandas.tests.arrays.categorical.test_analytics TestCategoricalAnalytics test_min_max_only_nan
 26,pandas.tests.indexes.datetimes.test_to_period TestToPeriod test_to_period_infer
 27,pandas.tests.test_strings test_cat_different_classes

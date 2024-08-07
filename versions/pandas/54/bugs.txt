@@ -18,6 +18,7 @@
 22,pandas.tests.indexes.datetimes.test_setops TestBusinessDatetimeIndex test_intersection_bug
 22,pandas.tests.indexes.datetimes.test_setops TestCustomDatetimeIndex test_intersection_bug
 23,pandas.tests.indexes.datetimes.test_timezones test_tz_localize_invalidates_freq
+24,pandas.tests.indexes.datetimes.test_misc test_isocalendar_returns_correct_values_close_to_new_year_with_tz
 25,pandas.tests.arrays.categorical.test_analytics TestCategoricalAnalytics test_min_max_only_nan
 26,pandas.tests.indexes.datetimes.test_to_period TestToPeriod test_to_period_infer
 27,pandas.tests.test_strings test_cat_different_classes
@@ -47,6 +48,7 @@
 48,pandas.tests.test_strings TestStringMethods test_repeat_with_null
 49,pandas.tests.extension.test_categorical TestComparisonOps test_not_equal_with_na
 50,pandas.tests.reshape.merge.test_merge test_categorical_non_unique_monotonic
+51,pandas.tests.groupby.test_function test_series_groupby_nunique
 52,pandas.tests.indexing.test_categorical TestCategoricalIndex test_loc_scalar
 52,pandas.tests.indexing.test_loc TestLoc test_loc_getitem_int
 52,pandas.tests.indexing.test_loc test_loc_mixed_int_float
