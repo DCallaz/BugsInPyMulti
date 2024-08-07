@@ -1,5 +1,5 @@
 #!/bin/bash
-USAGE="USAGE: ./gen_one.sh -p <project> -i <version> [-w <work dir>]"
+USAGE="USAGE: ./gen_one.sh [-v] -p <project> -i <version> [-w <work dir>] [-V <version dir>]"
 green=`tput setaf 2`
 yellow=`tput setaf 3`
 reset=`tput sgr0`
@@ -7,7 +7,7 @@ reset=`tput sgr0`
 work_dir="$PWD"
 verbose="/dev/null"
 vb=""
-while getopts ":hvp:i:w:" opt; do
+while getopts ":hvp:i:w:V:" opt; do
   case ${opt} in
     h )
       echo "$USAGE"
@@ -25,6 +25,9 @@ while getopts ":hvp:i:w:" opt; do
     v )
       verbose="/dev/stdout"
       vb="-v"
+      ;;
+    V )
+      v_dir="$OPTARG"
       ;;
     \? )
       echo "Invalid option: $OPTARG" 1>&2
@@ -45,8 +48,11 @@ elif [ ! "$v" ]; then
   exit 0
 fi
 echo "${green}Checking out $project-$v...${reset}"
-bugsinpy-multi-checkout $vb -p "$project" -i "$v" -w "$work_dir" &> "$verbose"
+bugsinpy-multi-checkout ${vb:+$vb} ${v_dir:+-V "$v_dir"} -p "$project" \
+  -i "$v" -w "$work_dir" &> "$verbose"
 cd "$work_dir/$project"
+echo "${green}Compiling...${reset}"
+bugsinpy-compile &> "$verbose"
 echo "${green}Collecting coverage...${reset}"
 bugsinpy-coverage -a &> "$verbose"
 echo "${green}Creating TCM...${reset}"
