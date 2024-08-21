@@ -49,7 +49,7 @@ def read_errs(err_file):
     """
     Extract pass/fail info from test framework's output
     """
-    if (subprocess.getoutput('grep unittest {}'.format(err_file))):
+    if (subprocess.getoutput('head -n1 {} | grep unittest'.format(err_file))):
         all_failed = subprocess.getoutput('grep "^\\(ERROR\\|FAIL\\):" '
                                           '{}'.format(err_file))
         pat = "^(?:ERROR|FAIL): (\\S+) \\((.*)\\)"
