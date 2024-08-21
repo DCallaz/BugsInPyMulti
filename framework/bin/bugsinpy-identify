@@ -1,5 +1,5 @@
 #!/bin/bash
-USAGE="USAGE: bugsinpy-identify [-w <work dir>] [-b <backtracks dir>]"
+USAGE="USAGE: bugsinpy-identify [-t <TCM>] [-w <work dir>/-p <project> -v <version>] [-b <backtracks dir>]"
 yellow=`tput setaf 3`
 reset=`tput sgr0`
 # Convert to absolute path
@@ -9,7 +9,7 @@ home="$(readlink -f "$(echo ${home/"~"/~})")"
 back_dir="$home/backtracks"
 work_dir="$PWD"
 # Get cmd line options
-while getopts ":hw:b:" opt; do
+while getopts ":hw:p:v:t:b:" opt; do
   case ${opt} in
     h )
       echo "$USAGE"
@@ -17,6 +17,15 @@ while getopts ":hw:b:" opt; do
       ;;
     w )
       work_dir="$OPTARG"
+      ;;
+    p )
+      project="$OPTARG"
+      ;;
+    v )
+      v="$OPTARG"
+      ;;
+    t )
+      tcm="$OPTARG"
       ;;
     b )
       back_dir="$OPTARG"
@@ -33,23 +42,44 @@ shift $((OPTIND -1))
 # Convert to absolute path
 work_dir="$(readlink -f "$(echo ${work_dir/"~"/~})")"
 back_dir="$(readlink -f "$(echo ${back_dir/"~"/~})")"
+# Set variables
+if [ -z "$tcm" ]; then
+  tcm="$work_dir/coverage.tcm"
+fi
+if [ -z "$project$v" ]; then
+  if [ ! -f "$work_dir/bugsinpy_version.info" ]; then
+    echo "${yellow}The directory \"$work_dir\" is not a checked out multi-fault project ${reset}"
+    echo "$USAGE"
+    exit 0
+  else
+    project="$(head -n 1 "$work_dir/bugsinpy_version.info" | cut -d ',' -f 1)"
+    v="$(head -n 1 "$work_dir/bugsinpy_version.info" | cut -d ',' -f 2)"
+  fi
+fi
+
+# Check project and version numbers
+info_out="$(bugsinpy-info -p "$project")"
+if [[ "$info_out" =~ ^Summary ]]; then
+  num_bugs="$(echo "$info_out" | grep "^Number of bugs" | cut -d ':' -f 2 | xargs)"
+  if [ $v -le 0 ] || [ $v -gt $num_bugs ]; then
+    echo "${yellow}Invalid version '$v' for project \"$project\" ($project has $num_bugs versions)${reset}"
+    exit 0
+  fi
+else
+  echo "${yellow}$info_out${reset}"
+  exit 0
+fi
+# Check for files
 if [ ! -d "$back_dir" ]; then
   echo "${yellow}Backtrack directory \"$back_dir\" does not exist${reset}"
   echo "$USAGE"
   exit 0
-elif [ ! -f "$work_dir/bugsinpy_version.info" ]; then
-  echo "${yellow}The directory \"$work_dir\" is not a checked out multi-fault project ${reset}"
-  echo "$USAGE"
-  exit 0
-elif [ ! -f "$work_dir/coverage.tcm" ]; then
-  echo "${yellow}Coverage file not available, please run:${reset}"
+elif [ ! -f "$tcm" ]; then
+  echo "${yellow}Coverage file not available, please specify coverage file or run:${reset}"
   echo "  bugsinpy-to-tcm"
   echo "${yellow}to produce the coverage file before running this script${reset}"
   exit 0
-fi
-project="$(head -n 1 "$work_dir/bugsinpy_version.info" | cut -d ',' -f 1)"
-v="$(head -n 1 "$work_dir/bugsinpy_version.info" | cut -d ',' -f 2)"
-if [ ! -f "$back_dir/${project}_backtrack.json" ]; then
+elif [ ! -f "$back_dir/${project}_backtrack.json" ]; then
   echo "${yellow}Backtracking file for $project not found at \"$back_dir/${project}_backtrack.json\"${reset}"
   echo "$USAGE"
   exit 0
@@ -66,11 +96,11 @@ for bug in $bugs; do
     lines=( $(echo "$full_line" | cut -d ',' --complement -f 1 | tr ',' ' ') )
     # Loop over each line in file for the bug
     for line in ${lines[@]}; do
-      l="$(grep -an "\<$file:$line$" coverage.tcm | cut -d ':' -f 1)"
+      l="$(grep -an "\<$file:$line$" "$tcm" | cut -d ':' -f 1)"
       if [[ "$l" =~ $'\n' ]]; then
         echo "${yellow}WARNING: found multiple lines in tcm file for \"$file:$line\"${reset}"
       elif [ "$l" ]; then
-        sed -i "${l}s/$/ | ${bug}/" coverage.tcm
+        sed -i "${l}s/$/ | ${bug}/" "$tcm"
         found=1
       fi
     done
