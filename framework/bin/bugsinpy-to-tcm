@@ -5,23 +5,44 @@ import json
 import subprocess
 import re
 import os
-import argparse
 from os.path import dirname
+from os import path as osp
+import argparse
+import method_defs
+from typing import Dict, List, Optional
+from enum import Enum
 
 
-def read_coverage(cov_file):
+def read_coverage(cov_file, method=False, basedir=None):
     """
     Extract coverage from coverage.py's json file
     """
     js = json.load(open(cov_file))
     tests = set()
-    locs = []
-    coverage = {}
+    locs: List[str] = []
+    coverage: Dict[str, List[int]] = {}
+    defs_dict: Dict[str, Optional[method_defs.Container]] = {}
     test_re = re.compile("^(.*).py::(.*?)(\\[.*?\\])?(\\|\\w+)?$")
     rm_test_prefix_re = re.compile("tests?\\.(?!([A-Z]|[^.] ))")
     for file, content in js['files'].items():
+        if (method):  # get the methods from the file
+            if (file not in defs_dict):
+                try:
+                    defs_dict[file] = method_defs.get_defs(osp.join(basedir, file))
+                except FileNotFoundError:
+                    defs_dict.setdefault(file, None)
+                    print("WARNING: could not find file",
+                          osp.join(basedir, file), "for method level")
+            cur_defs = defs_dict[file]
         for line, context in content['contexts'].items():
-            loc = str(file) + ":" + str(line)
+            if (not method):
+                loc = str(file) + ":" + str(line)
+            elif (cur_defs is None):
+                loc = str(file) + ":<module>:" + str(line)
+            else:
+                def_list = cur_defs.get_def_list(int(line))
+                loc = '.'.join([str(file)] + def_list[:-1]) + ":" + \
+                    def_list[-1] + ":" + str(line)
             if (loc in locs):
                 j = locs.index(loc)
             else:
@@ -95,35 +116,64 @@ def print_tcm(tests, locs, coverage, failed, tcm_file):
     print(file=tcm)
     print("#matrix", file=tcm)
     for test in sorted(coverage):
-        for loc in coverage[test]:
-            print(loc, 1, end=" ", file=tcm)
+        for i, loc in enumerate(coverage[test]):
+            end=" " if i != len(coverage[test])-1 else ""
+            print(loc, 1, end=end, file=tcm)
         print(file=tcm)
 
 
-def annotate_tcm(failed, tcm_file):
+def annotate_tcm(tcm_file, failed=None, basedir=None):
     """
     Read in the TCM file (tcm_file) given and annotate with the new failed
     information given in failed
     """
+    class Phase(Enum):
+        NONE = 0
+        TEST = 1
+        UUTS = 2
+        MATRIX = 3
     tmp_name = None
+    cur_file = None
+    cur_defs = None
     try:
         with open(tcm_file) as tcm, mktemp(mode='wt', dir=dirname(tcm_file),
                                            delete=False) as tmp:
             tmp_name = tmp.name
-            tests = False
+            phase = Phase(0)
             for l in tcm:
                 line = l.strip()
                 if (line == "#tests"):
-                    tests = True
-                elif (tests and line == "#uuts"):
-                    tests = False
-                elif (tests and
+                    phase = Phase.TEST
+                elif (line == "#uuts"):
+                    phase = Phase.UUTS
+                elif (line == '#matrix'):
+                    phase = Phase.MATRIX
+                elif (failed is not None and phase == Phase.TEST and
                       (m := re.match("^(.*) (PASSED|FAILED)$", line))):
                     test = m.group(1)
                     status = get_status(test, failed)
                     print(test, status, file=tmp)
-                else:
-                    print(line, file=tmp)
+                    continue
+                elif (basedir is not None and phase == Phase.UUTS and
+                      (m := re.match("^([^:]+):(\\d+)(.*)$", line))):
+                    file, line_no = m.group(1, 2)
+                    if (cur_file is None or file != cur_file):
+                        cur_file = file
+                        try:
+                            cur_defs = method_defs.get_defs(osp.join(basedir,
+                                                                   file))
+                        except FileNotFoundError:
+                            cur_defs = None
+                            print("WARNING: could not find file",
+                                  osp.join(basedir, file), "for method level")
+                    if (cur_defs is None):
+                        def_list = ['<module>']
+                    else:
+                        def_list = cur_defs.get_def_list(int(line_no))
+                    print('.'.join([file] + def_list[:-1]) + ":" + def_list[-1]
+                          + ":" + line_no + m.group(3), file=tmp)
+                    continue
+                print(line, file=tmp)
     except OSError as err:
         if (tmp_name and os.path.isfile(tmp_name)):
             os.remove(tmp_name)
@@ -147,20 +197,38 @@ if __name__ == "__main__":
                         help='The output of the testing framework (pytest or \
                         unittest) showing which tests failed')
     parser.add_argument('-a', '--annotate-failed', action='store_true',
-                        dest='append', help='Re-annotate the TCM file already '
+                        dest='failed', help='Re-annotate the TCM file already '
                         'generated with the failure information contained in '
                         'the test result file. NOTE: The output TCM file given'
                         ' MUST already exist for this option')
+    parser.add_argument('-m', '--add-method-level', action='store_true',
+                        default=True, dest='method', help='Add method level '
+                        'information to the TCM. If the TCM file given '
+                        'already exists, this option will re-annotate it with '
+                        'method level information. This option is the '
+                        'default, see -M to disable method level information')
+    parser.add_argument('-M', '--no-method-level', action='store_false',
+                        default=argparse.SUPPRESS,
+                        dest='method', help='Do not add method level '
+                        'information to the TCM. This is the inverse of the '
+                        '-m option, see that option for description')
+    parser.add_argument('-p', '--project-dir', action='store', dest='basedir',
+                        default='.', help='Extract method level information '
+                        'from the project located at PROJECT_DIR (default: '
+                        '%(default)s i.e. current directory)')
     args = parser.parse_args()
-    if (not os.path.isfile(args.cov_file)):
-        print("Coverage not yet run. Please run:")
-        print(" bugsinpy-coverage -a")
-        print("to produce the coverage needed for this script.")
-        quit()
-    if (args.append):  # Only append to the existing TCM file
-        failed = read_errs(args.err_file)
-        annotate_tcm(failed, args.tcm_file)
+    # Append to the existing TCM file
+    if (args.failed or (args.method and osp.isfile(args.tcm_file))):
+        failed = read_errs(args.err_file) if args.failed else None
+        basedir = osp.abspath(args.basedir) if args.method else None
+        annotate_tcm(args.tcm_file, failed=failed, basedir=basedir)
     else:  # Generate a new TCM file
-        tests, locs, coverage = read_coverage(args.cov_file)
+        if (not osp.isfile(args.cov_file)):
+            print("Coverage not yet run. Please run:")
+            print(" bugsinpy-coverage -a")
+            print("to produce the coverage needed for this script.")
+            quit()
+        tests, locs, coverage = read_coverage(args.cov_file, args.method,
+                                              osp.abspath(args.basedir))
         failed = read_errs(args.err_file)
         print_tcm(tests, locs, coverage, failed, args.tcm_file)

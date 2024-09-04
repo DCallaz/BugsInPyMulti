@@ -96,7 +96,7 @@ for bug in $bugs; do
     lines=( $(echo "$full_line" | cut -d ',' --complement -f 1 | tr ',' ' ') )
     # Loop over each line in file for the bug
     for line in ${lines[@]}; do
-      l="$(grep -an "\<$file:$line$" "$tcm" | cut -d ':' -f 1)"
+      l="$(grep -Ean "\<$file((\.|:).*)?:$line$" "$tcm" | cut -d ':' -f 1)"
       if [[ "$l" =~ $'\n' ]]; then
         echo "${yellow}WARNING: found multiple lines in tcm file for \"$file:$line\"${reset}"
       elif [ "$l" ]; then
