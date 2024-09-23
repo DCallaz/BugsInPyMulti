@@ -56,7 +56,7 @@ def read_coverage(cov_file, method=False, basedir=None):
                     test = matchr.group(1).replace("/", ".") + "." + \
                            matchr.group(2).replace("::()", "").replace("::", ".") + \
                            str(matchr.group(3) or '')
-                test = re.sub(rm_test_prefix_re, "", test)
+                test = re.sub(rm_test_prefix_re, "", test).replace(" ", "")
                 # Check for default context
                 if (test == ""):
                     continue
