@@ -99,7 +99,7 @@ if [ ! "$project" ]; then
 fi
 for project in $project; do
   echo "$project"
-  versions="$(python3 dump_versions.py ${v_dir:+-v "$v_dir" } "$project" |
+  versions="$(python3 framework/bin/dump_versions.py ${v_dir:+-v "$v_dir" } "$project" |
     awk -F- '{print $NF}')"
   for version in $versions; do
     run_with_lock run_one $project $version

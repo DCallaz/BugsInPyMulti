@@ -6,6 +6,8 @@ usage="-p project_name
              The id of the project for which the information shall be printed.
         -i bug_id
              The bug number of the project_name for which the information shall be printed.
+        -m
+             Print out multi-fault related info on the project and version.
 "
 
 case $1 in
@@ -18,16 +20,17 @@ ____HALP
 esac
 
 ###Read the flag of checkout
-while getopts p:i: flag
+while getopts p:i:m flag
 do
     case "${flag}" in
         p) project_name=${OPTARG};;
         i) bug_id=${OPTARG};;
+        m) multi=1;;
     esac
 done
 
 ###Project name and bug id are mandatory
-if [ "$project_name" == "" ]; then 
+if [ "$project_name" == "" ]; then
    echo "Please input project name"
    exit
 fi
@@ -46,93 +49,126 @@ fi
 
 ###Check if bug exist
 
-if [ "$bug_id" == "" ]; then 
-  if [ ! -d "$project_location/bugs/$bug_id" ]; then
-     echo "Bug number $bug_id does not exist, please check the bug id"
-     exit
-  fi
+if [ "$bug_id" == "" ] || [ ! -d "$project_location/bugs/$bug_id" ]; then
+  echo "Bug number $bug_id does not exist, please check the bug id"
+  exit
 fi
-cd "$project_location"
-input="project.info"
-githubURL=""
-checkfurther="NOT OK"
 
-###Read the project.info
-while IFS= read -r line
-do
-  if [[ "$line" == "github_url="* ]]; then
-     githubURL="$(cut -d'"' -f 2 <<< $line)"
-     githubName="${githubUrl##*/}"
-     if [[ "$githubName" == "" ]]; then
-         temp="${githubUrl%?}"
-         githubName="${temp##*/}"
+if [ "$multi" ]; then
+  if [ -z "$bug_id" ]; then
+    echo "Summary for Project: $project_name"
+    echo "+------------------------------------------------------------------------------+"
+    echo "| Version | Identified bugs                                                    |"
+    echo "+------------------------------------------------------------------------------+"
+    versions="$(python3 $framework_location/dump_versions.py $project_name)"
+    for version in $versions; do
+      v="${version##*-}"
+      bugs="$(echo ${version#*-} | tr "-" "\n" | sort -g | xargs | sed 's/ /, /g')"
+      printf "| %-7s | %-66s |\n" $v "$bugs"
+    done
+    echo "+------------------------------------------------------------------------------+"
+    echo "For information on a particular version, please use the '-i <version>' option"
+  else
+    echo "Summary for project $project_name version: $bug_id"
+    bugs="$(python3 $framework_location/dump_versions.py $project_name | grep "\-$bug_id$")"
+    bugs="$(echo ${bugs#*-} | tr "-" "\n" | sort -g | xargs)"
+    echo "+------------------------------------------------------------------------------------------------+"
+    echo "| Version | Identified bugs                                                                      |"
+    echo "+------------------------------------------------------------------------------------------------+"
+    printf "| %-7s | %-84s |\n" $bug_id "$(echo $bugs | sed 's/ /, /g')"
+    echo "+------------------------------------------------------------------------------------------------+"
+    echo "| Bug     | Locations                                                                            |"
+    echo "+------------------------------------------------------------------------------------------------+"
+    for bug in ${bugs}; do
+      locs=($(python3 $framework_location/backtrack.py "$framework_location/../../backtracks" "$project_name" "$bug" "$bug_id"))
+      for loc in "${locs[@]}"; do
+        printf "| %-7s | %-84s |\n" "$bug" "$locs"
+        bug=" "
+      done
+    done
+    echo "+------------------------------------------------------------------------------------------------+"
+  fi
+else
+  cd "$project_location"
+  input="project.info"
+  githubURL=""
+  checkfurther="NOT OK"
+
+  ###Read the project.info
+  while IFS= read -r line
+  do
+    if [[ "$line" == "github_url="* ]]; then
+       githubURL="$(cut -d'"' -f 2 <<< $line)"
+       githubName="${githubUrl##*/}"
+       if [[ "$githubName" == "" ]]; then
+           temp="${githubUrl%?}"
+           githubName="${temp##*/}"
+       fi
+    elif [[ "$line" == 'status="OK"'* ]]; then
+       checkfurther="OK"
+       #clone project if status OK
+    fi
+  done < "$input"
+
+  echo "Summary for Project $project_name"
+  echo "--------------------------------------------------------------------------------"
+  echo "Script dir	: $framework_location"
+  echo "Base dir	: $bugsinpy_location"
+  echo "Data dir	: $project_location"
+  if [ "$bug_id" != "" ]; then
+    echo "Bug dir		: $project_location/bugs/$bug_id"
+  fi
+  echo "--------------------------------------------------------------------------------"
+  echo "Project name	: $project_name"
+  echo "Status 		: $checkfurther"
+  echo "Github URL	: $githubURL"
+  num_of_bugs=$(find $project_location/bugs/* -maxdepth 0 -type d | wc -l)
+  echo "Number of bugs	: $num_of_bugs"
+  echo "--------------------------------------------------------------------------------"
+
+  if [ "$bug_id" != "" ]; then
+  cd "$project_location/bugs/$bug_id"
+  pythonpath_set=""
+  buggy_commit=""
+  fix_commit=""
+
+  ###Read bug.info file
+  DONE=false
+  until $DONE ;do
+  read || DONE=true
+  if [[ "$REPLY" == "buggy_commit_id"* ]]; then
+     buggy_commit="$(cut -d'"' -f 2 <<< $REPLY)"
+  elif [[ "$REPLY" == "fixed_commit_id"* ]]; then
+     fix_commit="$(cut -d'"' -f 2 <<< $REPLY)"
+  elif [[ "$REPLY" == "test_file"* ]]; then
+     test_file_all="$(cut -d'"' -f 2 <<< $REPLY)"
+     IFS=';' read -r -a test_file <<< "$test_file_all"
+  elif [[ "$REPLY" == "pythonpath"* ]]; then
+     pythonpath_all="$(cut -d'"' -f 2 <<< $REPLY)"
+     if [ "$pythonpath_all" != "" ]; then
+         temp_folder=":${folder_location}/"
+         pythonpath_set=${pythonpath_all//;/$temp_folder}
+         pythonpath_set="${folder_location}/${pythonpath_set}"
      fi
-  elif [[ "$line" == 'status="OK"'* ]]; then
-     checkfurther="OK"
-     #clone project if status OK
   fi
-done < "$input"
-
-echo "Summary for Project $project_name"
-echo "--------------------------------------------------------------------------------"
-echo "Script dir	: $framework_location"
-echo "Base dir	: $bugsinpy_location"
-echo "Data dir	: $project_location"
-if [ "$bug_id" != "" ]; then 
-  echo "Bug dir		: $project_location/bugs/$bug_id"
+  done < bug.info
+  echo ""
+  echo "Summary for Bug $project_name-$bug_id"
+  echo "--------------------------------------------------------------------------------"
+  echo "Revision id"
+  echo "	$fix_commit"
+  echo "--------------------------------------------------------------------------------"
+  echo "Buggy id"
+  echo "	$buggy_commit"
+  echo "--------------------------------------------------------------------------------"
+  echo "Triggering test file"
+  for index in "${!test_file[@]}"
+  do
+     test_file_now=${test_file[index]}
+     echo "	$test_file_now"
+  done
+  fi
 fi
-echo "--------------------------------------------------------------------------------"
-echo "Project name	: $project_name"
-echo "Status 		: $checkfurther"
-echo "Github URL	: $githubURL"
-num_of_bugs=$(find $project_location/bugs/* -maxdepth 0 -type d | wc -l)
-echo "Number of bugs	: $num_of_bugs"
-echo "--------------------------------------------------------------------------------"
-
-if [ "$bug_id" != "" ]; then 
-cd "$project_location/bugs/$bug_id"
-pythonpath_set=""
-buggy_commit=""
-fix_commit=""
-
-###Read bug.info file
-DONE=false
-until $DONE ;do
-read || DONE=true
-if [[ "$REPLY" == "buggy_commit_id"* ]]; then
-   buggy_commit="$(cut -d'"' -f 2 <<< $REPLY)"
-elif [[ "$REPLY" == "fixed_commit_id"* ]]; then
-   fix_commit="$(cut -d'"' -f 2 <<< $REPLY)"
-elif [[ "$REPLY" == "test_file"* ]]; then
-   test_file_all="$(cut -d'"' -f 2 <<< $REPLY)"
-   IFS=';' read -r -a test_file <<< "$test_file_all"
-elif [[ "$REPLY" == "pythonpath"* ]]; then
-   pythonpath_all="$(cut -d'"' -f 2 <<< $REPLY)"
-   if [ "$pythonpath_all" != "" ]; then
-       temp_folder=":${folder_location}/"
-       pythonpath_set=${pythonpath_all//;/$temp_folder}
-       pythonpath_set="${folder_location}/${pythonpath_set}"
-   fi
-fi
-done < bug.info
-echo ""
-echo "Summary for Bug $project_name-$bug_id"
-echo "--------------------------------------------------------------------------------"
-echo "Revision id"
-echo "	$fix_commit"
-echo "--------------------------------------------------------------------------------"
-echo "Buggy id"
-echo "	$buggy_commit"
-echo "--------------------------------------------------------------------------------"
-echo "Triggering test file"
-for index in "${!test_file[@]}"
-do
-   test_file_now=${test_file[index]}
-   echo "	$test_file_now"
-done
-fi
-
-
 
 
 
