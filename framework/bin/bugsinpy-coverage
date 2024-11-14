@@ -163,7 +163,7 @@ elif [[ "$run_all" == "1" ]]; then
       virtualenv poetry_env
       python_version="$(python --version | cut -d ' ' -f 2)"
       ./poetry_env/bin/pip install -U pip setuptools
-      ./poetry_env/bin/pip install -e git+https://github.com/python-poetry/poetry@5bab98c9500f1050c6bb6adfb55580a23173f18d#egg=poetry
+      ./poetry_env/bin/pip install poetry==1.8.4
       echo -e "[tool.poetry]\npackage-mode = false\n[tool.poetry.dependencies]\npython = \"$python_version\"\ncoverage = \"^5.0.0\"\npytest-timeout = \"*\"\npytest-cov = \"*\"" > pyproject.toml
       cat bugsinpy_requirements.txt | sed -E -e 's/^(-e git.*)#egg=.*$/\1/' |
         xargs -L 1 ./poetry_env/bin/poetry add

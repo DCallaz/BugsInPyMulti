@@ -106,6 +106,10 @@ if [ ! -d "$home/python_versions/py-$python_version" ]; then
   wget "https://www.python.org/ftp/python/$python_version/Python-$python_version.tgz" &&
   tar xzf "Python-$python_version.tgz" &&
   cd "Python-$python_version/" &&
+  if [[ "$python_version" =~ 3.6.* ]]; then
+    echo -e "--- Include/objimpl.h\n+++ Include/objimpl.h\n@@ -250,7 +250,7 @@\n         union _gc_head *gc_prev;\n         Py_ssize_t gc_refs;\n     } gc;\n-    double dummy;  /* force worst-case alignment */\n+    long double dummy;  /* force worst-case alignment */\n } PyGC_Head;\n\n extern PyGC_Head *_PyGC_generation0;\n--- Objects/obmalloc.c\n+++ Objects/obmalloc.c\n@@ -643,8 +643,8 @@\n  *\n  * You shouldn't change this unless you know what you are doing.\n  */\n-#define ALIGNMENT               8               /* must be 2^N */\n-#define ALIGNMENT_SHIFT         3\n+#define ALIGNMENT               16               /* must be 2^N */\n+#define ALIGNMENT_SHIFT         4\n\n /* Return the number of bytes in size class I, as a uint. */\n #define INDEX2SIZE(I) (((uint)(I) + 1) << ALIGNMENT_SHIFT)" > alignment.patch
+    patch -p0 < alignment.patch
+  fi
   ./configure --prefix "$home/python_versions/py-$python_version" &&
   make &&
   make altinstall
@@ -118,7 +122,8 @@ if [ ! -d "$home/python_versions/py-$python_version" ]; then
   fi
 fi
 ###Add environment
-virtualenv env -p "$home/python_versions/py-$python_version/bin/python${python_version%.*}"
+# virtualenv env -p "$home/python_versions/py-$python_version/bin/python${python_version%.*}"
+"$home/python_versions/py-$python_version/bin/python${python_version%.*}" -m venv env
 
 if [ $? -ne 0 ] || [ ! -d "env" ]; then
   echo "Could not create virtual environment!"
