@@ -23,7 +23,7 @@ def read_coverage(cov_file, method=False, basedir=None):
     coverage: Dict[str, List[int]] = {}
     defs_dict: Dict[str, Optional[method_defs.Container]] = {}
     test_re = re.compile("^(.*).py::(.*?)(\\[.*?\\])?(\\|\\w+)?$")
-    rm_test_prefix_re = re.compile("tests?\\.(?!([A-Z]|[^.] ))")
+    rm_test_prefix_re = re.compile("(?<=\\b)tests?\\.(?!([A-Z]|[^.] ))")
     for file, content in js['files'].items():
         if (method):  # get the methods from the file
             if (file not in defs_dict):
