@@ -47,7 +47,7 @@ up the dataset's Docker container, navigate to the `docker` directory:
 ```
 cd docker/
 ```
-and run the following:
+and run the following (you may need to prefix each command with `sudo`):
 ```bash
 # build the docker image
 docker build --tag bip-mf .
