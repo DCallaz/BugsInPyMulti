@@ -22,7 +22,7 @@ OR
 
 * Docker (see [Docker setup section](#docker))
 
-[^1] These dependencies are listed for Debian-based systems; for other
+[^1]: These dependencies are listed for Debian-based systems; for other
 systems please find equivalent packages, or consider using the docker
 container.
 
