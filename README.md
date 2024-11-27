@@ -65,16 +65,16 @@ The following commands are available for use within the dataset:
 
 Command | Description
 --- | ---
-info | Get the information of a specific project or a specific bug
-checkout	| Checkout buggy or fixed version project from dataset
-multi-checkout | Checkout a multi-fault version project from the dataset
-compile	| Compile sources from project that have been checkout
-test	| Run test case that relevant with bug, single-test case from input user, or all test cases from project
-coverage |	Run code coverage analysis from test case that relevant with bug, single-test case from input user, or all test cases. Also produces TCM file
-to-tcm | (Optional) Create or update a code coverage TCM from the collected coverage
+info | Get information of a specific project or a specific bug. Includes multi-fault info
+checkout	| Checkout a buggy or fixed version of a project from the dataset
+multi-checkout | Checkout a multi-fault version of a project from the dataset
+compile	| Compile sources from the project that has been checked out
+test	| Run a single-test case from input user, test cases relevant to the bug, or all test cases from a project
+coverage |	Run code coverage analysis of a single-test case from input user, test cases relevant to the bug, or all test cases. Also produces an SBFL-compatible TCM file
+to-tcm | (Optional) Create or update a code coverage TCM file from the collected coverage
 identify | Mark each of the faults identified in a multi-fault version in the created TCM
-mutation |	Run mutation analysis from input user or test case that relevant with bug
-fuzz | Run a test input generation from specific bug
+mutation |	Run mutation analysis from user input or test cases relevant to the bug
+fuzz | Run test input generation from a specific bug
 
 Any of the above commands can be run as: `bugsinpy-<command>`, for example:
 ```
