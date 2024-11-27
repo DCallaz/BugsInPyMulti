@@ -8,7 +8,7 @@ for bug exposure and identification respectively.
 
 The test case transplantation process is based on the ideas from [An et.
 al.](https://github.com/coinse/Defects4J-multifault), and is included in this
-repository (see [version search replication](#replication-of-version-searching).
+repository (see [version search replication](#replication-of-version-searching)).
 For details on the fault location translation process, see the
 [bug-backtracker](https://github.com/DCallaz/bug-backtracker).
 
