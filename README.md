@@ -57,7 +57,7 @@ docker run -dt --name bip-mf bip-mf:latest
 docker exec -it bip-mf bash
 ```
 
-The dataset repository should then be available at `/defects4j-mf/` inside the
+The dataset repository should then be available at `/bugsinpy-mf/` inside the
 Docker container.
 
 ## Usage
