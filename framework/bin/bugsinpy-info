@@ -49,7 +49,7 @@ fi
 
 ###Check if bug exist
 
-if [ "$bug_id" == "" ] || [ ! -d "$project_location/bugs/$bug_id" ]; then
+if [ "$bug_id" != "" ] && [ ! -d "$project_location/bugs/$bug_id" ]; then
   echo "Bug number $bug_id does not exist, please check the bug id"
   exit
 fi
