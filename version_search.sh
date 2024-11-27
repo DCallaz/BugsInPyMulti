@@ -103,11 +103,11 @@ for (( b=1; b<=$bugs; b++ )); do
   # Process tests and collect test diffs
   for t in "${tests[@]}"; do
     if [ "$unittest" -eq 1 ]; then
-      awk_cmd='match($0, /(.+)\.([A-Z][^.]*)\.([^.]+)/, ary) {print ary[1],ary[2],ary[3]}'
+      py_cmd='import re;print(" ".join(re.match("(.+)\\.(\\w[^.]*)\\.([^.]+)",input()).groups("")))'
     else
-      awk_cmd='match($0, /(.+)\.py(::([A-Z][^:]*))?::(.+)/, ary) {print ary[1],ary[3],ary[4]}'
+      py_cmd='import re;print(" ".join(re.match("(.+)\\.py(::(\\w[^:]*))?::(.+)",input()).groups("")))'
     fi
-    test_pts[$t]="$(echo "$t" | awk "$awk_cmd" | sed 's/\//./g;s/ \+/ /g')"
+    test_pts[$t]="$(echo "$t" | python -c "$py_cmd" | sed 's/\//./g;s/ \+/ /g')"
     test_diffs[$t]="$(bugsinpy-cut ${test_pts[$t]})"
     if [ "$?" -ne 0 ] || [ "${test_diffs[$t]}" == "" ]; then
       echo "ERROR: bugsinpy-cut did not succeed, skipping test $t for bug $b..."
