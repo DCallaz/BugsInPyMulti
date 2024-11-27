@@ -16,7 +16,16 @@ For details on the fault location translation process, see the
 ### Requirements
 * python3 >= 3.8
 * virtualenv
-* The project specific dependencies contained in `dependencies.txt`
+* The project specific dependencies contained in `dependencies.txt`[^1]
+
+OR
+
+* Docker (see [Docker setup section](#docker))
+
+[^1] These dependencies are listed for Debian-based systems; for other
+systems please find equivalent packages, or consider using the docker
+container.
+
 ### Steps
 This repository contains a standalone clone of the BugsInPy dataset. In order to
 set up this dataset, simply run the following line:
@@ -30,6 +39,27 @@ You can then test your installation by running:
 bugsinpy-multi-checkout -h
 ```
 which should print the help message of the multi-fault checkout command.
+
+### Docker
+
+Alternatively, this dataset may be used from within a Docker container. To set
+up the dataset's Docker container, navigate to the `docker` directory:
+```
+cd docker/
+```
+and run the following:
+```
+# build the docker image
+docker build --tag bip-mf .
+# create the docker container from the image
+docker run -dt --name bip-mf bip-mf:latest
+# execute an interactive bash shell for the container
+docker exec -it bip-mf bash
+```
+
+The dataset repository should then be available at `/defects4j-mf/` inside the
+Docker container.
+
 ## Usage
 The following commands are available for use within the dataset:
 
