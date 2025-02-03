@@ -82,7 +82,7 @@ if [ "$multi" ]; then
     for bug in ${bugs}; do
       locs=($(python3 $framework_location/backtrack.py "$framework_location/../../backtracks" "$project_name" "$bug" "$bug_id"))
       for loc in "${locs[@]}"; do
-        printf "| %-7s | %-84s |\n" "$bug" "$locs"
+        printf "| %-7s | %-84s |\n" "$bug" "$loc"
         bug=" "
       done
     done
