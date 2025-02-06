@@ -63,7 +63,7 @@ if [ "$multi" ]; then
     versions="$(python3 $framework_location/dump_versions.py $project_name)"
     for version in $versions; do
       v="${version##*-}"
-      bugs="$(echo ${version#*-} | tr "-" "\n" | sort -g | xargs | sed 's/ /, /g')"
+      bugs="$(echo $version | sed -E 's/^[a-zA-Z_\-]+//' | tr "-" "\n" | sort -g | xargs | sed 's/ /, /g')"
       printf "| %-7s | %-66s |\n" $v "$bugs"
     done
     echo "+------------------------------------------------------------------------------+"
