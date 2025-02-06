@@ -71,7 +71,7 @@ if [ "$multi" ]; then
   else
     echo "Summary for project $project_name version: $bug_id"
     bugs="$(python3 $framework_location/dump_versions.py $project_name | grep "\-$bug_id$")"
-    bugs="$(echo ${bugs#*-} | tr "-" "\n" | sort -g | xargs)"
+    bugs="$(echo $bugs | sed -E 's/^[a-zA-Z_\-]+//' | tr "-" "\n" | sort -g | xargs)"
     echo "+------------------------------------------------------------------------------------------------+"
     echo "| Version | Identified bugs                                                                      |"
     echo "+------------------------------------------------------------------------------------------------+"
